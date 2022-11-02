@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 import { Colors } from '@constant';
 import Text from '../Text';
@@ -70,23 +71,51 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
 
-	return (
-		<TouchableOpacity
-			style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
-			{ ...restOfProps }
-			activeOpacity={ 0.75 }>
-			<View style={ { flexDirection: 'row', alignItems: 'center' } }>
-				{ text && (
-					<Text
-						style={ textStyle }
-						size={ textSize }
-						weight={ weight }
-						color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
-				) }
-				{ children && children }
-			</View>
-		</TouchableOpacity>
-	);
+	if (backgroundColor !== 'transparent') {
+		return (
+			<LinearGradient
+				colors={ ['#CC1432', '#FE395A'] }
+				locations={ [0, 0.7, 1] }
+				style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+				start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
+			>
+				<TouchableOpacity
+
+					{ ...restOfProps }
+					activeOpacity={ 0.75 }>
+					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+						{ text && (
+							<Text
+								style={ textStyle }
+								size={ textSize }
+								weight={ weight }
+								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
+						) }
+						{ children && children }
+					</View>
+				</TouchableOpacity>
+			</LinearGradient>
+		);
+	} else {
+		return (
+			<TouchableOpacity style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+
+				{ ...restOfProps }
+				activeOpacity={ 0.75 }>
+				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+					{ text && (
+						<Text
+							style={ textStyle }
+							size={ textSize }
+							weight={ weight }
+							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
+					) }
+					{ children && children }
+				</View>
+			</TouchableOpacity>
+		);
+	}
+
 };
 
 export default React.memo(Button);

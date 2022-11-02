@@ -59,10 +59,10 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 			{ label && (
 				<Text
 					size={ 12 }
-					color={ formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.blue.default : undefined } >{ label }</Text>
+					color={ formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : undefined } >{ label }</Text>
 			) }
 			<TouchableWithoutFeedback onPress={ () => inputRef.current?.focus() }>
-				<View style={ [input, { borderColor: formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.blue.default : 'transparent' }] }>
+				<View style={ [input, { borderColor: formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : Colors.gray.line }] }>
 					{ leftIcon && leftIcon }
 					<TextInput
 						value={ formik?.values[name] }

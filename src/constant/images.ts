@@ -2,6 +2,7 @@ import LogoText from '../assets/images/LogoText.svg';
 import Logo from '../assets/images/Logo.svg';
 import LogoBlack from '../assets/images/LogoBlack.svg';
 import LogoWhite from '../assets/images/LogoWhite.svg';
+import LogoFB from '../assets/images/logo_fb_delivery.svg';
 
 import OnBoarding1 from '../assets/images/onboarding-1.png';
 import OnBoarding2 from '../assets/images/onboarding-2.jpeg';
@@ -26,4 +27,5 @@ export default {
 	Google,
 	Apple,
 	Facebook,
+	LogoFB
 };

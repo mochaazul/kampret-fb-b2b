@@ -31,79 +31,60 @@ const Login = () => {
 	return (
 		<Container>
 			<View style={ { flex: 1 } }>
-				<Images.LogoText />
+				<Images.LogoFB />
 				<Text
 					color={ Colors.black.default }
 					size={ 24 }
 					weight='700'
-					mt={ 30 }>Sign In</Text>
+					mt={ 20 }>Login</Text>
 				<Text
 					color={ Colors.gray.default }
+					size={ 12 }
+					weight='400'
 					mt={ 10 }
-					numberOfLines={ 1 }>Please sign in to continue.</Text>
+					numberOfLines={ 1 }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 				<View style={ styles.form_container }>
 					<Input
 						formik={ formik }
-						name='phone_number'
+						name='username'
 						label='Phone Number'
-						placeholder='Enter your phone number'
-						keyboardType='number-pad' />
+						placeholder='Masukkan username'
+						keyboardType='ascii-capable' />
 					<Input
 						formik={ formik }
 						name='password'
-						label='Password'
-						placeholder='Enter your password'
-						mt={ 20 }
+						label='Kata Sandi'
+						placeholder='Masukkan username'
+						mt={ 15 }
 						secureTextEntry />
 				</View>
 				<View style={ { alignItems: 'flex-end' } }>
 					<Button
 						mt={ 15 }
-						text='Forgot Your Password?'
+						text='Lupa Password?'
+						textSize={ 14 }
 						weight='700'
-						color={ Colors.black.default }
+						color={ Colors.gray.default }
 						noPadding
 						backgroundColor='transparent' />
 				</View>
 				<Button
 					onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
-					text='Sign In'
+					text='Masuk'
+					textSize={ 14 }
 					weight='700'
 					mt={ 30 } />
-				<Text
-					color={ Colors.gray.default }
-					mt={ 20 }
-					align='center'>or sign in with</Text>
-				<View style={ styles.social_container }>
-					<Button
-						type='outline'
-						color={ Colors.gray.default }
-						buttonStyle={ styles.social_button }>
-						<Images.Google />
-					</Button>
-					<Button
-						type='outline'
-						color={ Colors.gray.default }
-						buttonStyle={ styles.social_button }>
-						<Images.Facebook />
-					</Button>
-					<Button
-						type='outline'
-						color={ Colors.gray.default }
-						buttonStyle={ styles.social_button }>
-						<Images.Apple />
-					</Button>
-				</View>
 			</View>
 			<View style={ styles.register_container }>
 				<Text
-					color={ Colors.gray.default }
-					weight='700'>Don’t have an account? </Text>
+					color={ Colors.black.default }
+					weight='700' size={ 14 }>Ada kendala? </Text>
+
 				<Button
 					onPress={ () => NavigationHelper.push('Register') }
 					weight='700'
-					color={ Colors.black.default }
-					text='Sign Up Here'
+					color={ Colors.company.red }
+					text='Hubungi Kami'
 					noPadding
 					backgroundColor='transparent' />
 			</View>

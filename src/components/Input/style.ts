@@ -10,19 +10,20 @@ interface IStyle {
 export const styles = StyleSheet.create<IStyle>({
 	defaultStyle: {
 		flex: 1,
+		padding: 0
 	},
 	inputContainer: {
 
 	},
 	input: {
 		marginTop: 5,
-		backgroundColor: Colors.gray.light,
+		backgroundColor: Colors.white.background,
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingHorizontal: 15,
-		paddingVertical: 14,
-		borderRadius: 8,
+		paddingHorizontal: 20,
+		paddingVertical: 15,
+		borderRadius: 10,
 		borderWidth: 1,
-		borderColor: 'transparent',
+		borderColor: Colors.gray.line,
 	},
 });

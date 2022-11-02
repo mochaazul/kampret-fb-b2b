@@ -1,15 +1,16 @@
+import { Colors } from '@constant';
 import { StyleSheet, ViewStyle } from 'react-native';
 
 interface ICustomStyles extends ViewStyle {
-  defaultStyle: (
-    noPadding?: boolean | undefined,
-    noPaddingTop?: boolean | undefined,
-    noPaddingBottom?: boolean | undefined,
-    noPaddingLeft?: boolean | undefined,
-    noPaddingRight?: boolean | undefined,
-    noPaddingVertical?: boolean | undefined,
-    noPaddingHorizontal?: boolean | undefined,
-  ) => ViewStyle
+	defaultStyle: (
+		noPadding?: boolean | undefined,
+		noPaddingTop?: boolean | undefined,
+		noPaddingBottom?: boolean | undefined,
+		noPaddingLeft?: boolean | undefined,
+		noPaddingRight?: boolean | undefined,
+		noPaddingVertical?: boolean | undefined,
+		noPaddingHorizontal?: boolean | undefined,
+	) => ViewStyle;
 }
 
 const customStyle: ICustomStyles = {
@@ -64,6 +65,7 @@ const customStyle: ICustomStyles = {
 			paddingLeft: paddingLeft,
 			paddingRight: paddingRight,
 			flex: 1,
+			backgroundColor: Colors.white.background
 		};
 	},
 };

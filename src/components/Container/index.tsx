@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, ScrollView, StatusBar, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StatusBar, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ComponentInterface } from '@interfaces';
@@ -38,7 +38,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 			<StatusBar barStyle={ barStyle } />
 			<KeyboardAvoidingView
 				style={ { flex: 1 } }
-				behavior='padding'
+				behavior={ Platform.OS === "ios" ? "padding" : "height" }
 				keyboardVerticalOffset={ 10 }>
 				{ noScroll ? (
 					<View style={ [{ flex: 1 }, contentContainerStyle] }>
