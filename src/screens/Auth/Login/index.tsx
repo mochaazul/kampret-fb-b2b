@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextStyle, View } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
-import { Images, Colors } from '@constant';
+import { Images, Colors, Fonts } from '@constant';
 import { Button, Container, Input, Text } from '@components';
 import { Auth } from '@validator';
 import { NavigationHelper } from '@helpers';
@@ -32,11 +32,8 @@ const Login = () => {
 		<Container>
 			<View style={ { flex: 1 } }>
 				<Images.LogoFB />
-				<Text
-					color={ Colors.black.default }
-					size={ 24 }
-					weight='700'
-					mt={ 20 }>Login</Text>
+				{/* <Text type={ Fonts.heading.h2 as TextStyle }
+					mt={ 20 }>Login</Text> */}
 				<Text
 					color={ Colors.gray.default }
 					size={ 12 }

@@ -16,11 +16,16 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 		weight,
 		color,
 		align,
+		type,
 		...restOfProps
 	} = props;
 
 	const usingMemo = useMemo(() => {
-		const defaultStyle = { ...styles.defaultStyle };
+		let defaultStyle = { ...styles.defaultStyle };
+
+		// if (type) {
+		// 	defaultStyle = type;
+		// }
 
 		if (color) {
 			defaultStyle.color = color;
