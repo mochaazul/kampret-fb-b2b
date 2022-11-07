@@ -30,7 +30,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		...restOfProps
 	} = props;
 
-	const usingMemo = useMemo(() => {
+	const memoizedStyled = useMemo(() => {
 		const defaultStyle = { ...styles.defaultStyle };
 
 		if (backgroundColor) {
@@ -92,7 +92,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				<LinearGradient
 					colors={ disabled ? [Colors.white.disabled, Colors.gray.line] : [Colors.red.gradient1, Colors.red.gradient2] }
 					locations={ [0, 1] }
-					style={ StyleSheet.flatten(!useShadow ? [usingMemo.defaultStyle, buttonStyle] : [usingMemo.defaultStyle, buttonStyle, shadowed]) }
+					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, shadowed]) }
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -111,7 +111,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		);
 	} else {
 		return (
-			<TouchableOpacity style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
 
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
