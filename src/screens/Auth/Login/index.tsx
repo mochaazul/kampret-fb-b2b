@@ -51,6 +51,7 @@ const Login = () => {
 				</View>
 				<View style={ { alignItems: 'flex-end' } }>
 					<Button
+						onPress={ () => NavigationHelper.push('Forgot') }
 						mt={ 15 }
 						text='Lupa Password?'
 						textSize={ 14 }
