@@ -19,12 +19,17 @@ const Colors = {
 	yellow: {
 		default: '#FFDE17',
 	},
+	red: {
+		gradient1: '#CC1432',
+		gradient2: '#FE395A'
+	},
 	company: {
 		red: '#D80024'
 	},
 	white: {
 		pure: '#FFFFFF',
-		background: '#FAFAFA'
+		background: '#FAFAFA',
+		disabled: '#FBF4F4'
 	}
 };
 

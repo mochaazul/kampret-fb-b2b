@@ -90,7 +90,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<LinearGradient
-					colors={ disabled ? ['#FBF4F4', '#F4F4F4'] : ['#CC1432', '#FE395A'] }
+					colors={ disabled ? [Colors.white.disabled, Colors.gray.line] : [Colors.red.gradient1, Colors.red.gradient2] }
 					locations={ [0, 1] }
 					style={ StyleSheet.flatten(!useShadow ? [usingMemo.defaultStyle, buttonStyle] : [usingMemo.defaultStyle, buttonStyle, shadowed]) }
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
