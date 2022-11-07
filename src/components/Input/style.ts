@@ -20,6 +20,7 @@ export const styles = StyleSheet.create<IStyle>({
 		marginTop: 5,
 		backgroundColor: Colors.white.background,
 		flexDirection: 'row',
+		justifyContent: 'space-between',
 		alignItems: 'center',
 		paddingHorizontal: 20,
 		paddingVertical: 10,

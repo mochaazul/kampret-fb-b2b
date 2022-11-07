@@ -65,6 +65,7 @@ const Login = () => {
 					textSize={ 14 }
 					weight='700'
 					mt={ 30 }
+					useShadow={ true }
 				// disabled={ formik.errors
 				// 	&& Object.keys(formik.errors).length === 0
 				// 	&& Object.getPrototypeOf(formik.errors) === Object.prototype }

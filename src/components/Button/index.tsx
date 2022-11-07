@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Colors } from '@constant';
@@ -24,6 +24,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		type,
 		mt,
 		disabled,
+		useShadow,
 		buttonStyle,
 		children,
 		...restOfProps
@@ -71,7 +72,16 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 			defaultStyle,
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
-
+	const shadowed: ViewStyle = {
+		shadowColor: '#000',
+		shadowOffset: {
+			width: -2,
+			height: 4,
+		},
+		shadowOpacity: 0.04,
+		shadowRadius: 4.65,
+		elevation: 8,
+	};
 	if (backgroundColor !== 'transparent') {
 		return (
 
@@ -81,8 +91,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				activeOpacity={ 0.75 }>
 				<LinearGradient
 					colors={ disabled ? ['#FBF4F4', '#F4F4F4'] : ['#CC1432', '#FE395A'] }
-					locations={ [0, 0.7, 1] }
-					style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+					locations={ [0, 1] }
+					style={ StyleSheet.flatten(!useShadow ? [usingMemo.defaultStyle, buttonStyle] : [usingMemo.defaultStyle, buttonStyle, shadowed]) }
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
