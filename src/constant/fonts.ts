@@ -1,6 +1,14 @@
-import { Ratio } from '../helpers';
-// import { Colors } from '@constant';
+import { Dimensions, Platform, StatusBar } from 'react-native';
+import { Colors } from '@constant';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const normalize = (fontSize: number, standardScreenHeight = 812) => {
+	const heightPercent = (fontSize * screenHeight) / standardScreenHeight;
+	return Math.round(heightPercent);
+
+};
 const settings = {
 	primaryFont: {
 		light: 'Ubuntu-Light',
@@ -19,54 +27,54 @@ const settings = {
 	},
 
 	fontSize: {
-		// xxs: Ratio.normalizeValue(9),
-		xs: Ratio.normalizeValue(10),
-		s: Ratio.normalizeValue(12),
-		m: Ratio.normalizeValue(14),
-		l: Ratio.normalizeValue(16),
-		xl: Ratio.normalizeValue(20),
-		// h6: Ratio.normalizeValue(20),
-		// h5: Ratio.normalizeValue(22),
-		// h4: Ratio.normalizeValue(24),
-		h3: Ratio.normalizeValue(64),
-		h2: Ratio.normalizeValue(75),
-		// h1: Ratio.normalizeValue(96)
+		// xxs: normalize(9),
+		xs: normalize(10),
+		s: normalize(12),
+		m: normalize(14),
+		l: normalize(16),
+		xl: normalize(20),
+		// h6: normalize(20),
+		// h5: normalize(22),
+		// h4: normalize(24),
+		h3: normalize(64),
+		h2: normalize(75),
+		// h1: normalize(96)
 	},
 
 	letterSpacing: 0.3,
 };
 
-export const Fonts = {
+const Fonts = {
 	size: settings.fontSize,
 	type: settings.primaryFont,
 	paragraph: {
 		xl: {
 			bold: {
 				fontFamily: settings.primaryFont.bold,
-				fontSize: Ratio.normalizeValue(20),
-				lineHeight: Ratio.normalizeValue(27),
+				fontSize: normalize(20),
+				lineHeight: normalize(27),
 				fontWeight: '700',
-				// color: Colors.black.default,
+				color: Colors.black.default,
 			}
 
 		},
 		m: {
 			regular: {
 				fontFamily: settings.primaryFont.regular,
-				fontSize: Ratio.normalizeValue(14),
-				lineHeight: Ratio.normalizeValue(20),
+				fontSize: normalize(14),
+				lineHeight: normalize(20),
 				fontWeight: '400',
-				// color: Colors.black.default
+				color: Colors.black.default
 			}
 
 		},
 		s: {
 			regular: {
 				fontFamily: settings.primaryFont.regular,
-				fontSize: Ratio.normalizeValue(12),
-				lineHeight: Ratio.normalizeValue(18),
+				fontSize: normalize(12),
+				lineHeight: normalize(18),
 				fontWeight: '400',
-				// color: Colors.black.default
+				color: Colors.black.default
 			}
 
 		}
@@ -74,74 +82,76 @@ export const Fonts = {
 	heading: {
 		h2: {
 			fontFamily: settings.primaryFont.regular,
-			fontSize: Ratio.normalizeValue(24),
-			lineHeight: Ratio.normalizeValue(28),
+			fontSize: normalize(24),
+			lineHeight: normalize(28),
 			fontWeight: '700',
-			// color: Colors.black.default
+			color: Colors.black.default
 		},
 		h3: {
 			fontFamily: settings.primaryFont.regular,
-			fontSize: Ratio.normalizeValue(20),
-			lineHeight: Ratio.normalizeValue(23),
+			fontSize: normalize(20),
+			lineHeight: normalize(23),
 			fontWeight: '700',
-			// color: Colors.black.default
+			color: Colors.black.default
 		}
 	},
 	textBody: {
 		l: {
 			bold: {
 				fontFamily: settings.primaryFont.bold,
-				fontSize: Ratio.normalizeValue(16),
-				lineHeight: Ratio.normalizeValue(18),
+				fontSize: normalize(16),
+				lineHeight: normalize(18),
 				fontWeight: '700',
-				// color: Colors.black.default
+				color: Colors.black.default
 			},
 
 		},
 		m: {
 			bold: {
 				fontFamily: settings.primaryFont.bold,
-				fontSize: Ratio.normalizeValue(14),
-				lineHeight: Ratio.normalizeValue(16),
+				fontSize: normalize(14),
+				lineHeight: normalize(16),
 				fontWeight: '700',
-				// color: Colors.black.default
+				color: Colors.black.default
 			},
 			regular: {
 				fontFamily: settings.primaryFont.regular,
-				fontSize: Ratio.normalizeValue(14),
-				lineHeight: Ratio.normalizeValue(16),
-				fontWeight: '700',
-				// color: Colors.black.default
+				fontSize: normalize(14),
+				lineHeight: normalize(16),
+				fontWeight: '400',
+				color: Colors.black.default
 			},
 
 		},
 		s: {
 			bold: {
 				fontFamily: settings.primaryFont.bold,
-				fontSize: Ratio.normalizeValue(12),
-				lineHeight: Ratio.normalizeValue(14),
+				fontSize: normalize(12),
+				lineHeight: normalize(14),
 				fontWeight: '700',
-				// color: Colors.black.default
+				color: Colors.black.default
 			},
 			regular: {
 				fontFamily: settings.primaryFont.regular,
-				fontSize: Ratio.normalizeValue(12),
-				lineHeight: Ratio.normalizeValue(14),
-				fontWeight: '700',
-				// color: Colors.black.default
+				fontSize: normalize(12),
+				lineHeight: normalize(14),
+				fontWeight: '400',
+				color: Colors.black.default
 			},
 
 		},
 		xs: {
 			regular: {
 				fontFamily: settings.primaryFont.regular,
-				fontSize: Ratio.normalizeValue(10),
-				lineHeight: Ratio.normalizeValue(11),
+				fontSize: normalize(10),
+				lineHeight: normalize(11),
 				fontWeight: '400',
-				// color: Colors.black.default
+				color: Colors.black.default
 			},
 
 		},
 	}
 };
+
+export default Fonts
 

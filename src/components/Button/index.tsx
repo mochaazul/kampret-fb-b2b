@@ -23,6 +23,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		noPadding,
 		type,
 		mt,
+		disabled,
 		buttonStyle,
 		children,
 		...restOfProps
@@ -73,16 +74,17 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 
 	if (backgroundColor !== 'transparent') {
 		return (
-			<LinearGradient
-				colors={ ['#CC1432', '#FE395A'] }
-				locations={ [0, 0.7, 1] }
-				style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
-				start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
-			>
-				<TouchableOpacity
 
-					{ ...restOfProps }
-					activeOpacity={ 0.75 }>
+			<TouchableOpacity
+				disabled={ disabled }
+				{ ...restOfProps }
+				activeOpacity={ 0.75 }>
+				<LinearGradient
+					colors={ disabled ? ['#FBF4F4', '#F4F4F4'] : ['#CC1432', '#FE395A'] }
+					locations={ [0, 0.7, 1] }
+					style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
+				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
 						{ text && (
 							<Text
@@ -93,8 +95,9 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 						) }
 						{ children && children }
 					</View>
-				</TouchableOpacity>
-			</LinearGradient>
+				</LinearGradient>
+			</TouchableOpacity>
+
 		);
 	} else {
 		return (

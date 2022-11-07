@@ -8,7 +8,7 @@ import { Auth } from '@validator';
 import { NavigationHelper } from '@helpers';
 
 interface MyValues {
-	phone_number: string,
+	username: string,
 	password: string,
 }
 
@@ -20,7 +20,7 @@ const Login = () => {
 		validateOnChange: enableValidation,
 		validationSchema: Auth.LoginValidationSchema,
 		initialValues: {
-			phone_number: '',
+			username: '',
 			password: '',
 		},
 		onSubmit: () => {
@@ -32,19 +32,13 @@ const Login = () => {
 		<Container>
 			<View style={ { flex: 1 } }>
 				<Images.LogoFB />
-				{/* <Text type={ Fonts.heading.h2 as TextStyle }
-					mt={ 20 }>Login</Text> */}
-				<Text
-					color={ Colors.gray.default }
-					size={ 12 }
-					weight='400'
-					mt={ 10 }
-					numberOfLines={ 1 }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
+				<Text format={ Fonts.heading.h2 as TextStyle } mt={ 20 }>Login</Text>
+				<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 				<View style={ styles.form_container }>
 					<Input
 						formik={ formik }
 						name='username'
-						label='Phone Number'
+						label='Username'
 						placeholder='Masukkan username'
 						keyboardType='ascii-capable' />
 					<Input
@@ -70,7 +64,11 @@ const Login = () => {
 					text='Masuk'
 					textSize={ 14 }
 					weight='700'
-					mt={ 30 } />
+					mt={ 30 }
+				// disabled={ formik.errors
+				// 	&& Object.keys(formik.errors).length === 0
+				// 	&& Object.getPrototypeOf(formik.errors) === Object.prototype }
+				/>
 			</View>
 			<View style={ styles.register_container }>
 				<Text

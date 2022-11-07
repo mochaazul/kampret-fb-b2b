@@ -39,7 +39,8 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 			<KeyboardAvoidingView
 				style={ { flex: 1 } }
 				behavior={ Platform.OS === "ios" ? "padding" : "height" }
-				keyboardVerticalOffset={ 10 }>
+				keyboardVerticalOffset={ 30 }
+			>
 				{ noScroll ? (
 					<View style={ [{ flex: 1 }, contentContainerStyle] }>
 						{ children }

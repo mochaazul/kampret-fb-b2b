@@ -13,6 +13,7 @@ interface IButton extends React.ComponentProps<typeof TouchableOpacity> {
 	noPadding?: boolean | undefined;
 	type?: 'solid' | 'outline' | undefined;
 	mt?: number | undefined;
+	disabled?: boolean;
 }
 
 export default IButton;

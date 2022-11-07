@@ -7,7 +7,7 @@ interface IText extends React.ComponentProps<typeof Text> {
 	lineHeight?: number | undefined;
 	mt?: number | undefined;
 	align?: 'center' | 'left' | 'right',
-	type?: TextStyle | undefined;
+	format?: TextStyle | undefined;
 }
 
 export default IText;

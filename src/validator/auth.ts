@@ -1,11 +1,11 @@
 import * as yup from 'yup';
 
 export const LoginValidationSchema = yup.object().shape({
-	phone_number: yup
-		.string().required()
-		.label('Phone Number'),
+	username: yup
+		.string().required('Username tidak terdaftar')
+		.label('Username'),
 	password: yup
-		.string().required()
+		.string().required('Kata sandi tidak valid')
 		.label('Password'),
 });
 
