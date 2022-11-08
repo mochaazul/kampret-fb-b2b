@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextStyle, View } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
-import { Images, Colors } from '@constant';
+import { Images, Colors, Fonts } from '@constant';
 import { Button, Container, Input, Text } from '@components';
 import { Auth } from '@validator';
 import { NavigationHelper } from '@helpers';
 
 interface MyValues {
-	phone_number: string,
+	username: string,
 	password: string,
 }
 
@@ -20,7 +20,7 @@ const Login = () => {
 		validateOnChange: enableValidation,
 		validationSchema: Auth.LoginValidationSchema,
 		initialValues: {
-			phone_number: '',
+			username: '',
 			password: '',
 		},
 		onSubmit: () => {
@@ -32,22 +32,13 @@ const Login = () => {
 		<Container>
 			<View style={ { flex: 1 } }>
 				<Images.LogoFB />
-				<Text
-					color={ Colors.black.default }
-					size={ 24 }
-					weight='700'
-					mt={ 20 }>Login</Text>
-				<Text
-					color={ Colors.gray.default }
-					size={ 12 }
-					weight='400'
-					mt={ 10 }
-					numberOfLines={ 1 }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
+				<Text format={ Fonts.heading.h2 as TextStyle } mt={ 20 }>Login</Text>
+				<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 				<View style={ styles.form_container }>
 					<Input
 						formik={ formik }
 						name='username'
-						label='Phone Number'
+						label='Username'
 						placeholder='Masukkan username'
 						keyboardType='ascii-capable' />
 					<Input
@@ -60,6 +51,7 @@ const Login = () => {
 				</View>
 				<View style={ { alignItems: 'flex-end' } }>
 					<Button
+						onPress={ () => NavigationHelper.push('Forgot') }
 						mt={ 15 }
 						text='Lupa Password?'
 						textSize={ 14 }
@@ -73,7 +65,12 @@ const Login = () => {
 					text='Masuk'
 					textSize={ 14 }
 					weight='700'
-					mt={ 30 } />
+					mt={ 30 }
+					useShadow={ true }
+				// disabled={ formik.errors
+				// 	&& Object.keys(formik.errors).length === 0
+				// 	&& Object.getPrototypeOf(formik.errors) === Object.prototype }
+				/>
 			</View>
 			<View style={ styles.register_container }>
 				<Text

@@ -11,6 +11,7 @@ import OnBoarding3 from '../assets/images/onboarding-3.jpeg';
 import Google from '../assets/images/google.svg';
 import Apple from '../assets/images/apple.svg';
 import Facebook from '../assets/images/fb.svg';
+import Bell from '../assets/images/bell.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -27,5 +28,6 @@ export default {
 	Google,
 	Apple,
 	Facebook,
-	LogoFB
+	LogoFB,
+	Bell
 };

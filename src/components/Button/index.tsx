@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Colors } from '@constant';
@@ -23,12 +23,14 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		noPadding,
 		type,
 		mt,
+		disabled,
+		useShadow,
 		buttonStyle,
 		children,
 		...restOfProps
 	} = props;
 
-	const usingMemo = useMemo(() => {
+	const memoizedStyled = useMemo(() => {
 		const defaultStyle = { ...styles.defaultStyle };
 
 		if (backgroundColor) {
@@ -70,19 +72,29 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 			defaultStyle,
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
-
+	const shadowed: ViewStyle = {
+		shadowColor: '#000',
+		shadowOffset: {
+			width: -2,
+			height: 4,
+		},
+		shadowOpacity: 0.04,
+		shadowRadius: 4.65,
+		elevation: 8,
+	};
 	if (backgroundColor !== 'transparent') {
 		return (
-			<LinearGradient
-				colors={ ['#CC1432', '#FE395A'] }
-				locations={ [0, 0.7, 1] }
-				style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
-				start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
-			>
-				<TouchableOpacity
 
-					{ ...restOfProps }
-					activeOpacity={ 0.75 }>
+			<TouchableOpacity
+				disabled={ disabled }
+				{ ...restOfProps }
+				activeOpacity={ 0.75 }>
+				<LinearGradient
+					colors={ disabled ? [Colors.white.disabled, Colors.gray.line] : [Colors.red.gradient1, Colors.red.gradient2] }
+					locations={ [0, 1] }
+					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, shadowed]) }
+					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
+				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
 						{ text && (
 							<Text
@@ -93,12 +105,13 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 						) }
 						{ children && children }
 					</View>
-				</TouchableOpacity>
-			</LinearGradient>
+				</LinearGradient>
+			</TouchableOpacity>
+
 		);
 	} else {
 		return (
-			<TouchableOpacity style={ StyleSheet.flatten([usingMemo.defaultStyle, buttonStyle]) }
+			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
 
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>

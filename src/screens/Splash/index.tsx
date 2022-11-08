@@ -17,7 +17,7 @@ function Splash() {
 		// save timeoutId to clear the timeout when the component re-renders
 		const tm = setTimeout(() => {
 			NavigationHelper.reset('Login');
-		}, 3000);
+		}, 1500);
 
 		// clear timeout on re-render to avoid memory leaks
 		return () => {
@@ -27,7 +27,7 @@ function Splash() {
 
 	return (
 		<View style={ styles.container }>
-			<Images.LogoWhite />
+			<Images.LogoFB />
 		</View>
 	);
 }

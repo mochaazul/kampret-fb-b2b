@@ -25,8 +25,8 @@ const customStyle: ICustomStyles = {
 	) => {
 		let paddingTop = 30;
 		let paddingBottom = 30;
-		let paddingLeft = 30;
-		let paddingRight = 30;
+		let paddingLeft = 20;
+		let paddingRight = 20;
 
 		if (noPaddingTop) {
 			paddingTop = 0;

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text as TextNative } from 'react-native';
 
 import { Ratio } from '@helpers';
-import { useMemo } from 'react';
 import { styles } from './style';
 import { ComponentInterface } from '@interfaces';
 
@@ -16,11 +15,12 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 		weight,
 		color,
 		align,
+		format,
 		...restOfProps
 	} = props;
 
 	const usingMemo = useMemo(() => {
-		const defaultStyle = { ...styles.defaultStyle };
+		let defaultStyle = { ...styles.defaultStyle };
 
 		if (color) {
 			defaultStyle.color = color;
@@ -46,22 +46,35 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 			defaultStyle.textAlign = align;
 		}
 
+
 		return {
 			defaultStyle,
 		};
 	}, [color, weight, size, mt, lineHeight, align]);
 
-	return (
-		<TextNative
-			style={ StyleSheet.flatten([
-				usingMemo.defaultStyle,
-				style,
-			]) }
-			adjustsFontSizeToFit
-			{ ...restOfProps }
-		>{ props.children }
-		</TextNative>
-	);
+	if (format) {
+		return (
+			<TextNative
+				style={ StyleSheet.flatten([format, mt ? { marginTop: mt } : undefined, color ? { color } : undefined]) }
+				adjustsFontSizeToFit
+				{ ...restOfProps }
+			>{ props.children }
+			</TextNative>
+		);
+	} else {
+		return (
+			<TextNative
+				style={ StyleSheet.flatten([
+					usingMemo.defaultStyle,
+					style,
+				]) }
+				adjustsFontSizeToFit
+				{ ...restOfProps }
+			>{ props.children }
+			</TextNative>
+		);
+	}
+
 };
 
 export default Text;

@@ -1,9 +1,9 @@
-import { TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { TextInput, TextStyle, TouchableWithoutFeedback, View } from 'react-native';
 import React, { LegacyRef, useEffect, useMemo, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Text from '../Text';
-import { Colors } from '@constant';
+import { Colors, Fonts } from '@constant';
 import { Ratio } from '@helpers';
 import { styles } from './style';
 import { ComponentInterface } from '@interfaces';
@@ -57,9 +57,17 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 	return (
 		<View style={ usingMemo.inputContainer } >
 			{ label && (
-				<Text
-					size={ 12 }
-					color={ formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : undefined } >{ label }</Text>
+				<View style={ styles.row }>
+					<Text
+						format={ Fonts.textBody.s.bold as TextStyle }
+						color={ formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : Colors.gray.default } >{ label }</Text>
+					{ formik?.errors[name] && (
+						<Text
+							format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.company.red }>{ formik?.errors[name] }</Text>
+
+					) }
+				</View>
+
 			) }
 			<TouchableWithoutFeedback onPress={ () => inputRef.current?.focus() }>
 				<View style={ [input, { borderColor: formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : Colors.gray.line }] }>
@@ -67,7 +75,7 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 					<TextInput
 						value={ formik?.values[name] }
 						onChangeText={ formik?.handleChange(name) }
-						style={ usingMemo.defaultStyle }
+						style={ { ...Fonts.textBody.m.regular as TextStyle, padding: 0 } }
 						onFocus={ () => setIsFocus(true) }
 						onBlur={ () => setIsFocus(false) }
 						ref={ inputRef }
@@ -85,12 +93,7 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 					) }
 				</View>
 			</TouchableWithoutFeedback>
-			{ formik?.errors[name] && (
-				<Text
-					color={ Colors.alert.red }
-					size={ 12 }
-					mt={ 4 }>{ formik?.errors[name] }</Text>
-			) }
+
 		</View>
 	);
 };

@@ -3,7 +3,7 @@ import React from 'react';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/AntDesign';
 
-import { Button, Container } from '@components';
+import { Button, Container, Header } from '@components';
 import { Colors } from '@constant';
 import styles from './style';
 import { NavigationHelper } from '@helpers';
@@ -19,9 +19,11 @@ const Home = () => {
 	};
 
 	return (
-		<Container noPadding>
+		<Container noPaddingTop>
+			<Header />
 			<View style={ styles.container }>
 				<Text>Home Screen</Text>
+
 				<View style={ { marginTop: 10 } }>
 					<Button
 						onPress={ () => showToast('success') }
