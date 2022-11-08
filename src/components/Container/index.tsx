@@ -58,7 +58,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 						showsHorizontalScrollIndicator={ false }
 						contentContainerStyle={ [
 							{
-								flexGrow: 0,
+								flexGrow: 1,
 							},
 							contentContainerStyle,
 						] }

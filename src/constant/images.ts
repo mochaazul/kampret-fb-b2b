@@ -15,6 +15,7 @@ import Bell from '../assets/images/bell.svg';
 import More from '../assets/images/more.svg';
 import IconTime from '../assets/images/ic_time.svg';
 import IconLocation from '../assets/images/ic_location.svg';
+import IconScan from '../assets/images/ic_scan.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -36,4 +37,5 @@ export default {
 	More,
 	IconTime,
 	IconLocation,
+	IconScan,
 };

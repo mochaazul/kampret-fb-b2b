@@ -1,20 +1,22 @@
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import React from 'react';
 
 import { Container, DeliveryItem, Header } from '@components';
 import styles from './style';
 
 const Delivery = () => (
-	<Container noPaddingTop>
+	<Container noPaddingTop noPaddingBottom noScroll>
 		<Header />
-		<View style={ styles.container }>
-			<DeliveryItem />
-			<DeliveryItem />
-			<DeliveryItem />
-			<DeliveryItem />
-			<DeliveryItem />
-			<DeliveryItem />
-		</View>
+
+		<FlatList
+			bounces={ false }
+			style={ styles.container }
+			contentContainerStyle={ styles.content }
+			data={ Array(5) }
+			renderItem={ () => (<DeliveryItem />) }
+			ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
+		/>
+
 	</Container>
 );
 

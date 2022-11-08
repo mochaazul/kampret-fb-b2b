@@ -3,9 +3,13 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'stretch',
+		flexGrow: 1,
 	},
+
+	content: {
+		paddingTop: 16,
+		paddingBottom: 16,
+	}
 });
 
 export default styles;

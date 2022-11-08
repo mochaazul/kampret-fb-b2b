@@ -26,6 +26,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		disabled,
 		useShadow,
 		buttonStyle,
+		leadingIcon,
 		children,
 		...restOfProps
 	} = props;
@@ -96,6 +97,9 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+
+						{ leadingIcon && leadingIcon }
+
 						{ text && (
 							<Text
 								style={ textStyle }
@@ -116,6 +120,9 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+
+					{ leadingIcon && leadingIcon }
+
 					{ text && (
 						<Text
 							style={ textStyle }

@@ -13,7 +13,7 @@ export const styles = StyleSheet.create<IStyle>({
 		alignItems: 'center'
 	},
 	container: {
-		flex: 1,
+		flex: 0,
 		marginTop: 20
 	}
 });

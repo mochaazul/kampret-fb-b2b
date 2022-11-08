@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface IButton extends React.ComponentProps<typeof TouchableOpacity> {
@@ -15,6 +16,7 @@ interface IButton extends React.ComponentProps<typeof TouchableOpacity> {
 	mt?: number | undefined;
 	disabled?: boolean | undefined;
 	useShadow?: boolean | undefined;
+	leadingIcon?: ReactNode | undefined;
 }
 
 export default IButton;

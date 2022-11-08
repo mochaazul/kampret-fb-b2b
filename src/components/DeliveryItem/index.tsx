@@ -71,7 +71,8 @@ const index = () => (
 				textSize={ 14 }
 				weight='700'
 				useShadow={ true }
-
+				leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
+				buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
 			/>
 		</View>
 
