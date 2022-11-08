@@ -15,8 +15,7 @@ const Forgot = () => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const formik: FormikProps<ForgotInterface> = useFormik<ForgotInterface>({
-		validateOnBlur: enableValidation,
-		validateOnChange: enableValidation,
+		validateOnBlur: true,
 		validationSchema: Auth.PhoneNumberValidationSchema,
 		initialValues: {
 			phoneNumber: null,
@@ -27,14 +26,14 @@ const Forgot = () => {
 	});
 
 	return (
-		<Container>
+		<View style={ styles.container }>
 			<Text format={ Fonts.heading.h3 as TextStyle }>Masukkan Nomor Telepon Anda.</Text>
 			<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 			<Input
 				formik={ formik }
 				name='phoneNumber'
 				label='Nomor Telepon'
-				placeholder='08XXXXX'
+				placeholder='08XXX'
 				mt={ 20 }
 				keyboardType='phone-pad'
 			/>
@@ -45,11 +44,16 @@ const Forgot = () => {
 				weight='700'
 				mt={ 30 }
 				useShadow={ true }
+				disabled={ !formik.values.phoneNumber || formik.errors.phoneNumber !== undefined }
 			/>
-		</Container>
+		</View>
 	);
 };
 
 export default Forgot;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	container: {
+		padding: 20
+	}
+});

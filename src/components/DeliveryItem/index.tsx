@@ -3,6 +3,7 @@ import React from "react";
 import { TextStyle, View } from "react-native";
 import Button from "../Button";
 import Text from "../Text";
+import { NavigationHelper } from '@helpers';
 
 import { styles } from "./style";
 

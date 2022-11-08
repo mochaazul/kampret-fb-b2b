@@ -6,6 +6,7 @@ import MyToast from './Toast';
 import Header from './Header';
 import InputOTP from './InputOTP';
 import DeliveryItem from './DeliveryItem';
+import BottomSheet from './BottomSheet';
 
 export {
 	Text,
@@ -16,4 +17,5 @@ export {
 	Header,
 	InputOTP,
 	DeliveryItem,
+	BottomSheet
 };

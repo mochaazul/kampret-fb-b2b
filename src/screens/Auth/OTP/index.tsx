@@ -51,7 +51,7 @@ const OTPscreen = () => {
 	});
 
 	return (
-		<Container>
+		<Container noScroll>
 			<Text format={ Fonts.heading.h3 as TextStyle }>Masukkan OTP</Text>
 			<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 			<InputOTP
