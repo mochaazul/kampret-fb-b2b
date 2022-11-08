@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
 
 	tabNotFirst: {
 		marginStart: 30,
+		justifyContent: 'center',
+		alignItems: 'stretch',
 	},
 });
 
