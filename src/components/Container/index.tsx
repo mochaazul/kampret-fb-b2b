@@ -35,7 +35,13 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 					noPaddingHorizontal
 				)
 			}>
-			<StatusBar barStyle={ barStyle } />
+
+			<StatusBar
+				barStyle={ barStyle }
+				translucent
+				backgroundColor="transparent"
+			/>
+
 			<KeyboardAvoidingView
 				style={ { flex: 1 } }
 				behavior={ Platform.OS === "ios" ? "padding" : "height" }
@@ -52,7 +58,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 						showsHorizontalScrollIndicator={ false }
 						contentContainerStyle={ [
 							{
-								flexGrow: 1,
+								flexGrow: 0,
 							},
 							contentContainerStyle,
 						] }

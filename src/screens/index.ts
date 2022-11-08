@@ -3,6 +3,7 @@ import Home from './Home';
 import OnBoarding from './OnBoarding';
 import * as Auth from './Auth';
 import Contact from './Contact';
+import Delivery from './Delivery';
 
 export {
 	Splash,
@@ -10,4 +11,5 @@ export {
 	Home,
 	Auth,
 	Contact,
+	Delivery,
 };
