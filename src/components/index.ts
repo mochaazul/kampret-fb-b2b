@@ -4,6 +4,7 @@ import Input from './Input';
 import Container from './Container';
 import MyToast from './Toast';
 import Header from './Header';
+import DeliveryItem from './DeliveryItem';
 
 export {
 	Text,
@@ -11,5 +12,6 @@ export {
 	Input,
 	Container,
 	MyToast,
-	Header
+	Header,
+	DeliveryItem,
 };

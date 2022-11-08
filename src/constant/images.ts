@@ -12,6 +12,9 @@ import Google from '../assets/images/google.svg';
 import Apple from '../assets/images/apple.svg';
 import Facebook from '../assets/images/fb.svg';
 import Bell from '../assets/images/bell.svg';
+import More from '../assets/images/more.svg';
+import IconTime from '../assets/images/ic_time.svg';
+import IconLocation from '../assets/images/ic_location.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -29,5 +32,8 @@ export default {
 	Apple,
 	Facebook,
 	LogoFB,
-	Bell
+	Bell,
+	More,
+	IconTime,
+	IconLocation,
 };

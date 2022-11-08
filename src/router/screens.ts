@@ -1,5 +1,5 @@
 import {
-	Auth, Contact, Home, OnBoarding, Splash,
+	Auth, Contact, Delivery, Home, OnBoarding, Splash,
 } from '@screens';
 
 export const screens = [
@@ -26,5 +26,9 @@ export const screens = [
 	{
 		name: 'Contact',
 		component: Contact,
+	},
+	{
+		name: 'Delivery',
+		component: Delivery,
 	},
 ] as const;
