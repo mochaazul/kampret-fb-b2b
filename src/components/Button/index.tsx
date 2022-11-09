@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { Colors } from '@constant';
+import { Colors, Fonts } from '@constant';
 import Text from '../Text';
 import { Ratio } from '@helpers';
 import { useMemo } from 'react';
@@ -26,6 +26,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		disabled,
 		useShadow,
 		buttonStyle,
+		leadingIcon,
 		children,
 		...restOfProps
 	} = props;
@@ -96,11 +97,12 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+
+						{ leadingIcon && leadingIcon }
+
 						{ text && (
 							<Text
-								style={ textStyle }
-								size={ textSize }
-								weight={ weight }
+								format={ Fonts.textBody.m.bold as TextStyle }
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
 						{ children && children }
@@ -116,11 +118,12 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
+
+					{ leadingIcon && leadingIcon }
+
 					{ text && (
 						<Text
-							style={ textStyle }
-							size={ textSize }
-							weight={ weight }
+							format={ Fonts.textBody.m.bold as TextStyle }
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
 					{ children && children }

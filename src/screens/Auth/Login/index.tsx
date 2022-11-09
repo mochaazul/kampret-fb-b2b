@@ -24,7 +24,7 @@ const Login = () => {
 			password: '',
 		},
 		onSubmit: () => {
-			NavigationHelper.push('Home');
+			NavigationHelper.push('Delivery');
 		},
 	});
 

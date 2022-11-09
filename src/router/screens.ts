@@ -1,5 +1,5 @@
 import {
-	Auth, Contact, Home, OnBoarding, Splash
+	Auth, Contact, Delivery, Home, OnBoarding, Splash,
 } from '@screens';
 
 export const screens = [
@@ -38,5 +38,9 @@ export const screens = [
 	{
 		name: 'Reset',
 		component: Auth.Reset,
+	},
+	{
+		name: 'Delivery',
+		component: Delivery,
 	},
 ] as const;
