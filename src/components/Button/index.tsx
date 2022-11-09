@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { Colors } from '@constant';
+import { Colors, Fonts } from '@constant';
 import Text from '../Text';
 import { Ratio } from '@helpers';
 import { useMemo } from 'react';
@@ -102,9 +102,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 
 						{ text && (
 							<Text
-								style={ textStyle }
-								size={ textSize }
-								weight={ weight }
+								format={ Fonts.textBody.m.bold as TextStyle }
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
 						{ children && children }
@@ -125,9 +123,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 
 					{ text && (
 						<Text
-							style={ textStyle }
-							size={ textSize }
-							weight={ weight }
+							format={ Fonts.textBody.m.bold as TextStyle }
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
 					{ children && children }
