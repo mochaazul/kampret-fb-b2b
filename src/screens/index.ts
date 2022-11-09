@@ -4,6 +4,7 @@ import OnBoarding from './OnBoarding';
 import * as Auth from './Auth';
 import Contact from './Contact';
 import Delivery from './Delivery';
+import Notification from './Notification';
 
 export {
 	Splash,
@@ -12,4 +13,5 @@ export {
 	Auth,
 	Contact,
 	Delivery,
+	Notification,
 };

@@ -1,5 +1,5 @@
 import {
-	Auth, Contact, Delivery, Home, OnBoarding, Splash,
+	Auth, Contact, Delivery, Home, Notification, OnBoarding, Splash,
 } from '@screens';
 
 export const screens = [
@@ -42,5 +42,9 @@ export const screens = [
 	{
 		name: 'Delivery',
 		component: Delivery,
+	},
+	{
+		name: 'Notification',
+		component: Notification,
 	},
 ] as const;

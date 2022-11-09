@@ -9,6 +9,7 @@ const DeliveryList = () => (
 		bounces={ false }
 		style={ styles.container }
 		contentContainerStyle={ styles.content }
+		showsVerticalScrollIndicator={ false }
 		data={ [...Array(5).keys()] }
 		renderItem={ ({ i }: any) => (<DeliveryItem key={ i } />) }
 		ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }

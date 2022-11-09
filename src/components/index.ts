@@ -6,6 +6,7 @@ import MyToast from './Toast';
 import Header from './Header';
 import InputOTP from './InputOTP';
 import DeliveryItem from './DeliveryItem';
+import NotifItem from './NotifItem';
 
 export {
 	Text,
@@ -16,4 +17,5 @@ export {
 	Header,
 	InputOTP,
 	DeliveryItem,
+	NotifItem,
 };
