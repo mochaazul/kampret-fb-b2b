@@ -2,8 +2,10 @@ import React from 'react';
 import { KeyboardAvoidingView, ScrollView, StatusBar, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Header from '../Header';
 import { ComponentInterface } from '@interfaces';
 import { styles } from './styles';
+import { Colors } from '@constant';
 
 const Container: React.FC<ComponentInterface.IContainer> = props => {
 
@@ -19,6 +21,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 		contentContainerStyle,
 		noScroll,
 		children,
+		header,
 		...restOfProps
 	} = props;
 
@@ -44,12 +47,14 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 
 			<KeyboardAvoidingView
 				style={ { flex: 1 } }
-				behavior={ Platform.OS === "ios" ? "padding" : "height" }
-			// keyboardVerticalOffset={ 30 }
-
+				behavior={ Platform.OS === "ios" ? "padding" : undefined }
+			//keyboardVerticalOffset={ 30 }
 			>
+				{ noScroll && header &&
+					<Header { ...header } />
+				}
 				{ noScroll ? (
-					<View style={ [{ flex: 1 }, contentContainerStyle] }>
+					<View style={ [{ flex: 1, backgroundColor: Colors.white.background, paddingHorizontal: 20 }, contentContainerStyle] }>
 						{ children }
 					</View>
 				) : (
@@ -66,9 +71,15 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 						keyboardShouldPersistTaps={ 'handled' }
 						{ ...restOfProps }
 					>
-						<View style={ { flex: 1 } }>
+						{ header &&
+							<Header { ...header } />
+						}
+						<View style={ { flex: 1, backgroundColor: Colors.white.background, paddingHorizontal: 20 } }>
+
 							{ children }
+
 						</View>
+
 					</ScrollView>
 				) }
 			</KeyboardAvoidingView>

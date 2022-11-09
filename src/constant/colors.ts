@@ -34,6 +34,9 @@ const Colors = {
 	transparent: {
 		grey: 'rgba(61, 60, 60, 0.7)',
 		default: 'rgba(0, 0, 0, 0)'
+	},
+	green: {
+		default: '#27AE60'
 	}
 };
 

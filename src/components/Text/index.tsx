@@ -21,7 +21,6 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 
 	const usingMemo = useMemo(() => {
 		let defaultStyle = { ...styles.defaultStyle };
-
 		if (color) {
 			defaultStyle.color = color;
 		}
@@ -31,15 +30,15 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 		}
 
 		if (size) {
-			defaultStyle.fontSize = Ratio.normalizeValue(size);
+			defaultStyle.fontSize = Ratio.normalize(size);
 		}
 
 		if (mt) {
-			defaultStyle.marginTop = Ratio.normalizeValue(mt);
+			defaultStyle.marginTop = Ratio.normalize(mt);
 		}
 
 		if (lineHeight) {
-			defaultStyle.lineHeight = Ratio.normalizeValue(lineHeight);
+			defaultStyle.lineHeight = Ratio.normalize(lineHeight);
 		}
 
 		if (align) {
@@ -62,6 +61,7 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 			</TextNative>
 		);
 	} else {
+
 		return (
 			<TextNative
 				style={ StyleSheet.flatten([

@@ -51,14 +51,16 @@ const OTPscreen = () => {
 	});
 
 	return (
-		<Container noScroll>
-			<Text format={ Fonts.heading.h3 as TextStyle }>Masukkan OTP</Text>
+		<Container noScroll noPadding
+			header={ { title: '', type: 'regular', headerStyle: { backgroundColor: Colors.white.background } } }
+		>
+			<Text format={ Fonts.heading.h3 as TextStyle } mt={ 10 }>Masukkan OTP</Text>
 			<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 			<InputOTP
 				formik={ formik }
 				mt={ 20 } />
 
-			<View style={ styles.row }>
+			<View style={ [styles.row, { marginTop: 40 }] }>
 				<Text format={ Fonts.textBody.m.bold as TextStyle }>Tidak terima kode OTP?</Text>
 				{ seconds !== 0 &&
 					<Text format={ Fonts.textBody.m.bold as TextStyle } color={ Colors.company.red }>00:{ seconds.toString().length == 2 ? seconds : '0' + seconds }</Text>

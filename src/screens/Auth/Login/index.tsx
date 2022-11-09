@@ -32,8 +32,8 @@ const Login = () => {
 	});
 
 	return (
-		<Container>
-			<View style={ { flex: 1 } }>
+		<Container noPadding>
+			<View style={ { flex: 1, marginTop: 20 } }>
 				<Images.LogoFB />
 				<Text format={ Fonts.heading.h2 as TextStyle } mt={ 20 }>Login</Text>
 				<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginTop: 30,
+		marginBottom: 30,
+		marginTop: 30
 	},
 	social_button: {
 		flex: 1,

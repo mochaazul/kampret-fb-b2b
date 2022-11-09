@@ -29,7 +29,9 @@ const Reset = () => {
 	});
 
 	return (
-		<Container noScroll>
+		<Container noScroll noPadding
+			header={ { title: '', type: 'regular', headerStyle: { backgroundColor: Colors.white.background } } }
+		>
 			<Text format={ Fonts.heading.h3 as TextStyle }>Reset Kata Sandi</Text>
 			<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
 			<Input

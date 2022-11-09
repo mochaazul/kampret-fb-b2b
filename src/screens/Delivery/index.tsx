@@ -31,7 +31,7 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 			};
 
 			return (
-				<TouchableOpacity
+				<TouchableOpacity key={ 'item_' + index }
 					style={ [
 						styles.tabItem,
 						index > 0 ? { marginStart: 30 } : {},
@@ -53,11 +53,9 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 );
 
 const Delivery = () => (
-	<Container noPaddingTop noPaddingBottom noScroll>
-		<Header />
+	<Container noPadding noScroll header={ { type: 'main' } }>
 
 		<Tab.Navigator
-			style={ { marginTop: 20 } }
 			tabBar={ props => <TabItem { ...props } /> }
 		>
 			<Tab.Screen name="Pengiriman" component={ DeliveryList } />

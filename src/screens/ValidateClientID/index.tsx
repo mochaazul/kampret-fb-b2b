@@ -1,15 +1,22 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 
-import { Container, Header } from '@components';
+import { Container } from '@components';
+import ClientCard from './ClientCard';
 
 const ValidateClientID = () => {
 	return (
-		<Container>
-			<Header title='Validasi Client ID' />
-			<View>
-				<Text>ValidateClientID</Text>
-			</View>
+		<Container
+			noPadding
+			header={ {
+				title: 'Validasi Client ID',
+				type: 'regular'
+			} }
+		>
+
+			<ClientCard isValidated={ true } />
+			<ClientCard />
+			<ClientCard />
 		</Container>
 
 	);

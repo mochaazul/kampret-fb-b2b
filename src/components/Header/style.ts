@@ -14,8 +14,13 @@ export const styles = StyleSheet.create<IStyle>({
 		alignItems: 'center'
 	},
 	container: {
-		flex: 0,
-		marginTop: 20
+		margin: 20
 	},
-	regularHeader: { flexDirection: 'row', justifyContent: 'space-between' }
+	regularHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		backgroundColor: Colors.white.pure,
+		paddingHorizontal: 20
+	}
 });

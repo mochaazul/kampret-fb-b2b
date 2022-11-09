@@ -74,6 +74,7 @@ const index = () => (
 				useShadow={ true }
 				leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
 				buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
+				onPress={ () => NavigationHelper.push('ValidateClientID') }
 			/>
 		</View>
 
