@@ -21,7 +21,13 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 			<View style={ styles.container }>
 				<View style={ styles.row }>
 					<Images.LogoFB />
-					<Images.Bell />
+
+					<TouchableOpacity
+						activeOpacity={ .75 }
+						onPress={ () => NavigationHelper.push('Notification') }
+					>
+						<Images.Bell />
+					</TouchableOpacity>
 				</View>
 			</View>
 		);

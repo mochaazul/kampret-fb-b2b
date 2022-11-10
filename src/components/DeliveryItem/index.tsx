@@ -1,13 +1,14 @@
-import { Colors, Fonts, Images } from "@constant";
 import React from "react";
 import { TextStyle, View } from "react-native";
+
+import { Colors, Fonts, Images } from "@constant";
 import Button from "../Button";
 import Text from "../Text";
 import { NavigationHelper } from '@helpers';
 
 import { styles } from "./style";
 
-const index = () => (
+const DeliveryItem = () => (
 	<View style={ styles.container }>
 		<View style={ styles.row }>
 			<Text
@@ -81,4 +82,4 @@ const index = () => (
 	</View>
 );
 
-export default index;
+export default React.memo(DeliveryItem);

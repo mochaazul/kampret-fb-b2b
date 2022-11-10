@@ -3,14 +3,20 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		flexGrow: 1,
-		backgroundColor: Colors.white.pure
+		backgroundColor: Colors.white.pure,
+		paddingHorizontal: 0
 	},
 
 	content: {
 		paddingVertical: 16,
-		paddingHorizontal: 20
+		paddingHorizontal: 24,
+	},
+
+	line: {
+		flex: 1,
+		height: 1,
+		backgroundColor: Colors.gray.line,
+		marginVertical: 16,
 	}
 });
 
