@@ -5,6 +5,7 @@ import * as Auth from './Auth';
 import Contact from './Contact';
 import Delivery from './Delivery';
 import ValidateClientID from './ValidateClientID';
+import ItemChecking from './ItemChecking';
 
 export {
 	Splash,
@@ -13,5 +14,6 @@ export {
 	Auth,
 	Contact,
 	Delivery,
-	ValidateClientID
+	ValidateClientID,
+	ItemChecking
 };

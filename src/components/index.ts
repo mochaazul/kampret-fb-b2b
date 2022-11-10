@@ -7,6 +7,7 @@ import Header from './Header';
 import InputOTP from './InputOTP';
 import DeliveryItem from './DeliveryItem';
 import BottomSheet from './BottomSheet';
+import ModalDialog from './ModalDialog';
 
 export {
 	Text,
@@ -17,5 +18,6 @@ export {
 	Header,
 	InputOTP,
 	DeliveryItem,
-	BottomSheet
+	BottomSheet,
+	ModalDialog
 };

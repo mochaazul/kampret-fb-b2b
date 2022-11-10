@@ -11,11 +11,12 @@ interface ManualInput {
 }
 
 interface ScanChoiceProps {
-	onChoosen: (value: string) => void;
+	onChoosen: (value: 'manual' | 'result') => void;
 }
 
 const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
+	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
 
 	const formik: FormikProps<ManualInput> = useFormik<ManualInput>({
 		validateOnBlur: true,
@@ -30,10 +31,10 @@ const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 		},
 	});
 
-	if (!inputManualMode) {
+	if (!inputManualMode && !inputFromScanner) {
 		return (
 			<View style={ styles.container }>
-				<TouchableOpacity style={ styles.row }>
+				<TouchableOpacity style={ styles.row } onPress={ () => setInputFromScanner(true) }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Scan Barcode</Text>
 					<Images.IconRight />
 				</TouchableOpacity>
@@ -41,6 +42,24 @@ const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Input Manual</Text>
 					<Images.IconRight />
 				</TouchableOpacity>
+			</View>
+		);
+	} else if (inputFromScanner) {
+		return (
+			<View style={ styles.container }>
+				<TouchableOpacity style={ styles.row } onPress={ () => setInputFromScanner(false) }>
+					<View style={ { flex: 1 } } />
+					<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
+					<Images.IconClose style={ { flex: 1 } } />
+				</TouchableOpacity>
+				<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Barcode di Keranjang
+					untuk Validasi Client ID</Text>
+				<TouchableOpacity onPress={ () => onChoosen('result') }>
+					<Images.BarcodeTemplate style={ { paddingHorizontal: -20, marginTop: 20 } } />
+				</TouchableOpacity>
+				<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan barcode berada di dalam area kotak
+					yang sudah tersedia</Text>
+
 			</View>
 		);
 	} else {
