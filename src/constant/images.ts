@@ -22,6 +22,9 @@ import IconRight from '../assets/images/arrow_right.svg';
 import BarcodeTemplate from '../assets/images/scan_barcode.svg';
 import IconClose from '../assets/images/ic_close.svg';
 import IconSuccess from '../assets/images/success.svg';
+import ButtonCheck from '../assets/images/btn.svg';
+import ButtonCheck2 from '../assets/images/btn_flat.svg';
+import ButtonCircleScan from '../assets/images/circle.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -49,5 +52,8 @@ export default {
 	IconRight,
 	BarcodeTemplate,
 	IconClose,
-	IconSuccess
+	IconSuccess,
+	ButtonCheck,
+	ButtonCheck2,
+	ButtonCircleScan
 };

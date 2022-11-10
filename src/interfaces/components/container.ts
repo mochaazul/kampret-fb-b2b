@@ -12,6 +12,7 @@ interface IContainer extends React.ComponentProps<typeof ScrollView> {
 	barStyle?: StatusBarStyle,
 	noScroll?: boolean | undefined,
 	header?: HeaderInterface;
+	contentBackgroudColor?: string;
 }
 
 export default IContainer;
