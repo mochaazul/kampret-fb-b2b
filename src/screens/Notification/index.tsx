@@ -11,12 +11,11 @@ const Notification = () => {
 			noPadding
 			noScroll
 			header={ { type: 'regular', title: 'Notifikasi' } }
-			contentContainerStyle={ { backgroundColor: Colors.white.pure, paddingHorizontal: 0 } }
+			contentContainerStyle={ styles.container }
 		>
 
 			<FlatList
 				bounces={ false }
-				style={ styles.container }
 				contentContainerStyle={ styles.content }
 				showsVerticalScrollIndicator={ false }
 				data={ [...Array(10).keys()] }

@@ -5,6 +5,7 @@ interface IStyle {
 	container: ViewStyle;
 	row: ViewStyle;
 	bullet: ViewStyle;
+	content: ViewStyle;
 	line: ViewStyle;
 }
 
@@ -24,6 +25,11 @@ export const styles = StyleSheet.create<IStyle>({
 		backgroundColor: Colors.company.red,
 		borderRadius: 5,
 		marginTop: 4,
+	},
+
+	content: {
+		flex: 1,
+		marginStart: 10
 	},
 
 	line: {

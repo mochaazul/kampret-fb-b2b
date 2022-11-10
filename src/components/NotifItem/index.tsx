@@ -13,11 +13,10 @@ const NotifItem = () => (
 		<View style={ styles.row }>
 			<Bullet />
 
-			<View style={ { flex: 1, marginStart: 10 } }>
+			<View style={ styles.content }>
 				<Text
 					format={ Fonts.paragraph.m.regular as TextStyle }
 					color={ Colors.black.default }
-					style={ { backgroundColor: Colors.yellow.default, alignSelf: 'center' } }
 				>
 					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sodales mattis tincidunt orci vestibulum.
 				</Text>

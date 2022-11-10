@@ -34,7 +34,7 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 				<TouchableOpacity key={ 'item_' + index }
 					style={ [
 						styles.tabItem,
-						index > 0 ? { marginStart: 30 } : { marginStart: 20 },
+						index > 0 ? styles.tabFirst : styles.tabNotFirst,
 						isFocused ? styles.tabActive : styles.tabInactive
 					] }
 					activeOpacity={ .8 }
@@ -57,7 +57,7 @@ const Delivery = () => (
 		noPadding
 		noScroll
 		header={ { type: 'main' } }
-		contentContainerStyle={ { backgroundColor: Colors.white.pure, paddingHorizontal: 0 } }
+		contentContainerStyle={ styles.container }
 	>
 
 		<Tab.Navigator
