@@ -5,12 +5,19 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexGrow: 1,
-		backgroundColor: Colors.white.background
+		backgroundColor: Colors.white.pure
 	},
 
 	content: {
-		paddingTop: 16,
-		paddingBottom: 16,
+		paddingVertical: 16,
+		paddingHorizontal: 24,
+	},
+
+	line: {
+		flex: 1,
+		height: 1,
+		backgroundColor: Colors.gray.line,
+		marginVertical: 16,
 	}
 });
 

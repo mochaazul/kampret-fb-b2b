@@ -3,11 +3,16 @@ import { FlatList, View } from "react-native";
 
 import { Container, Header, NotifItem } from "@components";
 import styles from "./style";
+import { Colors } from "@constant";
 
 const Notification = () => {
 	return (
-		<Container noPaddingTop noPaddingBottom noScroll>
-			<Header />
+		<Container
+			noPadding
+			noScroll
+			header={ { type: 'regular', title: 'Notifikasi' } }
+			contentContainerStyle={ { backgroundColor: Colors.white.pure, paddingHorizontal: 0 } }
+		>
 
 			<FlatList
 				bounces={ false }
@@ -16,7 +21,7 @@ const Notification = () => {
 				showsVerticalScrollIndicator={ false }
 				data={ [...Array(10).keys()] }
 				renderItem={ ({ i }: any) => (<NotifItem key={ i } />) }
-				ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
+				ItemSeparatorComponent={ () => (<View style={ styles.line } />) }
 			/>
 		</Container>
 	);

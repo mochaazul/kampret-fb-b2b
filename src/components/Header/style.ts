@@ -4,6 +4,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 interface IStyle {
 	row: ViewStyle;
 	container: ViewStyle;
+	regularHeader: ViewStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -13,7 +14,13 @@ export const styles = StyleSheet.create<IStyle>({
 		alignItems: 'center'
 	},
 	container: {
-		flex: 0,
-		marginTop: 20
+		margin: 20
+	},
+	regularHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		backgroundColor: Colors.white.pure,
+		paddingHorizontal: 20
 	}
 });

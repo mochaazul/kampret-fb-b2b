@@ -3,9 +3,10 @@ import { StyleSheet, TextStyle, View } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
 import { Images, Colors, Fonts } from '@constant';
-import { Button, Container, Input, Text } from '@components';
+import { Button, Container, Input, Text, BottomSheet } from '@components';
 import { Auth } from '@validator';
 import { NavigationHelper } from '@helpers';
+import Forgot from './PhoneNumber';
 
 interface MyValues {
 	username: string,
@@ -15,8 +16,10 @@ interface MyValues {
 const Login = () => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
+	const [showPhoneInput, setShowPhoneInput] = useState<boolean>(false);
+
 	const formik: FormikProps<MyValues> = useFormik<MyValues>({
-		validateOnBlur: enableValidation,
+		validateOnBlur: true,
 		validateOnChange: enableValidation,
 		validationSchema: Auth.LoginValidationSchema,
 		initialValues: {
@@ -24,13 +27,13 @@ const Login = () => {
 			password: '',
 		},
 		onSubmit: () => {
-			NavigationHelper.push('Delivery');
+			setShowPhoneInput(true);
 		},
 	});
 
 	return (
-		<Container>
-			<View style={ { flex: 1 } }>
+		<Container noPadding>
+			<View style={ { flex: 1, marginTop: 20 } }>
 				<Images.LogoFB />
 				<Text format={ Fonts.heading.h2 as TextStyle } mt={ 20 }>Login</Text>
 				<Text format={ Fonts.textBody.s.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
@@ -45,13 +48,13 @@ const Login = () => {
 						formik={ formik }
 						name='password'
 						label='Kata Sandi'
-						placeholder='Masukkan username'
+						placeholder='Masukkan Kata Sandi'
 						mt={ 15 }
 						secureTextEntry />
 				</View>
 				<View style={ { alignItems: 'flex-end' } }>
 					<Button
-						onPress={ () => NavigationHelper.push('Forgot') }
+						onPress={ () => setShowPhoneInput(true) }
 						mt={ 15 }
 						text='Lupa Password?'
 						textSize={ 14 }
@@ -67,9 +70,7 @@ const Login = () => {
 					weight='700'
 					mt={ 30 }
 					useShadow={ true }
-				// disabled={ formik.errors
-				// 	&& Object.keys(formik.errors).length === 0
-				// 	&& Object.getPrototypeOf(formik.errors) === Object.prototype }
+					disabled={ formik.values == formik.initialValues }
 				/>
 			</View>
 			<View style={ styles.register_container }>
@@ -85,6 +86,12 @@ const Login = () => {
 					noPadding
 					backgroundColor='transparent' />
 			</View>
+			<BottomSheet
+				visible={ showPhoneInput }
+				onRequestClose={ () => setShowPhoneInput(false) }
+			>
+				<Forgot />
+			</BottomSheet>
 		</Container>
 	);
 };
@@ -105,7 +112,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginTop: 30,
+		marginBottom: 30,
+		marginTop: 30
 	},
 	social_button: {
 		flex: 1,

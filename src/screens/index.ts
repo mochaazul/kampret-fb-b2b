@@ -4,6 +4,7 @@ import OnBoarding from './OnBoarding';
 import * as Auth from './Auth';
 import Contact from './Contact';
 import Delivery from './Delivery';
+import ValidateClientID from './ValidateClientID';
 import Notification from './Notification';
 
 export {
@@ -13,5 +14,6 @@ export {
 	Auth,
 	Contact,
 	Delivery,
+	ValidateClientID,
 	Notification,
 };

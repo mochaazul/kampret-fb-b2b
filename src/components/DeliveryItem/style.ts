@@ -25,7 +25,7 @@ export const styles = StyleSheet.create<IStyle>({
 		flex: -1,
 		padding: 20,
 		margin: 2,
-		backgroundColor: Colors.white.background,
+		backgroundColor: Colors.white.pure,
 		borderRadius: 10,
 		shadowColor: Colors.gray.default,
 		shadowOpacity: 0.04,

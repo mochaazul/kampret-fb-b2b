@@ -4,6 +4,7 @@ import { TextStyle, View } from "react-native";
 import { Colors, Fonts, Images } from "@constant";
 import Button from "../Button";
 import Text from "../Text";
+import { NavigationHelper } from '@helpers';
 
 import { styles } from "./style";
 
@@ -74,6 +75,7 @@ const DeliveryItem = () => (
 				useShadow={ true }
 				leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
 				buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
+				onPress={ () => NavigationHelper.push('ValidateClientID') }
 			/>
 		</View>
 

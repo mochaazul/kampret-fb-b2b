@@ -65,7 +65,7 @@ const customStyle: ICustomStyles = {
 			paddingLeft: paddingLeft,
 			paddingRight: paddingRight,
 			flex: 1,
-			backgroundColor: Colors.white.background
+			backgroundColor: Colors.white.pure
 		};
 	},
 };

@@ -5,12 +5,12 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexGrow: 1,
-		backgroundColor: Colors.white.background
+		backgroundColor: Colors.white.pure
 	},
 
 	content: {
-		paddingTop: 16,
-		paddingBottom: 16,
+		paddingVertical: 16,
+		paddingHorizontal: 20
 	}
 });
 

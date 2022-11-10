@@ -9,7 +9,7 @@ interface IStyles {
 export const styles = StyleSheet.create<IStyles>({
 	defaultStyle: {
 		color: Colors.black.default,
-		fontFamily: 'Inter',
+		fontFamily: 'Ubuntu-Regular',
 		fontSize: Ratio.normalizeValue(14),
 	},
 });

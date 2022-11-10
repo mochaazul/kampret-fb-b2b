@@ -1,8 +1,7 @@
 import React from "react";
 import { TextStyle, View } from "react-native";
 
-import { Colors, Fonts, Images } from "@constant";
-import Button from "../Button";
+import { Colors, Fonts } from "@constant";
 import Text from "../Text";
 
 import { styles } from "./style";
@@ -32,8 +31,6 @@ const NotifItem = () => (
 				</Text>
 			</View>
 		</View>
-
-		<View style={ styles.line } />
 	</View>
 );
 

@@ -7,6 +7,7 @@ import styles from './style';
 const DeliveryList = () => (
 	<FlatList
 		bounces={ false }
+		keyExtractor={ (item, index) => 'tabBar_' + index }
 		style={ styles.container }
 		contentContainerStyle={ styles.content }
 		showsVerticalScrollIndicator={ false }

@@ -16,6 +16,8 @@ import More from '../assets/images/more.svg';
 import IconTime from '../assets/images/ic_time.svg';
 import IconLocation from '../assets/images/ic_location.svg';
 import IconScan from '../assets/images/ic_scan.svg';
+import IconBack from '../assets/images/left.svg';
+import IconCheck from '../assets/images/check_mark_circle.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -38,4 +40,6 @@ export default {
 	IconTime,
 	IconLocation,
 	IconScan,
+	IconBack,
+	IconCheck
 };

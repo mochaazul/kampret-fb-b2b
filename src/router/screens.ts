@@ -1,5 +1,5 @@
 import {
-	Auth, Contact, Delivery, Home, Notification, OnBoarding, Splash,
+	Auth, Contact, Delivery, Home, Notification, OnBoarding, Splash, ValidateClientID
 } from '@screens';
 
 export const screens = [
@@ -28,10 +28,6 @@ export const screens = [
 		component: Contact,
 	},
 	{
-		name: 'Forgot',
-		component: Auth.Forgot,
-	},
-	{
 		name: 'OTP',
 		component: Auth.OTP,
 	},
@@ -42,6 +38,10 @@ export const screens = [
 	{
 		name: 'Delivery',
 		component: Delivery,
+	},
+	{
+		name: 'ValidateClientID',
+		component: ValidateClientID,
 	},
 	{
 		name: 'Notification',

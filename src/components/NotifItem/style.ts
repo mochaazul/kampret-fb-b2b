@@ -11,8 +11,6 @@ interface IStyle {
 export const styles = StyleSheet.create<IStyle>({
 	container: {
 		flex: -1,
-		padding: 16,
-		paddingBottom: 0,
 	},
 
 	row: {
