@@ -6,6 +6,7 @@ import Contact from './Contact';
 import Delivery from './Delivery';
 import ValidateClientID from './ValidateClientID';
 import ItemChecking from './ItemChecking';
+import Notification from './Notification';
 
 export {
 	Splash,
@@ -15,5 +16,6 @@ export {
 	Contact,
 	Delivery,
 	ValidateClientID,
-	ItemChecking
+	ItemChecking,
+	Notification,
 };
