@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Container } from '@components';
+import { Container, BottomSheet } from '@components';
 import ClientCard from './ClientCard';
+import ScanChoice from './ScanChoice';
 
 const ValidateClientID = () => {
+	const [showScanChoices, setShowScanChoices] = useState<boolean>(false);
 	return (
 		<Container
 			noPadding
@@ -15,8 +17,14 @@ const ValidateClientID = () => {
 		>
 
 			<ClientCard isValidated={ true } />
-			<ClientCard />
-			<ClientCard />
+			<ClientCard onOpenScanChoice={ () => setShowScanChoices(true) } />
+			<ClientCard onOpenScanChoice={ () => setShowScanChoices(true) } />
+			<BottomSheet
+				visible={ showScanChoices }
+				onRequestClose={ () => setShowScanChoices(false) }
+			>
+				<ScanChoice onChoosen={ () => setShowScanChoices(false) } />
+			</BottomSheet>
 		</Container>
 
 	);

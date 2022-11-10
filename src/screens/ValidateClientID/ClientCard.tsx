@@ -1,13 +1,15 @@
 import { StyleSheet, View, TextStyle } from 'react-native';
 import React from 'react';
+import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
 import { Button, Text } from '@components';
 
 interface ClientCardProps {
 	isValidated?: boolean;
+	onOpenScanChoice?: () => void;
 }
-const ClientCard = ({ isValidated }: ClientCardProps) => {
+const ClientCard = ({ isValidated, onOpenScanChoice }: ClientCardProps) => {
 	if (!isValidated) {
 		return (
 			<View style={ styles.container }>
@@ -25,6 +27,9 @@ const ClientCard = ({ isValidated }: ClientCardProps) => {
 						weight='700'
 						color={ Colors.white.pure }
 						text='Validasi'
+						leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
+						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
+						onPress={ () => onOpenScanChoice ? onOpenScanChoice() : null }
 					/>
 				</View>
 
@@ -52,6 +57,13 @@ const ClientCard = ({ isValidated }: ClientCardProps) => {
 					<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>5 </Text>
 					<Text format={ Fonts.textBody.l.bold as TextStyle } >dari 10 barang sudah sesuai</Text>
 				</View>
+				<ProgressBar
+					styleAttr='Horizontal'
+					indeterminate={ false }
+					progress={ 0.5 }
+					color={ Colors.green.default }
+					style={ { marginTop: 10, marginBottom: 20 } }
+				/>
 
 				<Button
 					weight='700'
@@ -60,7 +72,7 @@ const ClientCard = ({ isValidated }: ClientCardProps) => {
 
 					backgroundColor='transparent'
 					type='outline'
-					mt={ 20 }
+				//mt={ 30 }
 				/>
 
 			</View>

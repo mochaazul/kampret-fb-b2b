@@ -43,7 +43,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		}
 
 		if (width) {
-			defaultStyle.width = Ratio.normalizeValue(width);
+			defaultStyle.width = Ratio.normalize(width);
 		}
 
 		if (noPadding) {
@@ -54,7 +54,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		}
 
 		if (mt) {
-			defaultStyle.marginTop = Ratio.normalizeValue(mt);
+			defaultStyle.marginTop = Ratio.normalize(mt);
 		}
 
 		if (type) {

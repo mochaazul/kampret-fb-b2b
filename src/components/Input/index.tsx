@@ -31,15 +31,15 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 		const defaultStyle = { ...styles.defaultStyle };
 		const inputContainer = { ...styles.inputContainer };
 		if (mt) {
-			inputContainer.marginTop = Ratio.normalizeValue(mt);
+			inputContainer.marginTop = Ratio.normalize(mt);
 		}
 
 		if (rightIcon) {
-			defaultStyle.marginRight = Ratio.normalizeValue(8);
+			defaultStyle.marginRight = Ratio.normalize(8);
 		}
 
 		if (leftIcon) {
-			defaultStyle.marginLeft = Ratio.normalizeValue(8);
+			defaultStyle.marginLeft = Ratio.normalize(8);
 		}
 
 		return {

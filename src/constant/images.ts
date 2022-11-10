@@ -18,6 +18,7 @@ import IconLocation from '../assets/images/ic_location.svg';
 import IconScan from '../assets/images/ic_scan.svg';
 import IconBack from '../assets/images/left.svg';
 import IconCheck from '../assets/images/check_mark_circle.svg';
+import IconRight from '../assets/images/arrow_right.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -41,5 +42,6 @@ export default {
 	IconLocation,
 	IconScan,
 	IconBack,
-	IconCheck
+	IconCheck,
+	IconRight
 };
