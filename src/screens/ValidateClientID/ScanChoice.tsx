@@ -27,7 +27,6 @@ const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 		},
 		onSubmit: () => {
 			onChoosen('manual');
-			console.log('inputed');
 		},
 	});
 
