@@ -5,6 +5,8 @@ interface IStyle {
 	row: ViewStyle;
 	container: ViewStyle;
 	regularHeader: ViewStyle;
+	actionButton: ViewStyle;
+	title: ViewStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -31,5 +33,14 @@ export const styles = StyleSheet.create<IStyle>({
 			height: 3,
 		},
 		elevation: 5,
-	}
+	},
+
+	actionButton: {
+		width: 24
+	},
+
+	title: {
+		flex: 1,
+		paddingVertical: 20
+	},
 });

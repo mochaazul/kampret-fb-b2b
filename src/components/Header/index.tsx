@@ -1,8 +1,8 @@
-import { TextStyle, View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import { ComponentInterface } from '@interfaces';
-import { Images, Fonts, Colors } from '@constant';
+import { Images } from '@constant';
 import { NavigationHelper } from '@helpers';
 import { styles } from './style';
 import { Text } from '@components';
@@ -35,7 +35,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 	} else {
 		return (
 			<View style={ [styles.regularHeader, headerStyle] }>
-				<View style={ { width: 24 } }>
+				<View style={ styles.actionButton }>
 					{
 						showLeftButton && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
 							<Images.IconBack />
@@ -43,7 +43,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 					}
 				</View>
 
-				<View style={ { flex: 1, paddingVertical: 20 } }>
+				<View style={ styles.title }>
 					{ title &&
 						<Text
 							weight='700'
@@ -55,7 +55,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 					}
 				</View>
 
-				<View style={ { width: 24 } }>
+				<View style={ styles.actionButton }>
 					{ rightButton && onPressRightButton &&
 						<TouchableOpacity onPress={ () => onPressRightButton() }>
 							{ rightButton }
