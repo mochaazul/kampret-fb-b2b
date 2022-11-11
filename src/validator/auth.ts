@@ -38,3 +38,9 @@ export const ResetPasswordValidationSchema = yup.object().shape({
 		.string().required('Konfirmasi sandi wajib diisi')
 		.oneOf([yup.ref('firstPassword'), null], 'Konfirmasi sandi tidak sama dengan sandi'),
 });
+
+export const InputClientID = yup.object().shape({
+
+	clientID: yup
+		.string().required('harus diisi').label('clientID').nullable(),
+});

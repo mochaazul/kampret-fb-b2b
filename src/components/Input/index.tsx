@@ -31,15 +31,15 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 		const defaultStyle = { ...styles.defaultStyle };
 		const inputContainer = { ...styles.inputContainer };
 		if (mt) {
-			inputContainer.marginTop = Ratio.normalizeValue(mt);
+			inputContainer.marginTop = Ratio.normalize(mt);
 		}
 
 		if (rightIcon) {
-			defaultStyle.marginRight = Ratio.normalizeValue(8);
+			defaultStyle.marginRight = Ratio.normalize(8);
 		}
 
 		if (leftIcon) {
-			defaultStyle.marginLeft = Ratio.normalizeValue(8);
+			defaultStyle.marginLeft = Ratio.normalize(8);
 		}
 
 		return {
@@ -75,7 +75,7 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 					<TextInput
 						value={ formik?.values[name] }
 						onChangeText={ formik?.handleChange(name) }
-						style={ { ...Fonts.textBody.m.regular as TextStyle, padding: 0 } }
+						style={ { ...Fonts.textBody.m.regular as TextStyle, paddingVertical: 0 } }
 						onFocus={ () => setIsFocus(true) }
 						onBlur={ () => setIsFocus(false) }
 						ref={ inputRef }

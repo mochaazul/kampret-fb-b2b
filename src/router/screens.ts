@@ -1,5 +1,6 @@
 import {
-	Auth, Contact, Delivery, Home, Notification, OnBoarding, Splash, ValidateClientID
+	Auth, Contact, Delivery, Home, OnBoarding, Splash, ValidateClientID, ItemChecking,
+	Notification,
 } from '@screens';
 
 export const screens = [
@@ -42,6 +43,10 @@ export const screens = [
 	{
 		name: 'ValidateClientID',
 		component: ValidateClientID,
+	},
+	{
+		name: 'ItemChecking',
+		component: ItemChecking,
 	},
 	{
 		name: 'Notification',

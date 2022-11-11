@@ -22,6 +22,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 		noScroll,
 		children,
 		header,
+		contentBackgroudColor,
 		...restOfProps
 	} = props;
 
@@ -74,7 +75,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 						{ header &&
 							<Header { ...header } />
 						}
-						<View style={ { flex: 1, backgroundColor: Colors.white.background, paddingHorizontal: 20 } }>
+						<View style={ { flex: 1, backgroundColor: contentBackgroudColor ? contentBackgroudColor : Colors.white.background, paddingHorizontal: 20 } }>
 
 							{ children }
 

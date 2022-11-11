@@ -5,6 +5,7 @@ import * as Auth from './Auth';
 import Contact from './Contact';
 import Delivery from './Delivery';
 import ValidateClientID from './ValidateClientID';
+import ItemChecking from './ItemChecking';
 import Notification from './Notification';
 
 export {
@@ -15,5 +16,6 @@ export {
 	Contact,
 	Delivery,
 	ValidateClientID,
+	ItemChecking,
 	Notification,
 };
