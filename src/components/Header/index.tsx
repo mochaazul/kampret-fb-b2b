@@ -11,6 +11,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 	const {
 		title,
 		type,
+		showLeftButton,
 		rightButton,
 		onPressRightButton,
 		headerStyle,
@@ -34,10 +35,15 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 	} else {
 		return (
 			<View style={ [styles.regularHeader, headerStyle] }>
-				<TouchableOpacity style={ { flex: 1, paddingVertical: 20 } } onPress={ () => NavigationHelper.pop(1) }>
-					<Images.IconBack />
-				</TouchableOpacity>
-				<View style={ { flex: 5, paddingVertical: 20 } }>
+				<View style={ { width: 24 } }>
+					{
+						showLeftButton && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
+							<Images.IconBack />
+						</TouchableOpacity>
+					}
+				</View>
+
+				<View style={ { flex: 1, paddingVertical: 20 } }>
 					{ title &&
 						<Text
 							weight='700'
@@ -48,7 +54,8 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 						</Text>
 					}
 				</View>
-				<View style={ { flex: 1 } }>
+
+				<View style={ { width: 24 } }>
 					{ rightButton && onPressRightButton &&
 						<TouchableOpacity onPress={ () => onPressRightButton() }>
 							{ rightButton }
