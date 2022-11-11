@@ -10,7 +10,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import { persistStore, persistReducer } from 'redux-persist';
 
-import Reactotron from './reactotronConfig';
+// import Reactotron from './reactotronConfig';
 import { Reducers } from '../store';
 
 const rootReducer = combineReducers({ ...Reducers });
@@ -22,9 +22,9 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-const enhancer:any = __DEV__ && Reactotron?.createEnhancer?.();
+// const enhancer:any = __DEV__ && Reactotron?.createEnhancer?.();
 
-const store = createStore(persistedReducer, compose(applyMiddleware(thunk), enhancer));
+const store = createStore(persistedReducer, compose(applyMiddleware(thunk)));
 
 const persistor = persistStore(store);
 
