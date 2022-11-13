@@ -5,7 +5,8 @@ import { ViewComponent, ViewStyle } from 'react-native';
 interface IHeader extends React.ComponentProps<typeof ViewComponent> {
 	title?: string;
 	type?: 'main' | 'regular';
-	rightButton?: string;
+	showLeftButton?: boolean | undefined;
+	rightButton?: ReactNode | undefined;
 	headerStyle?: ViewStyle;
 	onPressRightButton?: () => void;
 }

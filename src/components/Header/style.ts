@@ -5,6 +5,8 @@ interface IStyle {
 	row: ViewStyle;
 	container: ViewStyle;
 	regularHeader: ViewStyle;
+	actionButton: ViewStyle;
+	title: ViewStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -21,6 +23,24 @@ export const styles = StyleSheet.create<IStyle>({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		backgroundColor: Colors.white.pure,
-		paddingHorizontal: 20
-	}
+		paddingHorizontal: 20,
+		borderBottomWidth: 1,
+		borderBottomColor: Colors.gray.light,
+		shadowColor: Colors.gray.line,
+		shadowOpacity: 0.1,
+		shadowOffset: {
+			width: 0,
+			height: 3,
+		},
+		elevation: 5,
+	},
+
+	actionButton: {
+		width: 24
+	},
+
+	title: {
+		flex: 1,
+		paddingVertical: 20
+	},
 });

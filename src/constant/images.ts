@@ -25,6 +25,7 @@ import IconSuccess from '../assets/images/success.svg';
 import ButtonCheck from '../assets/images/btn.svg';
 import ButtonCheck2 from '../assets/images/btn_flat.svg';
 import ButtonCircleScan from '../assets/images/circle.svg';
+import IconCamera from '../assets/images/ic_camera.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -55,5 +56,6 @@ export default {
 	IconSuccess,
 	ButtonCheck,
 	ButtonCheck2,
-	ButtonCircleScan
+	ButtonCircleScan,
+	IconCamera
 };
