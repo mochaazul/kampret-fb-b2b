@@ -7,6 +7,7 @@ import Delivery from './Delivery';
 import ValidateClientID from './ValidateClientID';
 import ItemChecking from './ItemChecking';
 import Notification from './Notification';
+import InputKms from './InputKms';
 
 export {
 	Splash,
@@ -18,4 +19,5 @@ export {
 	ValidateClientID,
 	ItemChecking,
 	Notification,
+	InputKms,
 };
