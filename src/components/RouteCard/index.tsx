@@ -28,7 +28,7 @@ const RouteCard = ({
 				}
 				{ !isDelivered &&
 					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
-						<Text style={ [Fonts.textBody.l.bold, { color: '#ffffff' }] as TextStyle }>{ numbering }</Text>
+						<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ numbering }</Text>
 					</View>
 				}
 
@@ -48,7 +48,7 @@ const RouteCard = ({
 						<View style={ styles.leftIcon }></View>
 						<Text style={ [styles.text, { textDecorationLine: 'underline' }] } size={ 14 } lineHeight={ 20 } color={ Colors.blue.default } weight='400' >{ locationAddress }</Text>
 					</View>
-					<View style={ { flexDirection: 'row', alignItems: 'center', marginTop: 10 } }>
+					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
 						<Text size={ 14 } lineHeight={ 20 } weight='400'>{ locationTime.startAt + ' - ' + locationTime.estEnd } WIB</Text>
 						{ !disabled && !isDelivered &&
@@ -172,5 +172,11 @@ const styles = StyleSheet.create({
 		borderRightColor: Colors.gray.line,
 		borderRightWidth: 1,
 		paddingRight: 20
-	}
+	},
+	timeSection: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 10
+	},
+
 });
