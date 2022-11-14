@@ -67,7 +67,7 @@ const RouteCard = ({
 								weight='700'
 								color={ Colors.white.pure }
 								text='Sudah Sampai'
-								onPress={ () => console.log('sampai pressed') }
+							// onPress={ () => console.log('sampai pressed') }
 							/>
 						</View>
 					}

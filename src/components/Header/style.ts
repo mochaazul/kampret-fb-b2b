@@ -7,6 +7,7 @@ interface IStyle {
 	regularHeader: ViewStyle;
 	actionButton: ViewStyle;
 	title: ViewStyle;
+	version: TextStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -43,4 +44,10 @@ export const styles = StyleSheet.create<IStyle>({
 		flex: 1,
 		paddingVertical: 20
 	},
+
+	version: {
+		position: 'absolute',
+		right: 40,
+		color: Colors.gray.default
+	}
 });

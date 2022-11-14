@@ -19,7 +19,7 @@ const Complain = ({ onClose }: ComplainProps) => {
 			description: null
 		},
 		onSubmit: () => {
-			console.log('submit pressed');
+			// console.log('submit pressed');
 		},
 	});
 	return (

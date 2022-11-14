@@ -11,7 +11,7 @@ interface DeliveryItemProps {
 	index: number;
 }
 const DeliveryItem = ({ index }: DeliveryItemProps) => {
-	console.log('dl item', index);
+
 	return (
 		<View style={ styles.container }>
 			<View style={ styles.row }>
