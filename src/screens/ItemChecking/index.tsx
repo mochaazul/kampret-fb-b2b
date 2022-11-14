@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { Container, Text, Button } from '@components';
 import { Fonts, Colors, Images } from '@constant';
-
+import { NavigationHelper } from '@helpers';
 import ItemChecklist from './ItemChecklist';
 
 interface ItemCheck {
@@ -93,6 +93,7 @@ const ItemChecking = () => {
 					weight='700'
 					color={ Colors.white.pure }
 					text='Selesai Pemeriksaan'
+					onPress={ () => NavigationHelper.push('DeliveryRoute') }
 				/>
 			</View>
 		</Container>
