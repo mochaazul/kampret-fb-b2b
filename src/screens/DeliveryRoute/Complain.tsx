@@ -2,7 +2,7 @@ import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView } from
 import React, { useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 
-import { Input, Button, Text } from '@components';
+import { Input, Button, Text, Dropdown } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
 interface ComplainProps {
@@ -11,8 +11,21 @@ interface ComplainProps {
 interface IComplain {
 	description: string | null;
 }
+
+const dummyDropdown = [
+	{ key: '1', value: 'Salah Jenis' },
+	{ key: '2', value: 'Warna Salah' },
+	{ key: '3', value: 'Salah Barang' },
+	{ key: '4', value: 'Busuk' },
+	{ key: '5', value: 'Jumlah Lebih' },
+	{ key: '6', value: 'Jumlah Kurang' },
+	{ key: '8', value: 'Rusak' },
+];
+
 const Complain = ({ onClose }: ComplainProps) => {
 	const [qty, setQty] = useState<number>(2);
+	const [complainSelected, setComplainSelected] = useState('');
+
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
 		validateOnBlur: true,
 		validationSchema: Auth.ComplainValidationSchema,
@@ -39,13 +52,13 @@ const Complain = ({ onClose }: ComplainProps) => {
 				</TouchableOpacity>
 			</View>
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
-				<Input
-					formik={ formik }
-					name='description'
-					label='Deskripsi'
-					placeholder='Masukkan Deskripsi'
-					keyboardType='ascii-capable'
-					mt={ 20 }
+				<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
+				<Dropdown
+					boxStyles={ { marginTop: 5 } }
+					setSelected={ val => val ? setComplainSelected(val) : null }
+					defaultOption={ { key: '8', value: 'Rusak' } }
+					data={ dummyDropdown }
+					save="value"
 				/>
 				<Input
 					formik={ formik }
