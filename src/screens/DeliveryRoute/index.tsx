@@ -1,10 +1,11 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 
-import { Container, RouteCard } from '@components';
+import { Container, RouteCard, BottomSheet } from '@components';
 import { Colors, Images } from '@constant';
 import { NavigationHelper } from '@helpers';
 import { ComponentInterface } from '@interfaces';
+import Complain from './Complain';
 
 const dummyData: ComponentInterface.IRoute[] = [{
 	numbering: 1,
@@ -41,8 +42,10 @@ const dummyData: ComponentInterface.IRoute[] = [{
 ];
 const DeliveryRoute = () => {
 
+	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const handleHeaderRightOnPress = () => {
 		console.log('header right button pressed');
+		setShowComplain(true);
 	};
 
 	return (
@@ -60,6 +63,12 @@ const DeliveryRoute = () => {
 				data={ dummyData }
 				renderItem={ ({ item, index }) => <RouteCard { ...item } /> }
 			/>
+			<BottomSheet
+				visible={ showComplain }
+				onRequestClose={ () => setShowComplain(false) }
+			>
+				<Complain onClose={ () => setShowComplain(false) } />
+			</BottomSheet>
 		</Container>
 
 	);

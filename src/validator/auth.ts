@@ -44,3 +44,7 @@ export const InputClientID = yup.object().shape({
 	clientID: yup
 		.string().required('harus diisi').label('clientID').nullable(),
 });
+
+export const ComplainValidationSchema = yup.object().shape({
+	description: yup.string().required('Wajib diisi').nullable()
+});

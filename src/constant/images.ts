@@ -28,6 +28,7 @@ import ButtonCircleScan from '../assets/images/circle.svg';
 import IconCamera from '../assets/images/ic_camera.svg';
 import IconAlert from '../assets/images/alert.svg';
 import IconCheckGreen from '../assets/images/checkGreen.svg';
+import IconeCameraRed from '../assets/images/ic_camera_red.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -61,5 +62,6 @@ export default {
 	ButtonCircleScan,
 	IconCamera,
 	IconAlert,
-	IconCheckGreen
+	IconCheckGreen,
+	IconeCameraRed
 };
