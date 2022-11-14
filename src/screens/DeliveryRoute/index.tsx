@@ -66,6 +66,7 @@ const DeliveryRoute = () => {
 			<BottomSheet
 				visible={ showComplain }
 				onRequestClose={ () => setShowComplain(false) }
+				noScroll
 			>
 				<Complain onClose={ () => setShowComplain(false) } />
 			</BottomSheet>

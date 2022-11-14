@@ -30,6 +30,8 @@ import IconAlert from '../assets/images/alert.svg';
 import IconCheckGreen from '../assets/images/checkGreen.svg';
 import IconeCameraRed from '../assets/images/ic_camera_red.svg';
 import IconTruck from '../assets/images/delivery.svg';
+import IconMinus from '../assets/images/minus.svg';
+import IconPlus from '../assets/images/plus.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -65,5 +67,7 @@ export default {
 	IconAlert,
 	IconCheckGreen,
 	IconeCameraRed,
-	IconTruck
+	IconTruck,
+	IconMinus,
+	IconPlus
 };
