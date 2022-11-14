@@ -12,7 +12,7 @@ const DeliveryList = () => (
 		contentContainerStyle={ styles.content }
 		showsVerticalScrollIndicator={ false }
 		data={ [...Array(5).keys()] }
-		renderItem={ ({ i }: any) => (<DeliveryItem key={ i } />) }
+		renderItem={ ({ item, index }) => <DeliveryItem index={ index } /> }
 		ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
 	/>
 );
