@@ -93,7 +93,7 @@ const ItemChecking = () => {
 					weight='700'
 					color={ Colors.white.pure }
 					text='Selesai Pemeriksaan'
-					onPress={ () => NavigationHelper.push('InputKms') }
+					onPress={ () => NavigationHelper.pop(1) }
 				/>
 			</View>
 		</Container>

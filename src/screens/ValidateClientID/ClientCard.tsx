@@ -4,21 +4,32 @@ import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
 import { Button, Text } from '@components';
+import { DeliveryInterface } from '@interfaces';
+import { NavigationHelper } from '@helpers';
 
 interface ClientCardProps {
-	isValidated?: boolean;
+	customer: DeliveryInterface.IDeliveryCustomer;
 	onOpenScanChoice?: () => void;
 }
-const ClientCard = ({ isValidated, onOpenScanChoice }: ClientCardProps) => {
-	if (!isValidated) {
+
+const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
+	if (!customer.validated) {
 		return (
-			<View style={ styles.container }>
+			<View key={ customer.id } style={ styles.container }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>CID1234567890</Text>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ customer.id }</Text>
+
 						<View style={ styles.row }>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>Sumorice </Text>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text>
+							{
+								customer.custName &&
+								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ customer.custName } </Text>
+							}
+
+							{
+								(customer.numCart ?? 0) > 1 &&
+								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| { customer.numCart } Keranjang</Text>
+							}
 						</View>
 
 					</View>
@@ -36,44 +47,106 @@ const ClientCard = ({ isValidated, onOpenScanChoice }: ClientCardProps) => {
 			</View>
 		);
 	} else {
-
+		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
 		return (
-			<View style={ styles.container }>
+			<View key={ customer.id } style={ styles.container }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>CID1234567890</Text>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ customer.id }</Text>
+
 						<View style={ styles.row }>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>Sumorice </Text>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text>
+							{
+								customer.custName &&
+								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ customer.custName } </Text>
+							}
+
+							{
+								(customer.numCart ?? 0) > 1 &&
+								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| { customer.numCart } Keranjang</Text>
+							}
 						</View>
 
 					</View>
+
 					<View style={ styles.row }>
 						<Text format={ Fonts.textBody.m.bold as TextStyle } color={ Colors.green.default }>Tervalidasi </Text>
 						<Images.IconCheck />
 					</View>
 				</View>
+
 				<View style={ [styles.row, { marginTop: 30 }] }>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>5 </Text>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } >dari 10 barang sudah sesuai</Text>
+
+					{
+						numValidated == 0 &&
+						<>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.company.red }>{ customer.items?.length } barang </Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle }>perlu diperiksa</Text>
+						</>
+					}
+
+					{
+						(numValidated > 0 && numValidated < (customer.items?.length ?? 0)) &&
+						(
+							<>
+								<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>5 </Text>
+								<Text format={ Fonts.textBody.l.bold as TextStyle }>dari 10 barang sudah sesuai</Text>
+							</>
+						)
+					}
+
+					{
+						(numValidated > 0 && numValidated == (customer.items?.length ?? 0)) &&
+						(
+							<>
+								<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>{ customer.items?.length } barang sudah sesuai</Text>
+							</>
+						)
+					}
 				</View>
+
 				<ProgressBar
 					styleAttr='Horizontal'
 					indeterminate={ false }
-					progress={ 0.5 }
-					color={ Colors.green.default }
-					style={ { marginTop: 10, marginBottom: 20 } }
+					progress={ numValidated / (customer.items?.length ?? 0) }
+					color={ numValidated > 0 ? Colors.green.default : Colors.gray.default }
+					style={ styles.progressBar }
 				/>
 
-				<Button
-					weight='700'
-					color={ Colors.company.red }
-					text='Lanjutkan Pemeriksaan'
+				{
+					(numValidated > 0 && numValidated == (customer.items?.length ?? 0)) &&
+					<Button
+						weight='700'
+						color={ Colors.gray.default }
+						text='Lihat Detail'
+						backgroundColor='transparent'
+						type='outline'
+						onPress={ () => NavigationHelper.push('ItemChecking') }
+					/>
+				}
 
-					backgroundColor='transparent'
-					type='outline'
-				//mt={ 30 }
-				/>
+				{
+					numValidated > 0 && numValidated < (customer.items?.length ?? 0) &&
+					<Button
+						weight='700'
+						color={ Colors.company.red }
+						text='Lanjutkan Pemeriksaan'
+						backgroundColor='transparent'
+						type='outline'
+						onPress={ () => NavigationHelper.push('ItemChecking') }
+					/>
+				}
+
+				{
+					numValidated == 0 &&
+					<Button
+						weight='700'
+						color={ Colors.company.red }
+						text='Periksa Barang'
+						backgroundColor='transparent'
+						type='outline'
+						onPress={ () => NavigationHelper.push('ItemChecking') }
+					/>
+				}
 
 			</View>
 		);
@@ -90,6 +163,8 @@ const styles = StyleSheet.create({
 	container: {
 		padding: 20,
 		marginTop: 20,
+		marginBottom: 2,
+		marginHorizontal: 2,
 		backgroundColor: Colors.white.pure,
 		borderRadius: 10,
 		shadowColor: Colors.gray.default,
@@ -100,5 +175,11 @@ const styles = StyleSheet.create({
 			height: 2,
 		},
 		elevation: 5,
-	}
+	},
+	progressBar: {
+		marginTop: 10,
+		marginBottom: 20,
+		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
+		borderRadius: 10,
+	},
 });
