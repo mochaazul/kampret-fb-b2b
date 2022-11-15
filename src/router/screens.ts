@@ -9,6 +9,7 @@ import {
 	Splash,
 	ValidateClientID,
 	ItemChecking,
+	DeliveryRoute,
 } from '@screens';
 
 export const screens = [
@@ -63,5 +64,9 @@ export const screens = [
 	{
 		name: 'InputKms',
 		component: InputKms,
+	},
+	{
+		name: 'DeliveryRoute',
+		component: DeliveryRoute,
 	},
 ] as const;

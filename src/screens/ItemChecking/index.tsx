@@ -1,14 +1,61 @@
-import { StyleSheet, View, TextStyle } from 'react-native';
-import React from 'react';
+import { StyleSheet, View, TextStyle, FlatList } from 'react-native';
+import React, { useState } from 'react';
 
 import { Container, Text, Button } from '@components';
 import { Fonts, Colors, Images } from '@constant';
-
+import { NavigationHelper } from '@helpers';
 import ItemChecklist from './ItemChecklist';
 
+interface ItemCheck {
+	item: string,
+	itemCode: string,
+	checked: boolean;
+}
 const ItemChecking = () => {
+	const [dummyData, setDummyData] = useState<ItemCheck[]>([
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: true
+		},
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: false
+		},
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: false
+		},
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: true
+		},
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: false
+		},
+		{
+			item: '5 Pack Rumput Laut',
+			itemCode: 'SO0001-01',
+			checked: false
+		}
+	]);
+
+	const handleOnItemChecked = (index: number) => {
+		const itemData = dummyData;
+		itemData[index].checked = !dummyData[index].checked;
+		setDummyData([...itemData]);
+	};
+
 	return (
-		<Container header={ { title: 'Pemeriksaan Barang', type: 'regular' } } contentBackgroudColor={ Colors.white.pure } noPadding>
+		<Container
+			header={ { title: 'Pemeriksaan Barang', type: 'regular' } }
+			contentBackgroudColor={ Colors.white.pure } noPadding noScroll>
+
 			<View style={ [styles.row, styles.header] }>
 				<View>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>CID1234567890</Text>
@@ -23,33 +70,30 @@ const ItemChecking = () => {
 					<Images.IconCheck />
 				</View>
 			</View>
-			<ItemChecklist
-				isChecked={ true }
-				item='5 Pack Rumput Laut'
-				itemCode='SO0001-01'
+			<FlatList
+				data={ dummyData }
+				extraData={ dummyData }
+				keyExtractor={ (item, index) => 'listItem_' + index }
+				showsVerticalScrollIndicator={ false }
+				renderItem={ ({ item, index }) =>
+				(
+					<ItemChecklist
+						item={ item.item }
+						itemCode={ item.itemCode }
+						isChecked={ item.checked }
+						itemIndex={ index }
+						onCheckClicked={ indexChanged => handleOnItemChecked(indexChanged) }
+					/>)
+				}
 			/>
-			<ItemChecklist
-				isChecked={ false }
-				item='5 Pack Rumput Laut'
-				itemCode='SO0001-01'
-			/>
-			<ItemChecklist
-				isChecked={ false }
-				item='5 Pack Rumput Laut'
-				itemCode='SO0001-01'
-			/>
-			<ItemChecklist
-				isChecked={ true }
-				item='5 Pack Rumput Laut'
-				itemCode='SO0001-01'
-			/>
-			<View>
-				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end', marginTop: 50 } } />
+			<View style={ styles.footer }>
+				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
 				<Button
-					mt={ 30 }
+					mt={ 10 }
 					weight='700'
 					color={ Colors.white.pure }
 					text='Selesai Pemeriksaan'
+					onPress={ () => NavigationHelper.push('InputKms') }
 				/>
 			</View>
 		</Container>
@@ -71,8 +115,6 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 	},
 	footer: {
-		position: 'absolute',
-		bottom: 20,
-		flex: 1
+		bottom: 20
 	}
 });

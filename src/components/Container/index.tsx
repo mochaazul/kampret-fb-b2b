@@ -55,7 +55,7 @@ const Container: React.FC<ComponentInterface.IContainer> = props => {
 					<Header { ...header } />
 				}
 				{ noScroll ? (
-					<View style={ [{ flex: 1, backgroundColor: Colors.white.background, paddingHorizontal: 20 }, contentContainerStyle] }>
+					<View style={ [{ flex: 1, backgroundColor: contentBackgroudColor ? contentBackgroudColor : Colors.white.background, paddingHorizontal: 20 }, contentContainerStyle] }>
 						{ children }
 					</View>
 				) : (

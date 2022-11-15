@@ -8,6 +8,7 @@ import ValidateClientID from './ValidateClientID';
 import ItemChecking from './ItemChecking';
 import Notification from './Notification';
 import InputKms from './InputKms';
+import DeliveryRoute from './DeliveryRoute';
 
 export {
 	Splash,
@@ -20,4 +21,5 @@ export {
 	ItemChecking,
 	Notification,
 	InputKms,
+	DeliveryRoute
 };

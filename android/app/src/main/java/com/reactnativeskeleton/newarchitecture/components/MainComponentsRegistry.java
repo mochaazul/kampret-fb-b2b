@@ -1,4 +1,4 @@
-package com.reactnativeskeleton.newarchitecture.components;
+package com.rebelworks.fbdelivery.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

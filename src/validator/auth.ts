@@ -32,8 +32,8 @@ export const ResetPasswordValidationSchema = yup.object().shape({
 
 	firstPassword: yup
 		.string().required('Sandi wajib diisi')
-		.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
-			'Minimal kata sandi adalah 8 karakter, Satu huruf kapital,\nSatu huruf kecil,Satu Angka dan Satu Karakter khusus'),
+		.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+			'Minimal kata sandi adalah 8 karakter, Satu huruf kapital,\nSatu huruf kecil dan Satu Angka'),
 	secondPassword: yup
 		.string().required('Konfirmasi sandi wajib diisi')
 		.oneOf([yup.ref('firstPassword'), null], 'Konfirmasi sandi tidak sama dengan sandi'),
@@ -43,4 +43,8 @@ export const InputClientID = yup.object().shape({
 
 	clientID: yup
 		.string().required('harus diisi').label('clientID').nullable(),
+});
+
+export const ComplainValidationSchema = yup.object().shape({
+	description: yup.string().required('Wajib diisi').nullable()
 });

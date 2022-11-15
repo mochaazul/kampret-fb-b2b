@@ -9,6 +9,8 @@ import DeliveryItem from './DeliveryItem';
 import NotifItem from './NotifItem';
 import BottomSheet from './BottomSheet';
 import ModalDialog from './ModalDialog';
+import RouteCard from './RouteCard';
+import Dropdown from './Dropdown';
 
 export {
 	Text,
@@ -22,4 +24,6 @@ export {
 	BottomSheet,
 	ModalDialog,
 	NotifItem,
+	RouteCard,
+	Dropdown
 };

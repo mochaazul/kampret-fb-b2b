@@ -4,6 +4,7 @@ import IInput from './input';
 import IText from './text';
 import IInputOTP from './inputOTP';
 import IHeader from './header';
+import IRoute from './route';
 
 export type {
 	IButton,
@@ -11,5 +12,6 @@ export type {
 	IInput,
 	IText,
 	IInputOTP,
-	IHeader
+	IHeader,
+	IRoute
 };

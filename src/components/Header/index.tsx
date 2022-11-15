@@ -6,6 +6,7 @@ import { Images } from '@constant';
 import { NavigationHelper } from '@helpers';
 import { styles } from './style';
 import { Text } from '@components';
+import env from '../../../env';
 
 const Header: React.FC<ComponentInterface.IHeader> = props => {
 	const {
@@ -21,6 +22,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 		return (
 			<View style={ styles.container }>
 				<View style={ styles.row }>
+					<Text size={ 9 } style={ styles.version }>ver { env.version }</Text>
 					<Images.LogoFB />
 
 					<TouchableOpacity
@@ -37,7 +39,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 			<View style={ [styles.regularHeader, headerStyle] }>
 				<View style={ styles.actionButton }>
 					{
-						showLeftButton && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
+						showLeftButton !== false && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
 							<Images.IconBack />
 						</TouchableOpacity>
 					}

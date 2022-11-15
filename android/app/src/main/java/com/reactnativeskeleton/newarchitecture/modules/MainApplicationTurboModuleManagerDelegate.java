@@ -1,4 +1,4 @@
-package com.reactnativeskeleton.newarchitecture.modules;
+package com.rebelworks.fbdelivery.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

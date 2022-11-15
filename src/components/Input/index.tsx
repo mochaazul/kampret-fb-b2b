@@ -75,7 +75,7 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 					<TextInput
 						value={ formik?.values[name] }
 						onChangeText={ formik?.handleChange(name) }
-						style={ { ...Fonts.textBody.m.regular as TextStyle, paddingVertical: 0 } }
+						style={ { ...Fonts.textBody.m.regular as TextStyle, paddingVertical: 0, flex: 1 } }
 						onFocus={ () => setIsFocus(true) }
 						onBlur={ () => setIsFocus(false) }
 						ref={ inputRef }

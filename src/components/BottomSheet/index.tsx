@@ -12,30 +12,67 @@ interface BottomSheetProps {
 	onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
 	children: React.ReactNode,
 	title?: string | undefined,
+	noScroll?: boolean,
 	iconStyle?: TextStyle;
 	containerStyle?: ViewStyle;
 }
 
 const BottomSheet = ({
-	visible, onRequestClose, children, title, iconStyle, containerStyle
+	visible, onRequestClose, children, title, iconStyle, containerStyle, noScroll
 }: BottomSheetProps) => {
-	return (
-		<Modal
-			animationType='slide'
-			visible={ visible }
-			transparent
-			onRequestClose={ () => onRequestClose(false) }
+	if (!noScroll) {
+		return (
+			<Modal
+				animationType='slide'
+				visible={ visible }
+				transparent
+				onRequestClose={ () => onRequestClose(false) }
 
-		>
-			<ScrollView
-				contentContainerStyle={ {
-					flex: 1,
-					justifyContent: 'flex-end',
-					backgroundColor: Colors.transparent.default
-				} }
-				bounces={ false }
-				showsVerticalScrollIndicator={ false }
-				keyboardShouldPersistTaps={ 'handled' }
+			>
+				<ScrollView
+					contentContainerStyle={ {
+						flex: 1,
+						justifyContent: 'flex-end',
+						backgroundColor: Colors.transparent.default
+					} }
+					bounces={ false }
+					showsVerticalScrollIndicator={ false }
+					keyboardShouldPersistTaps={ 'handled' }
+				>
+					<TouchableOpacity style={ { backgroundColor: Colors.transparent.grey, flex: 1, bottom: -16, marginTop: -20 } }
+						onPress={ () => onRequestClose(false) }
+					/>
+					{ title &&
+						<View style={ [styles.title, containerStyle] } >
+							<Text style={ styles.titleText }>{ title }</Text>
+							<TouchableOpacity
+								onPress={ () => onRequestClose(false) }
+								style={ styles.iconClose }
+							>
+								<Ionicons
+									name='md-close'
+									color={ Colors.black.default }
+									size={ 20 }
+									style={ iconStyle }
+									onPress={ () => onRequestClose(false) }
+								/>
+							</TouchableOpacity>
+						</View>
+					}
+					<View style={ styles.bottom }>
+						{ children }
+					</View>
+				</ScrollView>
+			</Modal>
+		);
+	} else {
+		return (
+			<Modal
+				animationType='slide'
+				visible={ visible }
+				transparent
+				onRequestClose={ () => onRequestClose(false) }
+
 			>
 				<TouchableOpacity style={ { backgroundColor: Colors.transparent.grey, flex: 1, bottom: -16, marginTop: -20 } }
 					onPress={ () => onRequestClose(false) }
@@ -60,9 +97,9 @@ const BottomSheet = ({
 				<View style={ styles.bottom }>
 					{ children }
 				</View>
-			</ScrollView>
-		</Modal>
-	);
+
+			</Modal>);
+	}
 };
 
 export default BottomSheet;

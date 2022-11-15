@@ -14,7 +14,7 @@ const Colors = {
 		default: '#414141',
 	},
 	blue: {
-		default: '#39AAB4',
+		default: '#2F80ED',
 	},
 	yellow: {
 		default: '#FFDE17',
@@ -37,6 +37,9 @@ const Colors = {
 	},
 	green: {
 		default: '#27AE60'
+	},
+	orange: {
+		default: '#E1A226'
 	}
 };
 

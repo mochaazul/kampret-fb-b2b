@@ -26,6 +26,12 @@ import ButtonCheck from '../assets/images/btn.svg';
 import ButtonCheck2 from '../assets/images/btn_flat.svg';
 import ButtonCircleScan from '../assets/images/circle.svg';
 import IconCamera from '../assets/images/ic_camera.svg';
+import IconAlert from '../assets/images/alert.svg';
+import IconCheckGreen from '../assets/images/checkGreen.svg';
+import IconeCameraRed from '../assets/images/ic_camera_red.svg';
+import IconTruck from '../assets/images/delivery.svg';
+import IconMinus from '../assets/images/minus.svg';
+import IconPlus from '../assets/images/plus.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -57,5 +63,11 @@ export default {
 	ButtonCheck,
 	ButtonCheck2,
 	ButtonCircleScan,
-	IconCamera
+	IconCamera,
+	IconAlert,
+	IconCheckGreen,
+	IconeCameraRed,
+	IconTruck,
+	IconMinus,
+	IconPlus
 };
