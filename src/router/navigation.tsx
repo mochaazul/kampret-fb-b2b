@@ -10,18 +10,18 @@ const Stack = createNativeStackNavigator();
 
 const AppRouter = () => {
 
-  useEffect(() => {
-		requestCamera()
-  }, []);
+	useEffect(() => {
+		requestCamera();
+	}, []);
 
 	const requestCamera = async () => {
-		await Camera.requestCameraPermission()
-		await Camera.requestMicrophonePermission()
-	}
+		await Camera.requestCameraPermission();
+		await Camera.requestMicrophonePermission();
+	};
 	return (
 		<NavigationContainer ref={ NavigationHelper.navigationRef }>
 			<Stack.Navigator
-				initialRouteName='Splash'
+				initialRouteName='Delivery'
 				screenOptions={ { headerShown: false } }>
 				{
 					screens.map((screen, index) => {
