@@ -47,7 +47,7 @@ const DeliveryRoute = () => {
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
 
 	const handleHeaderRightOnPress = () => {
-		console.log('header right button pressed');
+		// console.log('header right button pressed');
 		setShowReportIssue(true);
 	};
 
