@@ -7,19 +7,26 @@ import Text from "../Text";
 import { NavigationHelper } from '@helpers';
 
 import { styles } from "./style";
-interface DeliveryItemProps {
-	index: number;
-}
-const DeliveryItem = ({ index }: DeliveryItemProps) => {
+import { DeliveryInterface } from "@interfaces";
+
+const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
+
+	const {
+		id,
+		numLocation,
+		date,
+		totalItem,
+		status,
+	} = props;
 
 	return (
-		<View style={ styles.container }>
+		<View style={ styles.container } key={ id }>
 			<View style={ styles.row }>
 				<Text
 					format={ Fonts.paragraph.xl.bold as TextStyle }
 					color={ Colors.black.default }
 				>
-					DE12345678
+					{ id }
 				</Text>
 
 				<Images.More />
@@ -37,7 +44,7 @@ const DeliveryItem = ({ index }: DeliveryItemProps) => {
 					format={ Fonts.paragraph.m.regular as TextStyle }
 					color={ Colors.black.default }
 				>
-					3 Lokasi
+					{ numLocation } Lokasi
 				</Text>
 			</View>
 
@@ -51,7 +58,7 @@ const DeliveryItem = ({ index }: DeliveryItemProps) => {
 					format={ Fonts.paragraph.m.regular as TextStyle }
 					color={ Colors.black.default }
 				>
-					29-09-2022, 07:00 - 12:00 WIB
+					{ date }
 				</Text>
 			</View>
 
@@ -68,10 +75,10 @@ const DeliveryItem = ({ index }: DeliveryItemProps) => {
 						format={ Fonts.paragraph.xl.bold as TextStyle }
 						color={ Colors.black.default }
 					>
-						25 Barang
+						{ totalItem } Barang
 					</Text>
 				</View>
-				{ index == 1 &&
+				{ status == 'deliver' &&
 					<Button
 						text='Lanjut Pengiriman'
 						textSize={ 14 }
@@ -82,7 +89,7 @@ const DeliveryItem = ({ index }: DeliveryItemProps) => {
 						onPress={ () => NavigationHelper.push('DeliveryRoute') }
 					/>
 				}
-				{ index !== 1 &&
+				{ status == 'new' &&
 					<Button
 						text='Validasi Client ID'
 						textSize={ 14 }
@@ -90,7 +97,7 @@ const DeliveryItem = ({ index }: DeliveryItemProps) => {
 						useShadow={ true }
 						leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
 						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
-						onPress={ () => NavigationHelper.push('ValidateClientID') }
+						onPress={ () => NavigationHelper.push('ValidateClientID', props) }
 					/>
 				}
 

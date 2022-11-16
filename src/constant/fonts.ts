@@ -55,6 +55,15 @@ const Fonts = {
 				lineHeight: normalize(27),
 				fontWeight: '700',
 				color: Colors.black.default,
+			},
+
+			boldCenter: {
+				fontFamily: settings.primaryFont.bold,
+				fontSize: normalize(20),
+				lineHeight: normalize(27),
+				fontWeight: '700',
+				color: Colors.black.default,
+				textAlign: 'center',
 			}
 
 		},
@@ -65,7 +74,24 @@ const Fonts = {
 				lineHeight: normalize(20),
 				fontWeight: '400',
 				color: Colors.black.default
-			}
+			},
+
+			regularCenter: {
+				fontFamily: settings.primaryFont.regular,
+				fontSize: normalize(14),
+				lineHeight: normalize(20),
+				fontWeight: '400',
+				color: Colors.black.default,
+				textAlign: 'center',
+			},
+
+			bold: {
+				fontFamily: settings.primaryFont.regular,
+				fontSize: normalize(14),
+				lineHeight: normalize(20),
+				fontWeight: '700',
+				color: Colors.black.default
+			},
 
 		},
 		s: {
