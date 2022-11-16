@@ -4,7 +4,11 @@ import React from 'react';
 import { Button, Text } from '@components';
 import { Fonts, Colors, Images } from '@constant';
 
-const ContentValidateDialog = () => {
+type ContentValidateDialogType = {
+	testBarcodeValue?:string
+}
+
+const ContentValidateDialog = ({testBarcodeValue = "KMZWAY87AA"}: ContentValidateDialogType) => {
 	return (
 		<View style={ { alignItems: 'stretch' } }>
 			<View style={ styles.header }>
@@ -16,7 +20,7 @@ const ContentValidateDialog = () => {
 			<View style={ styles.content }>
 				<View style={ [styles.row, { justifyContent: 'space-between', paddingBottom: 15 }] }>
 					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>CID1234567890</Text>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>{testBarcodeValue}</Text>
 						<View style={ styles.row }>
 							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>Sumorice </Text>
 							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text>
