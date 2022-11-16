@@ -1,5 +1,5 @@
 import { StyleSheet, View, TextStyle } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
@@ -13,6 +13,90 @@ interface ClientCardProps {
 }
 
 const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
+
+	const renderItemInfo = useMemo(() => {
+
+		const item = {
+			info: customer.items?.length + ' barang ',
+			infoColor: Colors.company.red,
+			desc: 'perlu diperiksa'
+		};
+
+		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+
+		if (numValidated) {
+			item.infoColor = Colors.green.default;
+
+			if (numValidated < (customer.items?.length ?? 0)) {
+				item.info = numValidated + ' ';
+				item.desc = 'dari ' + customer.items?.length + ' barang sudah sesuai';
+			} else {
+				item.info = numValidated + ' barang sudah sesuai';
+				item.desc = '';
+			}
+		}
+
+		return (
+			<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 30 }>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } color={ item.infoColor }>
+					{ item.info }
+				</Text>
+				{ item.desc }
+			</Text>
+		);
+	}, [customer]);
+
+	const renderProgressBar = useMemo(() => {
+		const item = {
+			progress: 0,
+			color: Colors.gray.default,
+		};
+
+		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+		if (numValidated) {
+			item.color = Colors.green.default;
+			item.progress = numValidated / (customer.items?.length ?? 0);
+		}
+
+		return (
+			<ProgressBar
+				styleAttr='Horizontal'
+				indeterminate={ false }
+				progress={ item.progress }
+				color={ item.color }
+				style={ styles.progressBar }
+			/>
+		);
+	}, [customer]);
+
+	const renderButton = useMemo(() => {
+		const item = {
+			text: 'Periksa Barang',
+			color: Colors.company.red
+		};
+
+		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+		if (numValidated) {
+			if (numValidated < (customer.items?.length ?? 0)) {
+				item.text = 'Lanjutkan Pemeriksaan';
+			} else {
+				item.text = 'Lihat Detail';
+				item.color = Colors.gray.default;
+			}
+		}
+
+		return (
+			<Button
+				weight='700'
+				color={ item.color }
+				text={ item.text }
+				backgroundColor='transparent'
+				type='outline'
+				onPress={ () => NavigationHelper.push('ItemChecking') }
+			/>
+		);
+	}, [customer]);
+
 	if (!customer.validated) {
 		return (
 			<View key={ customer.id } style={ styles.container }>
@@ -47,7 +131,6 @@ const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
 			</View>
 		);
 	} else {
-		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
 		return (
 			<View key={ customer.id } style={ styles.container }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
@@ -74,86 +157,18 @@ const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
 					</View>
 				</View>
 
-				<View style={ [styles.row, { marginTop: 30 }] }>
+				{ renderItemInfo }
 
-					{
-						numValidated == 0 &&
-						<>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.company.red }>{ customer.items?.length } barang </Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle }>perlu diperiksa</Text>
-						</>
-					}
+				{ renderProgressBar }
 
-					{
-						(numValidated > 0 && numValidated < (customer.items?.length ?? 0)) &&
-						(
-							<>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>5 </Text>
-								<Text format={ Fonts.textBody.l.bold as TextStyle }>dari 10 barang sudah sesuai</Text>
-							</>
-						)
-					}
-
-					{
-						(numValidated > 0 && numValidated == (customer.items?.length ?? 0)) &&
-						(
-							<>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } color={ Colors.green.default }>{ customer.items?.length } barang sudah sesuai</Text>
-							</>
-						)
-					}
-				</View>
-
-				<ProgressBar
-					styleAttr='Horizontal'
-					indeterminate={ false }
-					progress={ numValidated / (customer.items?.length ?? 0) }
-					color={ numValidated > 0 ? Colors.green.default : Colors.gray.default }
-					style={ styles.progressBar }
-				/>
-
-				{
-					(numValidated > 0 && numValidated == (customer.items?.length ?? 0)) &&
-					<Button
-						weight='700'
-						color={ Colors.gray.default }
-						text='Lihat Detail'
-						backgroundColor='transparent'
-						type='outline'
-						onPress={ () => NavigationHelper.push('ItemChecking') }
-					/>
-				}
-
-				{
-					numValidated > 0 && numValidated < (customer.items?.length ?? 0) &&
-					<Button
-						weight='700'
-						color={ Colors.company.red }
-						text='Lanjutkan Pemeriksaan'
-						backgroundColor='transparent'
-						type='outline'
-						onPress={ () => NavigationHelper.push('ItemChecking') }
-					/>
-				}
-
-				{
-					numValidated == 0 &&
-					<Button
-						weight='700'
-						color={ Colors.company.red }
-						text='Periksa Barang'
-						backgroundColor='transparent'
-						type='outline'
-						onPress={ () => NavigationHelper.push('ItemChecking') }
-					/>
-				}
+				{ renderButton }
 
 			</View>
 		);
 	}
 };
 
-export default ClientCard;
+export default React.memo(ClientCard);
 
 const styles = StyleSheet.create({
 	row: {
@@ -162,8 +177,6 @@ const styles = StyleSheet.create({
 	},
 	container: {
 		padding: 20,
-		marginTop: 20,
-		marginBottom: 2,
 		marginHorizontal: 2,
 		backgroundColor: Colors.white.pure,
 		borderRadius: 10,

@@ -37,7 +37,8 @@ const ValidateClientID = (props: any) => {
 				<FlatList
 					data={ delivery.customers }
 					showsVerticalScrollIndicator={ false }
-					style={ { flexGrow: 1, flex: 1 } }
+					style={ styles.listStyle }
+					contentContainerStyle={ styles.listContentStyle }
 					renderItem={
 						({ item, index }) =>
 							<ClientCard
@@ -45,6 +46,7 @@ const ValidateClientID = (props: any) => {
 								onOpenScanChoice={ () => setShowScanChoices(true) }
 							/>
 					}
+					ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
 				/>
 			}
 
@@ -84,7 +86,7 @@ const ValidateClientID = (props: any) => {
 export default ValidateClientID;
 
 const styles = StyleSheet.create({
-	footer: {
-		bottom: 20
-	}
+	listStyle: { flexGrow: 1, flex: 1 },
+	listContentStyle: { paddingVertical: 16 },
+	footer: { bottom: 20 }
 });

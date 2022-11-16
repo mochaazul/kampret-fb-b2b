@@ -33,7 +33,20 @@ const items: Array<DeliveryInterface.IDeliveryItem> = [
 	},
 ];
 
+const itemValidated = JSON.parse(JSON.stringify(items)) as Array<DeliveryInterface.IDeliveryItem>;
+itemValidated.map((v) => v.validated = true);
+
+const itemPartialValidated = JSON.parse(JSON.stringify(items)) as Array<DeliveryInterface.IDeliveryItem>;
+itemPartialValidated.map((v, i) => { if (i < 3) v.validated = true; });
+
 const customers: Array<DeliveryInterface.IDeliveryCustomer> = [
+	{
+		id: 'CID1234567899',
+		custName: 'Sumorice',
+		validated: false,
+		numCart: 1,
+		items: items,
+	},
 	{
 		id: 'CID1234567890',
 		custName: 'Sumorice',
@@ -44,16 +57,16 @@ const customers: Array<DeliveryInterface.IDeliveryCustomer> = [
 	{
 		id: 'CID1234567891',
 		custName: 'Sumorice',
-		validated: false,
+		validated: true,
 		numCart: 2,
-		items: items,
+		items: itemPartialValidated,
 	},
 	{
 		id: 'CID1234567892',
 		custName: 'Mangkokku',
-		validated: false,
+		validated: true,
 		numCart: 1,
-		items: items,
+		items: itemValidated,
 	},
 ];
 
