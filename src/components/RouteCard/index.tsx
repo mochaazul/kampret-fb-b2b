@@ -3,6 +3,7 @@ import React from 'react';
 import { Colors, Fonts, Images } from '@constant';
 import { Button, Text } from '@components';
 import { ComponentInterface } from '@interfaces';
+import { NavigationHelper } from '@helpers';
 
 const RouteCard = ({
 	locationAddress,
@@ -67,7 +68,7 @@ const RouteCard = ({
 								weight='700'
 								color={ Colors.white.pure }
 								text='Sudah Sampai'
-							// onPress={ () => console.log('sampai pressed') }
+								onPress={ () => NavigationHelper.push('DeliveryCheck') }
 							/>
 						</View>
 					}

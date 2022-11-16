@@ -10,6 +10,7 @@ import Notification from './Notification';
 import InputKms from './InputKms';
 import DeliveryRoute from './DeliveryRoute';
 import CapturePhoto from './CapturePhoto';
+import DeliveryCheck from './DeliveryCheck';
 
 export {
 	Splash,
@@ -23,5 +24,6 @@ export {
 	Notification,
 	InputKms,
 	DeliveryRoute,
-	CapturePhoto
+	CapturePhoto,
+	DeliveryCheck
 };
