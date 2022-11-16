@@ -11,6 +11,7 @@ import BottomSheet from './BottomSheet';
 import ModalDialog from './ModalDialog';
 import RouteCard from './RouteCard';
 import Dropdown from './Dropdown';
+import Camera from './Camera';
 
 export {
 	Text,
@@ -25,5 +26,6 @@ export {
 	ModalDialog,
 	NotifItem,
 	RouteCard,
-	Dropdown
+	Dropdown,
+	Camera
 };

@@ -9,6 +9,7 @@ import ItemChecking from './ItemChecking';
 import Notification from './Notification';
 import InputKms from './InputKms';
 import DeliveryRoute from './DeliveryRoute';
+import CapturePhoto from './CapturePhoto';
 
 export {
 	Splash,
@@ -21,5 +22,6 @@ export {
 	ItemChecking,
 	Notification,
 	InputKms,
-	DeliveryRoute
+	DeliveryRoute,
+	CapturePhoto
 };

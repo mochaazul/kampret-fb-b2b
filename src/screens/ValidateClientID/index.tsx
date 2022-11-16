@@ -11,10 +11,11 @@ import { NavigationHelper } from '@helpers';
 const ValidateClientID = () => {
 	const [showScanChoices, setShowScanChoices] = useState<boolean>(false);
 	const [showResult, setShowResult] = useState<boolean>(false);
-
+	const [testBarcodeValue, setTestBardcodeValue] = useState('')
 	const handleOnChoosen = (value: string) => {
-		if (value == 'result') {
+		if (value) {
 			setShowResult(true);
+			setTestBardcodeValue(value)
 		}
 		setShowScanChoices(false);
 	};
@@ -41,11 +42,11 @@ const ValidateClientID = () => {
 				visible={ showScanChoices }
 				onRequestClose={ () => setShowScanChoices(false) }
 			>
-				<ScanChoice onChoosen={ value => handleOnChoosen(value) } />
+				<ScanChoice onChoosen={handleOnChoosen} />
 			</BottomSheet>
 			<ModalDialog visible={ showResult }
 				onRequestClose={ () => setShowResult(false) }>
-				<ContentValidateDialog />
+				<ContentValidateDialog testBarcodeValue={testBarcodeValue} />
 			</ModalDialog>
 		</Container>
 
