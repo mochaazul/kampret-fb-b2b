@@ -2,21 +2,25 @@ import { StyleSheet, TextStyle, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 
 import { Images, Fonts, Colors } from '@constant';
-import { Text, Input, Button } from '@components';
+import { Text, Input, Button, Camera } from '@components';
 import { FormikProps, useFormik } from 'formik';
 import { Auth } from '@validator';
+import { useScanBarcodes } from '@helpers';
 
 interface ManualInput {
 	clientID: string | null;
 }
 
 interface ScanChoiceProps {
-	onChoosen: (value: 'manual' | 'result') => void;
+	onChoosen: (value: string) => void;
 }
 
 const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
 	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
+
+	const {frameProcessor} = useScanBarcodes({callback: (value) => onChoosen(value)})
+
 
 	const formik: FormikProps<ManualInput> = useFormik<ManualInput>({
 		validateOnBlur: true,
@@ -53,9 +57,7 @@ const ScanChoice = ({ onChoosen }: ScanChoiceProps) => {
 				</TouchableOpacity>
 				<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Barcode di Keranjang
 					untuk Validasi Client ID</Text>
-				<TouchableOpacity onPress={ () => onChoosen('result') }>
-					<Images.BarcodeTemplate style={ { paddingHorizontal: -20, marginTop: 20 } } />
-				</TouchableOpacity>
+				<Camera frameProcessor={ frameProcessor } style={ { paddingHorizontal: -20, marginTop: 20, width: '100%', height: 300 } }  />
 				<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan barcode berada di dalam area kotak
 					yang sudah tersedia</Text>
 

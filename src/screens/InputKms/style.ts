@@ -1,4 +1,5 @@
 import { Colors } from '@constant';
+import { Ratio } from '@helpers';
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -14,6 +15,7 @@ const styles = StyleSheet.create({
 		borderColor: Colors.gray.default,
 		borderStyle: 'dashed',
 		borderWidth: 1,
+		height: 300
 	},
 
 	content: {

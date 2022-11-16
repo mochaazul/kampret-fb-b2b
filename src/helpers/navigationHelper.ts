@@ -17,10 +17,10 @@ export function replace(name: typeof screens[number]['name'], params?: object) {
 	}
 }
 
-export function reset(name: typeof screens[number]['name'], params?: object) {
+export function reset(name: typeof screens[number]['name'], params?: object, index:number = 0) {
 	if (navigationRef.isReady()) {
 		navigationRef.dispatch(CommonActions.reset({
-			index: 0,
+			index: index,
 			routes: [
 				{ name, params },
 			],

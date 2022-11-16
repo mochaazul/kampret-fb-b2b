@@ -13,12 +13,13 @@ import { DeliveryInterface } from '@interfaces';
 const ValidateClientID = (props: any) => {
 	const [showScanChoices, setShowScanChoices] = useState<boolean>(false);
 	const [showResult, setShowResult] = useState<boolean>(false);
-	const [showWarningStartDelivery, setShowWarningStartDelivery] = useState<boolean>(false);
+	const [testBarcodeValue, setTestBardcodeValue] = useState('')	const [showWarningStartDelivery, setShowWarningStartDelivery] = useState<boolean>(false);
 	const delivery = props.route.params as DeliveryInterface.IDelivery;
 
 	const handleOnChoosen = (value: string) => {
-		if (value == 'result') {
+		if (value) {
 			setShowResult(true);
+			setTestBardcodeValue(value);
 		}
 		setShowScanChoices(false);
 	};
@@ -65,12 +66,12 @@ const ValidateClientID = (props: any) => {
 				visible={ showScanChoices }
 				onRequestClose={ () => setShowScanChoices(false) }
 			>
-				<ScanChoice onChoosen={ value => handleOnChoosen(value) } />
+				<ScanChoice onChoosen={ handleOnChoosen } />
 			</BottomSheet>
 
 			<ModalDialog visible={ showResult }
 				onRequestClose={ () => setShowResult(false) }>
-				<ContentValidateDialog />
+				<ContentValidateDialog testBarcodeValue={ testBarcodeValue } />
 			</ModalDialog>
 
 			<ModalDialog visible={ showWarningStartDelivery }
