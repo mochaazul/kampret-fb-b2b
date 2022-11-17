@@ -1,14 +1,15 @@
-import { Button, Text } from "@components";
-import { Colors, Fonts } from "@constant";
-import { NavigationHelper } from "@helpers";
 import React from "react";
 import { StyleSheet, TextStyle, View } from "react-native";
 
+import { Button, Text } from "@components";
+import { Colors, Fonts } from "@constant";
+
 interface ConfirmArrivalProp {
 	onClose?: () => void;
+	onConfirm?: () => void;
 }
 
-const ConfirmArrival = ({ onClose }: ConfirmArrivalProp) => {
+const ConfirmArrival = ({ onClose, onConfirm }: ConfirmArrivalProp) => {
 	return (
 		<View style={ styles.container }>
 			<Text
@@ -34,7 +35,7 @@ const ConfirmArrival = ({ onClose }: ConfirmArrivalProp) => {
 					backgroundColor="transparent"
 					color={ Colors.company.red }
 					buttonStyle={ styles.button }
-					onPress={ () => NavigationHelper.push('InputKms') }
+					onPress={ onConfirm }
 				/>
 
 				<View style={ { width: 20 } } />

@@ -1,4 +1,4 @@
-import { BottomSheet, Button, Container, Input, Text } from "@components";
+import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, TextStyle, TouchableOpacity, View } from "react-native";
@@ -6,13 +6,14 @@ import { Image, ScrollView, TextStyle, TouchableOpacity, View } from "react-nati
 import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
+import { Actions } from "@store";
 
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
+import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
 
 import styles from "./styles";
-import { Actions } from "@store";
 
 interface CheckValues {
 	receiverName: string,
@@ -22,6 +23,7 @@ interface CheckValues {
 
 const DeliveryCheck = () => {
 	const [showComplain, setShowComplain] = useState<boolean>(false);
+	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 
@@ -222,6 +224,11 @@ const DeliveryCheck = () => {
 				</View>
 			</ScrollView>
 
+			<ModalDialog visible={ showSuccessDialog }
+				onRequestClose={ () => setShowSuccessDialog(false) }>
+				<SuccessDeliveryDialog />
+			</ModalDialog>
+
 			<BottomSheet
 				visible={ showComplain }
 				onRequestClose={ () => setShowComplain(false) }
@@ -235,7 +242,13 @@ const DeliveryCheck = () => {
 				onRequestClose={ () => setShowConfirm(false) }
 				noScroll
 			>
-				<ConfirmArrival onClose={ () => setShowConfirm(false) } />
+				<ConfirmArrival
+					onClose={ () => setShowConfirm(false) }
+					onConfirm={ () => {
+						setShowConfirm(false);
+						setShowSuccessDialog(true);
+					} }
+				/>
 			</BottomSheet>
 
 		</Container >
