@@ -54,7 +54,7 @@ const Text: React.FC<ComponentInterface.IText> = props => {
 	if (format) {
 		return (
 			<TextNative
-				style={ StyleSheet.flatten([format, mt ? { marginTop: mt } : undefined, color ? { color } : undefined]) }
+				style={ StyleSheet.flatten([format, mt ? { marginTop: mt } : undefined, color ? { color } : undefined, style]) }
 				adjustsFontSizeToFit
 				{ ...restOfProps }
 			>{ props.children }

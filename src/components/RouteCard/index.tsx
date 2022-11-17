@@ -3,6 +3,8 @@ import React from 'react';
 import { Colors, Fonts, Images } from '@constant';
 import { Button, Text } from '@components';
 import { ComponentInterface } from '@interfaces';
+import { NavigationHelper, useAppDispatch } from '@helpers';
+import { Actions } from '@store';
 
 const RouteCard = ({
 	locationAddress,
@@ -67,7 +69,11 @@ const RouteCard = ({
 								weight='700'
 								color={ Colors.white.pure }
 								text='Sudah Sampai'
-							// onPress={ () => console.log('sampai pressed') }
+								onPress={ () => {
+									// const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+									// setTmpImgUri(null);
+									NavigationHelper.push('DeliveryCheck');
+								} }
 							/>
 						</View>
 					}

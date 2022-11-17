@@ -10,7 +10,8 @@ import {
 	ValidateClientID,
 	ItemChecking,
 	DeliveryRoute,
-	CapturePhoto
+	CapturePhoto,
+	DeliveryCheck
 } from '@screens';
 
 export const screens = [
@@ -73,5 +74,9 @@ export const screens = [
 	{
 		name: 'CapturePhoto',
 		component: CapturePhoto,
+	},
+	{
+		name: 'DeliveryCheck',
+		component: DeliveryCheck,
 	},
 ] as const;

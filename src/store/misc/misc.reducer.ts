@@ -5,9 +5,10 @@ import { MiscInterface } from '@interfaces';
 const initialState: MiscInterface.MiscState = {
 	loading: false,
 	deviceHeight: 0,
+	tmpImageUri: '',
 };
 
-type Actions = { type: string; payload: any };
+type Actions = { type: string; payload: any; };
 
 const miscReducers = (
 	state = initialState,
@@ -29,6 +30,11 @@ const miscReducers = (
 			return {
 				...state,
 				deviceHeight: payload,
+			};
+		case Dispatches.TMP_IMAGE_URI:
+			return {
+				...state,
+				tmpImageUri: payload,
 			};
 		default:
 			return state;

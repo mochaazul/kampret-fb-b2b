@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Container, BottomSheet, ModalDialog, Button } from '@components';
 import { Colors, Images } from '@constant';
@@ -25,22 +25,15 @@ const ValidateClientID = (props: any) => {
 		setShowScanChoices(false);
 	};
 
-	return (
-		<Container
-			noPadding
-			noScroll
-			header={ {
-				title: 'Validasi Client ID',
-				type: 'regular'
-			} }
-		>
-			{
-				delivery.customers &&
+	const renderCustomers = useMemo(() => {
+		if (delivery.customers && delivery.customers.length)
+			return (
 				<FlatList
 					data={ delivery.customers }
 					showsVerticalScrollIndicator={ false }
 					style={ styles.listStyle }
 					contentContainerStyle={ styles.listContentStyle }
+					keyExtractor={ (item: DeliveryInterface.IDeliveryCustomer) => item.id }
 					renderItem={
 						({ item, index }) =>
 							<ClientCard
@@ -50,7 +43,19 @@ const ValidateClientID = (props: any) => {
 					}
 					ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
 				/>
-			}
+			);
+	}, [delivery.customers]);
+
+	return (
+		<Container
+			noPadding
+			noScroll
+			header={ {
+				title: 'Validasi Client ID',
+				type: 'regular'
+			} }
+		>
+			{ renderCustomers }
 
 			<View style={ styles.footer }>
 				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />

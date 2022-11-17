@@ -1,4 +1,5 @@
 export type MiscState = {
-  loading: boolean,
-  deviceHeight: number
+	loading: boolean,
+	deviceHeight: number,
+	tmpImageUri?: string | null,
 };

@@ -10,9 +10,7 @@ import { NavigationProps } from '@interfaces';
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 
-const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
-	const [loading, setLoading] = useState<boolean>(false);
-	const [currentPhoto, setCurrentPhoto] = useState<null | string>(null);
+const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	const { t } = useTranslation();
 	const navigateToCapturePhoto = useCallback(

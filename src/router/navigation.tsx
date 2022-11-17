@@ -21,7 +21,7 @@ const AppRouter = () => {
 	return (
 		<NavigationContainer ref={ NavigationHelper.navigationRef }>
 			<Stack.Navigator
-				initialRouteName='Splash'
+				initialRouteName='Delivery'
 				screenOptions={ { headerShown: false } }>
 				{
 					screens.map((screen, index) => {
