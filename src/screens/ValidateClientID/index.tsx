@@ -13,7 +13,8 @@ import { DeliveryInterface } from '@interfaces';
 const ValidateClientID = (props: any) => {
 	const [showScanChoices, setShowScanChoices] = useState<boolean>(false);
 	const [showResult, setShowResult] = useState<boolean>(false);
-	const [testBarcodeValue, setTestBardcodeValue] = useState('')	const [showWarningStartDelivery, setShowWarningStartDelivery] = useState<boolean>(false);
+	const [testBarcodeValue, setTestBardcodeValue] = useState('');
+	const [showWarningStartDelivery, setShowWarningStartDelivery] = useState<boolean>(false);
 	const delivery = props.route.params as DeliveryInterface.IDelivery;
 
 	const handleOnChoosen = (value: string) => {

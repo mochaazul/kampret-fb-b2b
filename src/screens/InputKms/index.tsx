@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
+import { useTranslation } from 'react-i18next';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
@@ -9,36 +10,38 @@ import { NavigationProps } from '@interfaces';
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 
-const InputKms = ({route, navigation}:InputKmsScreenProps) => {
+const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
+	const [loading, setLoading] = useState<boolean>(false);
+	const [currentPhoto, setCurrentPhoto] = useState<null | string>(null);
 
+	const { t } = useTranslation();
 	const navigateToCapturePhoto = useCallback(
 		() => {
-			NavigationHelper.push('CapturePhoto')
+			NavigationHelper.push('CapturePhoto');
 		},
 		[],
-	)
+	);
 
-const renderImage =  useMemo(() => {
-	if(route && route.params?.photo) {
+	const renderImage = useMemo(() => {
+		if (route && route.params?.photo) {
 			return (
-				<Image style={styles.addImage} source={{uri: route.params?.photo }} />
-			)
-	}
+				<Image style={ styles.addImage } source={ { uri: route.params?.photo } } />
+			);
+		}
 
-	return (
-		<View style={ styles.addImage }>
-			<Images.IconCamera />
+		return (
+			<View style={ styles.addImage }>
+				<Images.IconCamera />
+				<Text
+					format={ Fonts.textBody.l.bold as TextStyle }
+					color={ Colors.gray.default }
+					mt={ 20 }>
+					+ { t('inputKM.addPhoto') }
+				</Text>
+			</View>
+		);
+	}, [route]);
 
-			<Text
-				format={ Fonts.textBody.l.bold as TextStyle }
-				color={ Colors.gray.default }
-				mt={ 20 }
-				>
-				+ Tambah Foto
-			</Text>
-		</View>
-	)
-}, [route])
 	return (
 		<Container
 			noPadding
@@ -57,7 +60,7 @@ const renderImage =  useMemo(() => {
 
 			<Input
 				name="input_km"
-				label="KM Kendaraan"
+				label={ t('inputKM.vehicleBarometer') }
 				mt={ 16 }
 			/>
 
@@ -66,20 +69,20 @@ const renderImage =  useMemo(() => {
 				color={ Colors.black.default }
 				mt={ 20 }
 			>
-				Foto KM Kendaraan
+				{ t('inputKM.photo') }
 			</Text>
 
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={navigateToCapturePhoto}
+				onPress={ navigateToCapturePhoto }
 			>
-				{renderImage}
+				{ renderImage }
 
 			</TouchableOpacity>
 
 			<Button
 				onPress={ undefined }
-				text='Lanjutkan'
+				text={ t('actions.continue') }
 				textSize={ 14 }
 				weight='700'
 				mt={ 30 }
