@@ -1,4 +1,3 @@
-import React from 'react';
 import {
 	View,
 	Text,
@@ -13,6 +12,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Colors } from '@constant';
+import { useEffect, useRef, useState } from 'react';
 
 export interface SelectListProps {
 	setSelected: (value: string | undefined) => void,
@@ -65,13 +65,13 @@ const SelectList: React.FC<SelectListProps> = ({
 	fontFamily
 }) => {
 
-	const oldOption = React.useRef(null);
-	const [_firstRender, _setFirstRender] = React.useState<boolean>(true);
-	const [dropdown, setDropdown] = React.useState<boolean>(dropdownShown);
-	const [selectedval, setSelectedVal] = React.useState<any>("");
-	const [height, setHeight] = React.useState<number>(200);
-	const animatedvalue = React.useRef(new Animated.Value(0)).current;
-	const [filtereddata, setFilteredData] = React.useState(data);
+	const oldOption = useRef(null);
+	const [_firstRender, _setFirstRender] = useState<boolean>(true);
+	const [dropdown, setDropdown] = useState<boolean>(dropdownShown);
+	const [selectedval, setSelectedVal] = useState<any>("");
+	const [height, setHeight] = useState<number>(200);
+	const animatedvalue = useRef(new Animated.Value(0)).current;
+	const [filtereddata, setFilteredData] = useState(data);
 
 
 	const slidedown = () => {
@@ -93,18 +93,18 @@ const SelectList: React.FC<SelectListProps> = ({
 		}).start(() => setDropdown(false));
 	};
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (maxHeight)
 			setHeight(maxHeight);
 	}, [maxHeight]);
 
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setFilteredData(data);
 	}, [data]);
 
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (_firstRender) {
 			_setFirstRender(false);
 			return;
@@ -113,7 +113,7 @@ const SelectList: React.FC<SelectListProps> = ({
 	}, [selectedval]);
 
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!_firstRender && defaultOption && oldOption.current != defaultOption.key) {
 			// oldOption.current != null
 			oldOption.current = defaultOption.key;
@@ -129,7 +129,7 @@ const SelectList: React.FC<SelectListProps> = ({
 
 	}, [defaultOption]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!_firstRender) {
 			if (dropdownShown)
 				slidedown();

@@ -1,16 +1,42 @@
 import { BottomSheet, Button, Container, Input, Text } from "@components";
+import { FormikProps, useFormik } from "formik";
+import React, { useCallback, useMemo, useState } from "react";
+import { Image, ScrollView, TextStyle, TouchableOpacity, View } from "react-native";
+
 import { Colors, Fonts, Images } from "@constant";
-import React, { useState } from "react";
-import { FlatList, ScrollView, TextStyle, View } from "react-native";
+import { NavigationHelper, useAppSelector } from "@helpers";
+import { Delivery } from "@validator";
+
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
 
 import styles from "./styles";
 
+interface CheckValues {
+	receiverName: string,
+	photoUri: string,
+	returnChecked: boolean;
+}
+
 const DeliveryCheck = () => {
 	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
+	const [enableValidation, setEnableValidation] = useState<boolean>(false);
+
+	const miscState = useAppSelector(state => state.miscReducers);
+
+	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
+		validateOnBlur: true,
+		validateOnChange: enableValidation,
+		validationSchema: Delivery.DeliveryCheckValidationSchema,
+		initialValues: {
+			receiverName: '',
+			photoUri: '',
+			returnChecked: false,
+		},
+		onSubmit: () => { setShowConfirm(true); },
+	});
 
 	const dummyItems: Array<CheckItemProp> = [
 		{
@@ -51,6 +77,36 @@ const DeliveryCheck = () => {
 		},
 	];
 
+	const navigateToCapturePhoto = useCallback(
+		() => {
+			NavigationHelper.push('CapturePhoto');
+		},
+		[],
+	);
+
+	const renderImage = useMemo(() => {
+		if (miscState.tmpImageUri) {
+			formik.setFieldValue('photoUri', miscState.tmpImageUri);
+			return (
+				<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
+			);
+		}
+
+		return (
+			<View style={ styles.addImage }>
+				<Images.IconCamera />
+
+				<Text
+					format={ Fonts.textBody.l.bold as TextStyle }
+					color={ Colors.gray.default }
+					mt={ 20 }
+				>
+					+ Tambah Foto
+				</Text>
+			</View>
+		);
+	}, [miscState.tmpImageUri]);
+
 	return (
 		<Container
 			noPadding
@@ -81,12 +137,16 @@ const DeliveryCheck = () => {
 					Pesanan
 				</Text>
 
-				<FlatList
-					data={ dummyItems }
-					renderItem={ ({ item }) => <CheckItem { ...item } /> }
-					ItemSeparatorComponent={ () => <View style={ { height: 10 } } /> }
-					style={ { flexGrow: 0 } }
-				/>
+				{
+					dummyItems.map((value: CheckItemProp, index: number) => {
+						return (
+							<View key={ 'item_' + index }>
+								{ index > 0 && <View style={ { height: 10 } } /> }
+								<CheckItem { ...value } />
+							</View>
+						);
+					})
+				}
 
 				<Text
 					color={ Colors.gray.default }
@@ -98,9 +158,18 @@ const DeliveryCheck = () => {
 
 				<View style={ styles.section }>
 					<Input
-						name="penerima"
+						formik={ formik }
+						name="receiverName"
 						label="Nama Penerima"
 					/>
+
+					<TouchableOpacity
+						activeOpacity={ .75 }
+						onPress={ navigateToCapturePhoto }
+					>
+						{ renderImage }
+
+					</TouchableOpacity>
 				</View>
 
 				<Text
@@ -120,7 +189,15 @@ const DeliveryCheck = () => {
 							2 Keranjang Merah
 						</Text>
 
-						<Images.ButtonCheck2 />
+						<TouchableOpacity
+							onPress={ () => formik.setFieldValue('returnChecked', !formik.values['returnChecked']) }
+						>
+							{
+								formik.values['returnChecked'] ?
+									<Images.ButtonCheck2 /> :
+									<Images.ButtonCheck />
+							}
+						</TouchableOpacity>
 					</View>
 
 					<Button
@@ -129,7 +206,8 @@ const DeliveryCheck = () => {
 						weight='700'
 						mt={ 30 }
 						useShadow={ true }
-						onPress={ () => setShowConfirm(true) }
+						onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
+						disabled={ !formik.isValid }
 					/>
 				</View>
 			</ScrollView>

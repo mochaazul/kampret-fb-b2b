@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, TextStyle, TouchableOpacity, View } from "react-n
 
 import { Text } from "@components";
 import { Colors, Fonts } from "@constant";
+import { number } from "yup";
 
 export interface CheckItemProp {
 	id: string;
@@ -69,6 +70,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					<FlatList
 						bounces={ false }
 						horizontal={ true }
+						keyExtractor={ (item: any, index: number) => 'item_' + index }
 						data={ item.complainFiles }
 						renderItem={ ({ item }) => <>{ item }</> }
 						ItemSeparatorComponent={ () => <View style={ { width: 10 } } /> }
@@ -79,7 +81,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 	}, [item.isComplain]);
 
 	return (
-		<View style={ styles.container } key={ item.id }>
+		<View style={ styles.container }>
 
 			<View style={ styles.header }>
 				<View>

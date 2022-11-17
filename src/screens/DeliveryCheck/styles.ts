@@ -20,5 +20,19 @@ export default StyleSheet.create({
 		paddingVertical: 16,
 		paddingHorizontal: 20,
 		backgroundColor: Colors.white.pure,
-	}
+	},
+
+	addImage: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginTop: 8,
+		paddingHorizontal: 20,
+		paddingTop: 48,
+		paddingBottom: 32,
+		borderRadius: 12,
+		borderColor: Colors.gray.default,
+		borderStyle: 'dashed',
+		borderWidth: 1,
+		height: 160
+	},
 });

@@ -9,36 +9,36 @@ import { NavigationProps } from '@interfaces';
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 
-const InputKms = ({route, navigation}:InputKmsScreenProps) => {
+const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
 
 	const navigateToCapturePhoto = useCallback(
 		() => {
-			NavigationHelper.push('CapturePhoto')
+			NavigationHelper.push('CapturePhoto');
 		},
 		[],
-	)
+	);
 
-const renderImage =  useMemo(() => {
-	if(route && route.params?.photo) {
+	const renderImage = useMemo(() => {
+		if (route && route.params?.photo) {
 			return (
-				<Image style={styles.addImage} source={{uri: route.params?.photo }} />
-			)
-	}
+				<Image style={ styles.addImage } source={ { uri: route.params?.photo } } />
+			);
+		}
 
-	return (
-		<View style={ styles.addImage }>
-			<Images.IconCamera />
+		return (
+			<View style={ styles.addImage }>
+				<Images.IconCamera />
 
-			<Text
-				format={ Fonts.textBody.l.bold as TextStyle }
-				color={ Colors.gray.default }
-				mt={ 20 }
+				<Text
+					format={ Fonts.textBody.l.bold as TextStyle }
+					color={ Colors.gray.default }
+					mt={ 20 }
 				>
-				+ Tambah Foto
-			</Text>
-		</View>
-	)
-}, [route])
+					+ Tambah Foto
+				</Text>
+			</View>
+		);
+	}, [route]);
 	return (
 		<Container
 			noPadding
@@ -71,9 +71,9 @@ const renderImage =  useMemo(() => {
 
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={navigateToCapturePhoto}
+				onPress={ navigateToCapturePhoto }
 			>
-				{renderImage}
+				{ renderImage }
 
 			</TouchableOpacity>
 
