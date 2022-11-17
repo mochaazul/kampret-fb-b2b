@@ -18,6 +18,7 @@ interface IRoute {
 	totalItem?: number,
 	disabled?: boolean,
 	numbering: number;
+	onClick?: () => void | undefined;
 }
 
 export default IRoute;

@@ -11,7 +11,9 @@ import {
 	ItemChecking,
 	DeliveryRoute,
 	CapturePhoto,
-	DeliveryCheck
+	DeliveryCheck,
+	DeliveryRouteHistory,
+	DeliveryHistoryDetail
 } from '@screens';
 
 export const screens = [
@@ -78,5 +80,13 @@ export const screens = [
 	{
 		name: 'DeliveryCheck',
 		component: DeliveryCheck,
+	},
+	{
+		name: 'DeliveryRouteHistory',
+		component: DeliveryRouteHistory,
+	},
+	{
+		name: 'DeliveryHistoryDetail',
+		component: DeliveryHistoryDetail,
 	},
 ] as const;

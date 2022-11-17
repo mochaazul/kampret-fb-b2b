@@ -1,10 +1,10 @@
-import { StyleSheet, TextStyle, View } from 'react-native';
 import React from 'react';
+import { StyleSheet, TextStyle, TouchableOpacity, View } from 'react-native';
+
 import { Colors, Fonts, Images } from '@constant';
 import { Button, Text } from '@components';
 import { ComponentInterface } from '@interfaces';
-import { NavigationHelper, useAppDispatch } from '@helpers';
-import { Actions } from '@store';
+import { NavigationHelper } from '@helpers';
 
 const RouteCard = ({
 	locationAddress,
@@ -14,13 +14,21 @@ const RouteCard = ({
 	isDelivered,
 	disabled,
 	numbering,
-	totalItem }: ComponentInterface.IRoute) => {
+	totalItem,
+	onClick,
+}: ComponentInterface.IRoute) => {
+
 	return (
-		<View style={ [styles.container,
-		{
-			marginTop: numbering === 1 ? 20 : 0,
-			opacity: disabled ? 0.7 : 1
-		}] } key={ 'route_' + numbering }>
+		<TouchableOpacity
+			style={ [styles.container,
+			{
+				marginTop: numbering === 1 ? 20 : 0,
+				opacity: disabled ? 0.7 : 1
+			}] }
+			key={ 'route_' + numbering }
+			activeOpacity={ .7 }
+			onPress={ onClick }
+		>
 
 			<View style={ styles.numbering }>
 				{ isDelivered &&
@@ -97,8 +105,7 @@ const RouteCard = ({
 				<View style={ { height: 20 } }></View>
 			</View>
 
-		</View >
-
+		</TouchableOpacity >
 	);
 };
 

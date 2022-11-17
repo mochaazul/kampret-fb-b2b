@@ -101,6 +101,14 @@ const Fonts = {
 				lineHeight: normalize(18),
 				fontWeight: '400',
 				color: Colors.black.default
+			},
+
+			bold: {
+				fontFamily: settings.primaryFont.regular,
+				fontSize: normalize(12),
+				lineHeight: normalize(18),
+				fontWeight: '700',
+				color: Colors.black.default
 			}
 
 		}
