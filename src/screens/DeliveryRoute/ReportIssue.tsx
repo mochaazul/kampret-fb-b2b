@@ -49,7 +49,7 @@ const ReportIssue = ({ onClose }: ComplainProps) => {
 				<Dropdown
 					boxStyles={ { marginTop: 5 } }
 					setSelected={ val => val ? setComplainSelected(val) : null }
-					defaultOption={ { key: '8', value: 'Rusak' } }
+					defaultOption={ { key: '4', value: 'Gerimis' } }
 					data={ dummyDropdown }
 					save="value"
 				/>

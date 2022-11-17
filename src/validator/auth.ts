@@ -33,10 +33,10 @@ export const ResetPasswordValidationSchema = yup.object().shape({
 	firstPassword: yup
 		.string().required('Sandi wajib diisi')
 		.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
-			'Minimal kata sandi adalah 8 karakter, Satu huruf kapital,\nSatu huruf kecil dan Satu Angka'),
+			'Minimal kata sandi adalah 8 karakter, Satu huruf kapital,\nSatu huruf kecil dan Satu Angka').nullable(),
 	secondPassword: yup
 		.string().required('Konfirmasi sandi wajib diisi')
-		.oneOf([yup.ref('firstPassword'), null], 'Konfirmasi sandi tidak sama dengan sandi'),
+		.oneOf([yup.ref('firstPassword'), null], 'Konfirmasi sandi tidak sama dengan sandi').nullable(),
 });
 
 export const InputClientID = yup.object().shape({
