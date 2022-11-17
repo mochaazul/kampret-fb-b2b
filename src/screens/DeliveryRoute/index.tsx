@@ -6,6 +6,7 @@ import { Colors, Images } from '@constant';
 import { NavigationHelper } from '@helpers';
 import { ComponentInterface } from '@interfaces';
 import Complain from './Complain';
+import ReportIssue from './ReportIssue';
 
 const dummyData: ComponentInterface.IRoute[] = [{
 	numbering: 1,
@@ -43,9 +44,11 @@ const dummyData: ComponentInterface.IRoute[] = [{
 const DeliveryRoute = () => {
 
 	const [showComplain, setShowComplain] = useState<boolean>(false);
+	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
+
 	const handleHeaderRightOnPress = () => {
 		// console.log('header right button pressed');
-		setShowComplain(true);
+		setShowReportIssue(true);
 	};
 
 	return (
@@ -69,6 +72,13 @@ const DeliveryRoute = () => {
 				noScroll
 			>
 				<Complain onClose={ () => setShowComplain(false) } />
+			</BottomSheet>
+			<BottomSheet
+				visible={ showReportIssue }
+				onRequestClose={ () => setShowReportIssue(false) }
+				noScroll
+			>
+				<ReportIssue onClose={ () => setShowReportIssue(false) } />
 			</BottomSheet>
 		</Container>
 

@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 import { AppRouter } from '@router';
 import { ReduxConfig } from '@config';
 import { MyToast } from '@components';
+import './src/translations';
 
 const App = () => {
 	return (

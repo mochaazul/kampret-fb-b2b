@@ -1,18 +1,19 @@
 import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, TextStyle, TouchableOpacity, View } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppSelector } from "@helpers";
+import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
+import { Actions } from "@store";
 
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
+import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
 
 import styles from "./styles";
-import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
 
 interface CheckValues {
 	receiverName: string,
@@ -27,6 +28,15 @@ const DeliveryCheck = () => {
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 
 	const miscState = useAppSelector(state => state.miscReducers);
+
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+
+	useEffect(() => {
+		return function () {
+			setTmpImgUri('');
+		};
+	}, []);
+
 
 	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
 		validateOnBlur: true,

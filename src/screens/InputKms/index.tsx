@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
+import { useTranslation } from 'react-i18next';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
@@ -9,8 +10,9 @@ import { NavigationProps } from '@interfaces';
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 
-const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
+const InputKms = ({ route }: InputKmsScreenProps) => {
 
+	const { t } = useTranslation();
 	const navigateToCapturePhoto = useCallback(
 		() => {
 			NavigationHelper.push('CapturePhoto');
@@ -28,17 +30,16 @@ const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
 		return (
 			<View style={ styles.addImage }>
 				<Images.IconCamera />
-
 				<Text
 					format={ Fonts.textBody.l.bold as TextStyle }
 					color={ Colors.gray.default }
-					mt={ 20 }
-				>
-					+ Tambah Foto
+					mt={ 20 }>
+					+ { t('inputKM.addPhoto') }
 				</Text>
 			</View>
 		);
 	}, [route]);
+
 	return (
 		<Container
 			noPadding
@@ -57,7 +58,7 @@ const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
 
 			<Input
 				name="input_km"
-				label="KM Kendaraan"
+				label={ t('inputKM.vehicleBarometer') }
 				mt={ 16 }
 			/>
 
@@ -66,7 +67,7 @@ const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
 				color={ Colors.black.default }
 				mt={ 20 }
 			>
-				Foto KM Kendaraan
+				{ t('inputKM.photo') }
 			</Text>
 
 			<TouchableOpacity
@@ -79,7 +80,7 @@ const InputKms = ({ route, navigation }: InputKmsScreenProps) => {
 
 			<Button
 				onPress={ undefined }
-				text='Lanjutkan'
+				text={ t('actions.continue') }
 				textSize={ 14 }
 				weight='700'
 				mt={ 30 }
