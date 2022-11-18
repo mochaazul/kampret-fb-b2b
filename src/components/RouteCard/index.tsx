@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, TextStyle, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors, Fonts, Images } from '@constant';
 import { Button, Text } from '@components';
@@ -18,13 +18,18 @@ const RouteCard = ({
 	onClick,
 }: ComponentInterface.IRoute) => {
 
+	const containerStyle = useMemo(() => {
+		const style: ViewStyle = { ...styles.container };
+
+		style.marginTop = numbering == 1 ? 20 : 0;
+		style.opacity = disabled ? .7 : 1;
+
+		return style;
+	}, [numbering, disabled]);
+
 	return (
 		<TouchableOpacity
-			style={ [styles.container,
-			{
-				marginTop: numbering === 1 ? 20 : 0,
-				opacity: disabled ? 0.7 : 1
-			}] }
+			style={ containerStyle }
 			key={ 'route_' + numbering }
 			activeOpacity={ .7 }
 			onPress={ onClick }
@@ -46,7 +51,7 @@ const RouteCard = ({
 					<View style={ styles.dashLine } />
 				}
 			</View>
-			<View style={ { flex: 12 } }>
+			<View style={ styles.contentContainer }>
 				<View style={ disabled ? styles.contentDisabled : styles.content }>
 					<View style={ styles.row }>
 						<View style={ styles.leftIcon }>
@@ -102,7 +107,7 @@ const RouteCard = ({
 						</View>
 					}
 				</View>
-				<View style={ { height: 20 } }></View>
+				<View style={ styles.spaceHeight }></View>
 			</View>
 
 		</TouchableOpacity >
@@ -115,6 +120,9 @@ const styles = StyleSheet.create({
 	container: {
 		//paddingBottom: 20,
 		flexDirection: 'row'
+	},
+	contentContainer: {
+		flex: 12,
 	},
 	content: {
 		marginLeft: 10,
@@ -190,6 +198,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginTop: 10
+	},
+
+	spaceHeight: {
+		height: 20
 	},
 
 });
