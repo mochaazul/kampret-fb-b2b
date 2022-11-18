@@ -5,3 +5,8 @@ export const DeliveryCheckValidationSchema = yup.object().shape({
 	photoUri: yup.string().required(),
 	returnChecked: yup.boolean().isTrue(),
 });
+
+export const InputKMvalidationSchema = yup.object().shape({
+	kmSpeedometer: yup.string().required('Wajib diisi').nullable(),
+	photoUri: yup.string().required().nullable(),
+});

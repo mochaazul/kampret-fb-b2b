@@ -15,7 +15,6 @@ const CapturePhoto = () => {
 			const result = await cameraRef?.current?.takePhoto({
 				qualityPrioritization: 'quality',
 			});
-
 			setTmpImgUri("file://" + result?.path);
 
 			NavigationHelper.pop(1);

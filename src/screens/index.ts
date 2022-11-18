@@ -11,6 +11,8 @@ import InputKms from './InputKms';
 import DeliveryRoute from './DeliveryRoute';
 import CapturePhoto from './CapturePhoto';
 import DeliveryCheck from './DeliveryCheck';
+import DeliveryRouteHistory from './DeliveryRouteHistory';
+import DeliveryHistoryDetail from './DeliveryHistoryDetail';
 
 export {
 	Splash,
@@ -25,5 +27,7 @@ export {
 	InputKms,
 	DeliveryRoute,
 	CapturePhoto,
-	DeliveryCheck
+	DeliveryCheck,
+	DeliveryRouteHistory,
+	DeliveryHistoryDetail,
 };

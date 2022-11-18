@@ -8,7 +8,7 @@ import { number } from "yup";
 export interface CheckItemProp {
 	id: string;
 	name: string;
-	isComplain: boolean;
+	isComplain?: boolean | undefined;
 	complainAmount?: string;
 	complainLabel?: string;
 	complainDesc?: string;
@@ -101,7 +101,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					</Text>
 				</View>
 
-				{ renderComplainBtn }
+				{ item.isComplain !== undefined && renderComplainBtn }
 
 			</View>
 			{ renderComplain }

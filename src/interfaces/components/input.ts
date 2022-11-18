@@ -9,6 +9,7 @@ interface IInput extends React.ComponentProps<typeof TextInput> {
 	leftIcon?: ReactNode | undefined;
 	formik?: any;
 	name: string;
+	disabled?: boolean | undefined;
 }
 
 export default IInput;

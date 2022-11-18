@@ -1,25 +1,25 @@
-import { View, TextStyle } from 'react-native';
+import { FlatList, View } from 'react-native';
 import React from 'react';
 
-import { Text } from '@components';
-import { Colors, Fonts } from '@constant';
+import styles from './style';
+import { dummyDeliveryHistory } from '../dummy';
+import DeliveryHistoryItem from './DeliveryHistoryItem';
 
 const DeliveryHistory = () => (
-	<View style={ {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: Colors.white.background
-	} }
-	>
-
-		<Text
-			format={ Fonts.paragraph.xl.bold as TextStyle }
-			color={ Colors.gray.default }
-		>
-			TODO: Delivery History List
-		</Text>
-	</View>
+	<FlatList
+		bounces={ false }
+		keyExtractor={ (_item, index) => 'tabBar_' + index }
+		style={ styles.container }
+		contentContainerStyle={ styles.content }
+		showsVerticalScrollIndicator={ false }
+		data={ dummyDeliveryHistory }
+		renderItem={
+			({ item, index }) => <DeliveryHistoryItem key={ 'item_' + index } { ...item } />
+		}
+		ItemSeparatorComponent={
+			() => (<View style={ { height: 16 } } />)
+		}
+	/>
 );
 
 export default DeliveryHistory;

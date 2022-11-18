@@ -12,10 +12,6 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		paddingHorizontal: 20,
 		backgroundColor: Colors.white.background
-	},
-
-	heightSpace: {
-		height: 16,
 	}
 });
 

@@ -18,6 +18,7 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 		leftIcon,
 		secureTextEntry,
 		formik,
+		disabled,
 		...resOfProps
 	} = props;
 
@@ -70,7 +71,9 @@ const Input: React.FC<ComponentInterface.IInput> = props => {
 
 			) }
 			<TouchableWithoutFeedback onPress={ () => inputRef.current?.focus() }>
-				<View style={ [input, { borderColor: formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : Colors.gray.line }] }>
+				<View style={ [input, { borderColor: formik?.errors[name] ? Colors.alert.red : isFocus ? Colors.black.default : Colors.gray.line }] }
+					pointerEvents={ disabled ? 'none' : 'auto' }
+				>
 					{ leftIcon && leftIcon }
 					<TextInput
 						value={ formik?.values[name] }

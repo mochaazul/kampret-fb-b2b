@@ -1,18 +1,40 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper } from "@helpers";
+import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
 import { NavigationProps } from '@interfaces';
+import { Actions } from "@store";
+import { FormikProps, useFormik } from 'formik';
+import { Delivery } from '@validator';
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
-
+type InputKM = {
+	kmSpeedometer: string | null,
+	photoUri: string | null;
+};
 const InputKms = ({ route }: InputKmsScreenProps) => {
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 
-	const { t } = useTranslation();
+	const { t: translate } = useTranslation();
+
+	const formik: FormikProps<InputKM> = useFormik<InputKM>({
+		validateOnBlur: true,
+		validateOnChange: true,
+		validationSchema: Delivery.InputKMvalidationSchema,
+		initialValues: {
+			kmSpeedometer: null,
+			photoUri: null
+		},
+		onSubmit: () => {
+			NavigationHelper.reset('Delivery');
+		},
+	});
+
 	const navigateToCapturePhoto = useCallback(
 		() => {
 			NavigationHelper.push('CapturePhoto');
@@ -20,10 +42,17 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		[],
 	);
 
+	useEffect(() => {
+		return function () {
+			setTmpImgUri('');
+		};
+	}, []);
+
 	const renderImage = useMemo(() => {
-		if (route && route.params?.photo) {
+		if ((route && route.params?.photo) || tmpCapturedImg !== '') {
+			formik.setFieldValue('photoUri', tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : route.params?.photo);
 			return (
-				<Image style={ styles.addImage } source={ { uri: route.params?.photo } } />
+				<Image style={ styles.addImage } source={ { uri: tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : route.params?.photo } } />
 			);
 		}
 
@@ -34,11 +63,11 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 					format={ Fonts.textBody.l.bold as TextStyle }
 					color={ Colors.gray.default }
 					mt={ 20 }>
-					+ { t('inputKM.addPhoto') }
+					+ { translate('inputKM.addPhoto') }
 				</Text>
 			</View>
 		);
-	}, [route]);
+	}, [route, tmpCapturedImg]);
 
 	return (
 		<Container
@@ -57,9 +86,10 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		>
 
 			<Input
-				name="input_km"
-				label={ t('inputKM.vehicleBarometer') }
+				name="kmSpeedometer"
+				label={ translate('inputKM.vehicleBarometer') }
 				mt={ 16 }
+				formik={ formik }
 			/>
 
 			<Text
@@ -67,7 +97,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				color={ Colors.black.default }
 				mt={ 20 }
 			>
-				{ t('inputKM.photo') }
+				{ translate('inputKM.photo') }
 			</Text>
 
 			<TouchableOpacity
@@ -79,13 +109,13 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			</TouchableOpacity>
 
 			<Button
-				onPress={ undefined }
-				text={ t('actions.continue') }
+				onPress={ () => formik.handleSubmit() }
+				text={ translate('actions.continue') }
 				textSize={ 14 }
 				weight='700'
 				mt={ 30 }
 				useShadow={ true }
-				disabled={ true }
+				disabled={ !formik.isValid }
 			/>
 		</Container >
 	);

@@ -1,13 +1,10 @@
 import React from "react";
-import { TextStyle, View } from "react-native";
+import { TextStyle, View, StyleSheet } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
-import Button from "../Button";
-import Text from "../Text";
 import { NavigationHelper } from '@helpers';
-
-import { styles } from "./style";
 import { DeliveryInterface } from "@interfaces";
+import { Button, Text } from "@components";
 
 const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 
@@ -108,3 +105,40 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 };
 
 export default React.memo(DeliveryItem);
+
+const styles = StyleSheet.create({
+	row: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center'
+	},
+
+	rowContent: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 16,
+	},
+
+	container: {
+		flex: -1,
+		padding: 20,
+		margin: 2,
+		backgroundColor: Colors.white.pure,
+		borderRadius: 10,
+		shadowColor: Colors.gray.default,
+		shadowOpacity: 0.04,
+		shadowRadius: 3,
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		elevation: 5,
+	},
+
+	line: {
+		flex: 1,
+		height: 1,
+		backgroundColor: Colors.gray.line,
+		marginTop: 16,
+	}
+});
