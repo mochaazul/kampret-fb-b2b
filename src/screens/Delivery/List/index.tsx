@@ -8,7 +8,7 @@ import DeliveryItem from './DeliveryItem';
 const DeliveryList = () => (
 	<FlatList
 		bounces={ false }
-		keyExtractor={ (item, index) => 'tabBar_' + index }
+		keyExtractor={ (_item, index) => 'tabBar_' + index }
 		style={ styles.container }
 		contentContainerStyle={ styles.content }
 		showsVerticalScrollIndicator={ false }
@@ -17,7 +17,7 @@ const DeliveryList = () => (
 			({ item, index }) => <DeliveryItem key={ 'item_' + index } { ...item } />
 		}
 		ItemSeparatorComponent={
-			() => (<View style={ { height: 16 } } />)
+			() => (<View style={ styles.heightSpace } />)
 		}
 	/>
 );
