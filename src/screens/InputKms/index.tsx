@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 
-	const { t } = useTranslation();
+	const { t: translate } = useTranslation();
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
 		validateOnBlur: true,
@@ -63,7 +63,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 					format={ Fonts.textBody.l.bold as TextStyle }
 					color={ Colors.gray.default }
 					mt={ 20 }>
-					+ { t('inputKM.addPhoto') }
+					+ { translate('inputKM.addPhoto') }
 				</Text>
 			</View>
 		);
@@ -87,7 +87,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			<Input
 				name="kmSpeedometer"
-				label={ t('inputKM.vehicleBarometer') }
+				label={ translate('inputKM.vehicleBarometer') }
 				mt={ 16 }
 				formik={ formik }
 			/>
@@ -97,7 +97,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				color={ Colors.black.default }
 				mt={ 20 }
 			>
-				{ t('inputKM.photo') }
+				{ translate('inputKM.photo') }
 			</Text>
 
 			<TouchableOpacity
@@ -110,7 +110,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			<Button
 				onPress={ () => formik.handleSubmit() }
-				text={ t('actions.continue') }
+				text={ translate('actions.continue') }
 				textSize={ 14 }
 				weight='700'
 				mt={ 30 }
