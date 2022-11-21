@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Colors, Fonts } from '@constant';
@@ -28,8 +28,14 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		buttonStyle,
 		leadingIcon,
 		children,
+		loading,
 		...restOfProps
 	} = props;
+
+	const memoizedProps = useMemo(() => {
+		const props = { loading, disabled };
+		return props;
+	}, [loading, disabled]);
 
 	const memoizedStyled = useMemo(() => {
 		const defaultStyle = { ...styles.defaultStyle };
@@ -73,27 +79,32 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 			defaultStyle,
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
-	const shadowed: ViewStyle = {
-		shadowColor: '#000',
-		shadowOffset: {
-			width: -2,
-			height: 4,
-		},
-		shadowOpacity: 0.04,
-		shadowRadius: 4.65,
-		elevation: 8,
-	};
+
+	const renderLoading = useMemo(() => {
+		if (loading) {
+			return <ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />;
+		}
+		return null;
+	}, [loading]);
+
+	const renderChildren = useMemo(() => {
+		if (children) {
+			return children;
+		}
+		return null;
+	}, [children]);
+
 	if (backgroundColor !== 'transparent') {
 		return (
 
 			<TouchableOpacity
-				disabled={ disabled }
+				disabled={ memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<LinearGradient
 					colors={ disabled ? [Colors.white.disabled, Colors.gray.line] : [Colors.red.gradient1, Colors.red.gradient2] }
 					locations={ [0, 1] }
-					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, shadowed]) }
+					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, styles.shadowStyle]) }
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -105,7 +116,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 								format={ Fonts.textBody.m.bold as TextStyle }
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
-						{ children && children }
+						{ renderChildren }
+						{ renderLoading }
 					</View>
 				</LinearGradient>
 			</TouchableOpacity>
@@ -114,7 +126,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 	} else {
 		return (
 			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
-
+				disabled={ memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -126,7 +138,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 							format={ Fonts.textBody.m.bold as TextStyle }
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
-					{ children && children }
+					{ renderChildren }
+					{ renderLoading }
 				</View>
 			</TouchableOpacity>
 		);

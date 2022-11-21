@@ -21,9 +21,11 @@ const axiosAPI = axios.create({
 const getHeaders = (headers?: Record<string, string>) => {
 	const state = store.getState();
 	return {
-		'token': state.authReducers.token ?? '',
-		'Accept': 'application/json',
+		'Authorization': state.authReducers.user ? state.authReducers.user.token : '',
+		'Accept': '*/*',
 		'Content-Type': 'applications/json',
+		'Connection': 'keep-alive',
+		'Accept-Encoding': 'gzip, deflate,br',
 		...headers,
 	};
 };
@@ -93,13 +95,13 @@ const get = <T>(url: string, params?: object, headers?: Record<string, string>):
 const deleteRequest = (url: string, headers?: object) => apiRequest('delete', url, headers);
 
 // function to execute the http post request
-const post = (url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('post', url, request, headers);
+const post = <T>(url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('post', url, request, headers);
 
 // function to execute the http post image
 const postImage = (url: string, request: {
-  uri: string,
-  name: string,
-  type: string,
+	uri: string,
+	name: string,
+	type: string,
 }, headers?: Record<string, string>) => {
 	const form = new FormData();
 	form.append('image', JSON.stringify(request));

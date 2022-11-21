@@ -4,7 +4,8 @@ import { FormikProps, useFormik } from 'formik';
 
 import { Images, Colors, Fonts } from '@constant';
 import { Button, Container, Input, Text } from '@components';
-import { NavigationHelper } from '@helpers';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from "@store";
 import { Auth } from '@validator';
 
 interface ResetInterface {
@@ -15,6 +16,9 @@ interface ResetInterface {
 const Reset = () => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
+
+	const updatePassword = useAppDispatch(Actions.authAction.resetPassword);
+
 	const formik: FormikProps<ResetInterface> = useFormik<ResetInterface>({
 		validateOnBlur: enableValidation,
 		validateOnChange: enableValidation,
@@ -24,7 +28,10 @@ const Reset = () => {
 			secondPassword: null
 		},
 		onSubmit: () => {
-			NavigationHelper.reset('Delivery');
+			updatePassword({
+				password: formik.values.firstPassword,
+				confirm_password: formik.values.secondPassword
+			});
 		},
 	});
 

@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 
 import { Images, Colors, Fonts } from '@constant';
+import { NavigationProps } from '@interfaces';
 import { Button, Container, InputOTP, Text } from '@components';
-import { NavigationHelper } from '@helpers';
-import { Auth } from '@validator';
+import { NavigationHelper, useAppDispatch } from '@helpers';
+import { Actions } from "@store";
 
 let interval;
 
@@ -16,15 +17,22 @@ interface OTPInterface {
 	otp4: number | null;
 }
 
-const OTPscreen = () => {
+type OTPScreenProps = NavigationProps<'OTP'>;
+const OTPscreen = ({ route }: OTPScreenProps) => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const [seconds, setSeconds] = useState(30);
 
+	const verifyOTP = useAppDispatch(Actions.authAction.verifyOTP);
+	const requestOTP = useAppDispatch(Actions.authAction.requestOTP);
+
+	const handleOnResendOTP = () => {
+		setSeconds(30);
+		requestOTP({ phone: route.params?.phoneNumber }, route.params?.authType);
+	};
+
 	const formik: FormikProps<OTPInterface> = useFormik<OTPInterface>({
-		// validateOnBlur: enableValidation,
-		// validateOnChange: enableValidation,
-		// validationSchema: Auth.PhoneNumberValidationSchema,
+
 		initialValues: {
 			otp1: null,
 			otp2: null,
@@ -32,7 +40,14 @@ const OTPscreen = () => {
 			otp4: null,
 		},
 		onSubmit: () => {
-			NavigationHelper.push('Reset');
+			verifyOTP(
+				{
+					phone: route.params?.phoneNumber,
+					otp_code: '' + formik.values.otp1 + formik.values.otp2
+						+ formik.values.otp3 + formik.values.otp4
+				}
+				, route.params?.authType);
+
 		},
 	});
 
@@ -67,7 +82,7 @@ const OTPscreen = () => {
 				}
 				{ seconds === 0 &&
 					<Button
-						onPress={ () => setSeconds(30) }
+						onPress={ () => handleOnResendOTP() }
 						text='Kirim Ulang'
 						textSize={ 14 }
 						weight='700'

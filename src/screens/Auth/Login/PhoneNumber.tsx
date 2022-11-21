@@ -7,11 +7,15 @@ import { Button, Container, Input, Text } from '@components';
 import { NavigationHelper } from '@helpers';
 import { Auth } from '@validator';
 
+interface PhoneNumberProps {
+	onPhoneNumberSubmitted: (phoneNumber: string) => void;
+	loading: boolean;
+}
 interface ForgotInterface {
 	phoneNumber: string | null;
 }
 
-const Forgot = () => {
+const Forgot = ({ onPhoneNumberSubmitted, loading }: PhoneNumberProps) => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const formik: FormikProps<ForgotInterface> = useFormik<ForgotInterface>({
@@ -21,7 +25,8 @@ const Forgot = () => {
 			phoneNumber: null,
 		},
 		onSubmit: () => {
-			NavigationHelper.push('OTP');
+			// NavigationHelper.push('OTP');
+			if (formik.values.phoneNumber) onPhoneNumberSubmitted(formik.values.phoneNumber);
 		},
 	});
 
@@ -44,6 +49,7 @@ const Forgot = () => {
 				weight='700'
 				mt={ 30 }
 				useShadow={ true }
+				loading={ loading }
 				disabled={ !formik.values.phoneNumber || formik.errors.phoneNumber !== undefined }
 			/>
 		</View>

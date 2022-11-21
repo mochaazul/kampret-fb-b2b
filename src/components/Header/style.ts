@@ -8,6 +8,8 @@ interface IStyle {
 	actionButton: ViewStyle;
 	title: ViewStyle;
 	version: TextStyle;
+	rightIcon: ViewStyle;
+	icon: ViewStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -47,7 +49,14 @@ export const styles = StyleSheet.create<IStyle>({
 
 	version: {
 		position: 'absolute',
-		right: 40,
+		right: 70,
 		color: Colors.gray.default
+	},
+	rightIcon: {
+		flexDirection: 'row',
+		alignItems: 'center'
+	},
+	icon: {
+		marginRight: 20
 	}
 });

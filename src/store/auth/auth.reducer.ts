@@ -3,10 +3,12 @@ import { Dispatches } from '@constant';
 import { AuthInterface } from '@interfaces';
 
 const initialState: AuthInterface.AuthState = {
-	token: '',
+
+	loading: false,
+	user: null
 };
 
-type Actions = { type: string; payload: any };
+type Actions = { type: string; payload: any; };
 
 const authReducers = (
 	state = initialState,
@@ -17,7 +19,12 @@ const authReducers = (
 		case Dispatches.LOGIN:
 			return {
 				...state,
-				token: payload,
+				user: payload
+			};
+		case Dispatches.LOADING_AUTH:
+			return {
+				...state,
+				loading: payload
 			};
 		case Dispatches.LOGOUT:
 			return initialState;
