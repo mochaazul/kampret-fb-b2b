@@ -80,18 +80,6 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
 
-	// ini seharusnya bisa diluar lifecyle nya react ya
-	const shadowed: ViewStyle = {
-		shadowColor: '#000',
-		shadowOffset: {
-			width: -2,
-			height: 4,
-		},
-		shadowOpacity: 0.04,
-		shadowRadius: 4.65,
-		elevation: 8,
-	};
-
 	const renderLoading = useMemo(() => {
 		if (loading) {
 			return <ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />;
@@ -116,7 +104,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 				<LinearGradient
 					colors={ disabled ? [Colors.white.disabled, Colors.gray.line] : [Colors.red.gradient1, Colors.red.gradient2] }
 					locations={ [0, 1] }
-					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, shadowed]) }
+					style={ StyleSheet.flatten(!useShadow ? [memoizedStyled.defaultStyle, buttonStyle] : [memoizedStyled.defaultStyle, buttonStyle, styles.shadowStyle]) }
 					start={ { x: 0.0, y: 0.25 } } end={ { x: 0.5, y: 1.0 } }
 				>
 					<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -150,10 +138,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 							format={ Fonts.textBody.m.bold as TextStyle }
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
-					{ children && children }
-					{ memoizedProps.loading &&
-						<ActivityIndicator size="small" color={ Colors.company.red } />
-					}
+					{ renderChildren }
+					{ renderLoading }
 				</View>
 			</TouchableOpacity>
 		);
