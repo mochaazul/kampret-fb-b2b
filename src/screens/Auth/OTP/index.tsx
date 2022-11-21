@@ -22,7 +22,14 @@ const OTPscreen = ({ route }: OTPScreenProps) => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const [seconds, setSeconds] = useState(30);
+
 	const verifyOTP = useAppDispatch(Actions.authAction.verifyOTP);
+	const requestOTP = useAppDispatch(Actions.authAction.requestOTP);
+
+	const handleOnResendOTP = () => {
+		setSeconds(30);
+		requestOTP({ phone: route.params?.phoneNumber }, route.params?.authType);
+	};
 
 	const formik: FormikProps<OTPInterface> = useFormik<OTPInterface>({
 
@@ -75,7 +82,7 @@ const OTPscreen = ({ route }: OTPScreenProps) => {
 				}
 				{ seconds === 0 &&
 					<Button
-						onPress={ () => setSeconds(30) }
+						onPress={ () => handleOnResendOTP() }
 						text='Kirim Ulang'
 						textSize={ 14 }
 						weight='700'
