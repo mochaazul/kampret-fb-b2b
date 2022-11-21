@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { Colors, Fonts } from '@constant';
@@ -28,6 +28,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		buttonStyle,
 		leadingIcon,
 		children,
+		loading,
 		...restOfProps
 	} = props;
 
@@ -106,6 +107,9 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
 						{ children && children }
+						{ loading &&
+							<ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />
+						}
 					</View>
 				</LinearGradient>
 			</TouchableOpacity>
@@ -114,7 +118,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 	} else {
 		return (
 			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
-
+				disabled={ disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -127,6 +131,9 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
 					{ children && children }
+					{ loading &&
+						<ActivityIndicator size="small" color={ Colors.company.red } />
+					}
 				</View>
 			</TouchableOpacity>
 		);

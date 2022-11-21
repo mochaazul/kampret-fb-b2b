@@ -3,6 +3,7 @@ import Colors from './colors';
 import Dispatches from './dispatches';
 import Endpoints from './endpoints';
 import Fonts from './fonts';
+import Variables from './variables';
 
 export {
 	Fonts,
@@ -10,5 +11,5 @@ export {
 	Colors,
 	Dispatches,
 	Endpoints,
-
+	Variables
 };

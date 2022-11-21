@@ -17,6 +17,7 @@ interface IButton extends React.ComponentProps<typeof TouchableOpacity> {
 	disabled?: boolean | undefined;
 	useShadow?: boolean | undefined;
 	leadingIcon?: ReactNode | undefined;
+	loading?: boolean;
 }
 
 export default IButton;

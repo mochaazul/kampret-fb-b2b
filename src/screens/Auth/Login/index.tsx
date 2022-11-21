@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TextStyle, View } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
-import { Images, Colors, Fonts } from '@constant';
+import { Images, Colors, Fonts, Variables } from '@constant';
 import { Button, Container, Input, Text, BottomSheet } from '@components';
 import { Auth } from '@validator';
-import { NavigationHelper } from '@helpers';
-import Forgot from './PhoneNumber';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from "@store";
+import PhoneNumber from './PhoneNumber';
 
 interface MyValues {
 	username: string,
@@ -16,20 +17,30 @@ interface MyValues {
 const Login = () => {
 
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
-	const [showPhoneInput, setShowPhoneInput] = useState<boolean>(false);
+	const [showPhoneInput, setShowPhoneInput] = useState<'login' | 'reset' | null>(null);
+
+	const postLogin = useAppDispatch(Actions.authAction.login);
+	const requestOTP = useAppDispatch(Actions.authAction.requestOTP);
+
+	const loadingAuth = useAppSelector(state => state.authReducers.loading);
+	const user = useAppSelector(state => state.authReducers.user);
 
 	const formik: FormikProps<MyValues> = useFormik<MyValues>({
 		validateOnBlur: true,
-		validateOnChange: enableValidation,
+		validateOnChange: true,
 		validationSchema: Auth.LoginValidationSchema,
 		initialValues: {
 			username: '',
 			password: '',
 		},
 		onSubmit: () => {
-			setShowPhoneInput(true);
+			postLogin(formik.values);
 		},
 	});
+
+	useEffect(() => {
+		if (user && user.user_status == Variables.USER_STATUS.UNVERIFIED_USER && !showPhoneInput) setShowPhoneInput('login');
+	}, [user]);
 
 	return (
 		<Container noPadding>
@@ -54,7 +65,7 @@ const Login = () => {
 				</View>
 				<View style={ { alignItems: 'flex-end' } }>
 					<Button
-						onPress={ () => setShowPhoneInput(true) }
+						onPress={ () => setShowPhoneInput('reset') }
 						mt={ 15 }
 						text='Lupa Password?'
 						textSize={ 14 }
@@ -71,6 +82,7 @@ const Login = () => {
 					mt={ 30 }
 					useShadow={ true }
 					disabled={ formik.values == formik.initialValues }
+					loading={ loadingAuth }
 				/>
 			</View>
 			<View style={ styles.register_container }>
@@ -87,10 +99,13 @@ const Login = () => {
 					backgroundColor='transparent' />
 			</View>
 			<BottomSheet
-				visible={ showPhoneInput }
-				onRequestClose={ () => setShowPhoneInput(false) }
+				visible={ showPhoneInput !== null }
+				onRequestClose={ () => setShowPhoneInput(null) }
 			>
-				<Forgot />
+				<PhoneNumber
+					onPhoneNumberSubmitted={ PhoneNumber => requestOTP({ phone: '62' + PhoneNumber.slice(1) }, showPhoneInput) }
+					loading={ loadingAuth }
+				/>
 			</BottomSheet>
 		</Container>
 	);
