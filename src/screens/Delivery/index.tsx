@@ -4,6 +4,8 @@ import { createMaterialTopTabNavigator, MaterialTopTabBarProps } from '@react-na
 
 import { Container, Header, Text } from '@components';
 import { Colors, Fonts } from '@constant';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from "@store";
 
 import DeliveryList from './List';
 import DeliveryHistory from './History';
@@ -52,22 +54,25 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 	</View>
 );
 
-const Delivery = () => (
-	<Container
-		noPadding
-		noScroll
-		header={ { type: 'main' } }
-		contentContainerStyle={ styles.container }
-	>
-
-		<Tab.Navigator
-			tabBar={ props => <TabItem { ...props } /> }
+const Delivery = () => {
+	const logout = useAppDispatch(Actions.authAction.logout);
+	return (
+		<Container
+			noPadding
+			noScroll
+			header={ { type: 'main', onPressRightButton: () => logout() } }
+			contentContainerStyle={ styles.container }
 		>
-			<Tab.Screen name="Pengiriman" component={ DeliveryList } />
-			<Tab.Screen name="Riwayat Pengiriman" component={ DeliveryHistory } />
-		</Tab.Navigator>
 
-	</Container>
-);
+			<Tab.Navigator
+				tabBar={ props => <TabItem { ...props } /> }
+			>
+				<Tab.Screen name="Pengiriman" component={ DeliveryList } />
+				<Tab.Screen name="Riwayat Pengiriman" component={ DeliveryHistory } />
+			</Tab.Navigator>
+
+		</Container>
+	);
+};
 
 export default Delivery;

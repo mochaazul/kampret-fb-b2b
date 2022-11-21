@@ -79,6 +79,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 			defaultStyle,
 		};
 	}, [backgroundColor, circle, width, noPadding, mt, type, color]);
+
+	// ini seharusnya bisa diluar lifecyle nya react ya
 	const shadowed: ViewStyle = {
 		shadowColor: '#000',
 		shadowOffset: {
@@ -89,6 +91,21 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		shadowRadius: 4.65,
 		elevation: 8,
 	};
+
+	const renderLoading = useMemo(() => {
+		if (loading) {
+			return <ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />;
+		}
+		return null;
+	}, [loading]);
+
+	const renderChildren = useMemo(() => {
+		if (children) {
+			return children;
+		}
+		return null;
+	}, [children]);
+
 	if (backgroundColor !== 'transparent') {
 		return (
 
@@ -111,10 +128,8 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 								format={ Fonts.textBody.m.bold as TextStyle }
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
-						{ children && children }
-						{ memoizedProps.loading &&
-							<ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />
-						}
+						{ renderChildren }
+						{ renderLoading }
 					</View>
 				</LinearGradient>
 			</TouchableOpacity>

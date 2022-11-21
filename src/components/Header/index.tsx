@@ -18,19 +18,30 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 		headerStyle,
 		...resOfProps
 	} = props;
+
+
 	if (!type || type == 'main') {
 		return (
 			<View style={ styles.container }>
 				<View style={ styles.row }>
 					<Text size={ 9 } style={ styles.version }>ver { env.version }</Text>
 					<Images.LogoFB />
+					<View style={ styles.rightIcon }>
+						<TouchableOpacity
+							activeOpacity={ .75 }
+							style={ styles.icon }
+							onPress={ () => NavigationHelper.push('Notification') }
+						>
+							<Images.Bell />
+						</TouchableOpacity>
+						<TouchableOpacity
+							activeOpacity={ .75 }
+							onPress={ () => onPressRightButton ? onPressRightButton() : null }
+						>
+							<Images.IconLogout />
+						</TouchableOpacity>
+					</View>
 
-					<TouchableOpacity
-						activeOpacity={ .75 }
-						onPress={ () => NavigationHelper.push('Notification') }
-					>
-						<Images.Bell />
-					</TouchableOpacity>
 				</View>
 			</View>
 		);
