@@ -16,28 +16,31 @@ export default {
 			type: Dispatches.LOGIN,
 			payload: null,
 		});
-		API.post<MiscInterface.BE<ServerResponses.LOGIN>>(`${ Endpoints.LOGIN }`, { ...payload, confirm_password: payload.password })
-			.then(response => {
-				if (response) {
-					dispatch({
-						type: Dispatches.LOGIN,
-						payload: response.data,
-					});
-					if (response.data.user_status == Variables.USER_STATUS.ACTIVE_USER) {
-						NavigationHelper.reset('Delivery');
-					}
-				}
-			})
-			.catch(error => {
-				// todo handle error
-			})
-			.finally(() => {
 
-				dispatch({
-					type: Dispatches.LOADING_AUTH,
-					payload: false,
+		setTimeout(() => {
+			API.post<MiscInterface.BE<ServerResponses.LOGIN>>(`${ Endpoints.LOGIN }`, { ...payload, confirm_password: payload.password })
+				.then(response => {
+					if (response) {
+						dispatch({
+							type: Dispatches.LOGIN,
+							payload: response.data,
+						});
+						if (response.data.user_status == Variables.USER_STATUS.ACTIVE_USER) {
+							NavigationHelper.reset('Delivery');
+						}
+					}
+				})
+				.catch(error => {
+					// todo handle error
+				})
+				.finally(() => {
+
+					dispatch({
+						type: Dispatches.LOADING_AUTH,
+						payload: false,
+					});
 				});
-			});
+		}, 5000);
 	},
 	requestOTP: (payload: AuthInterface.requestOTP, authType: 'login' | 'reset') => (dispatch: Dispatch) => {
 		dispatch({

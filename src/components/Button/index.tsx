@@ -32,6 +32,11 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		...restOfProps
 	} = props;
 
+	const memoizedProps = useMemo(() => {
+		const props = { loading, disabled };
+		return props;
+	}, [loading, disabled]);
+
 	const memoizedStyled = useMemo(() => {
 		const defaultStyle = { ...styles.defaultStyle };
 
@@ -88,7 +93,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		return (
 
 			<TouchableOpacity
-				disabled={ disabled }
+				disabled={ memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<LinearGradient
@@ -107,7 +112,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 								color={ color ? color : type === 'outline' ? Colors.black.default : Colors.white.pure }>{ text }</Text>
 						) }
 						{ children && children }
-						{ loading &&
+						{ memoizedProps.loading &&
 							<ActivityIndicator size="small" color={ Colors.white.pure } style={ styles.loadingStyle } />
 						}
 					</View>
@@ -118,7 +123,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 	} else {
 		return (
 			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
-				disabled={ disabled }
+				disabled={ memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -131,7 +136,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 							color={ color ? color : type === 'outline' ? Colors.black.default : Colors.yellow.default }>{ text }</Text>
 					) }
 					{ children && children }
-					{ loading &&
+					{ memoizedProps.loading &&
 						<ActivityIndicator size="small" color={ Colors.company.red } />
 					}
 				</View>
