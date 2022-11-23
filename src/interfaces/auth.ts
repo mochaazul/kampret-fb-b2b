@@ -2,6 +2,7 @@ import { LOGIN as LOGIN_SUCCESS_RESPONSE } from './serverResponses';
 
 export type AuthState = {
 	loading: boolean,
+	loginError: object | null,
 	user: LOGIN_SUCCESS_RESPONSE | null;
 };
 

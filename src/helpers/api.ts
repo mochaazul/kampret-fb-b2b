@@ -64,6 +64,7 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 						text1: 'Error',
 						text2: err.response.data.stat_msg,
 					});
+					return Promise.reject(err);
 					break;
 				default:
 					Toast.show({

@@ -3,8 +3,8 @@ import { Dispatches } from '@constant';
 import { AuthInterface } from '@interfaces';
 
 const initialState: AuthInterface.AuthState = {
-
 	loading: false,
+	loginError: null,
 	user: null
 };
 
@@ -25,6 +25,11 @@ const authReducers = (
 			return {
 				...state,
 				loading: payload
+			};
+		case Dispatches.LOGIN_ERROR:
+			return {
+				...state,
+				loginError: payload
 			};
 		case Dispatches.LOGOUT:
 			return initialState;

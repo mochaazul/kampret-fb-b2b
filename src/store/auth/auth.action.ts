@@ -16,6 +16,10 @@ export default {
 			type: Dispatches.LOGIN,
 			payload: null,
 		});
+		dispatch({
+			type: Dispatches.LOGIN_ERROR,
+			payload: null,
+		});
 
 		API.post<MiscInterface.BE<ServerResponses.LOGIN>>(`${ Endpoints.LOGIN }`, { ...payload, confirm_password: payload.password })
 			.then(response => {
@@ -31,6 +35,12 @@ export default {
 			})
 			.catch(error => {
 				// todo handle error
+				if (error.response.data && typeof error.response.data.stat_msg == 'string') {
+					dispatch({
+						type: Dispatches.LOGIN_ERROR,
+						payload: { username: error.response.data.stat_msg },
+					});
+				}
 			})
 			.finally(() => {
 
@@ -165,4 +175,10 @@ export default {
 			type: Dispatches.LOGOUT,
 		};
 	},
+	resetLoginError: () => {
+		return {
+			type: Dispatches.LOGIN_ERROR,
+			payload: null,
+		};
+	}
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TextStyle, View } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
-import { Images, Colors, Fonts, Variables } from '@constant';
+import { Images, Colors, Fonts, Variables, Dispatches } from '@constant';
 import { Button, Container, Input, Text, BottomSheet } from '@components';
 import { Auth } from '@validator';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
@@ -21,26 +21,36 @@ const Login = () => {
 
 	const postLogin = useAppDispatch(Actions.authAction.login);
 	const requestOTP = useAppDispatch(Actions.authAction.requestOTP);
+	const resetLoginError = useAppDispatch(Actions.authAction.resetLoginError);
 
 	const loadingAuth = useAppSelector(state => state.authReducers.loading);
+	const loadingError = useAppSelector(state => state.authReducers.loginError);
 	const user = useAppSelector(state => state.authReducers.user);
 
 	const formik: FormikProps<MyValues> = useFormik<MyValues>({
-		validateOnBlur: true,
-		validateOnChange: true,
+		validateOnBlur: enableValidation,
+		validateOnChange: enableValidation,
 		validationSchema: Auth.LoginValidationSchema,
 		initialValues: {
 			username: '',
 			password: '',
 		},
 		onSubmit: () => {
+			// formik.setErrors({ username: 'user asdad' });
 			postLogin(formik.values);
 		},
 	});
 
 	useEffect(() => {
 		if (user && user.user_status == Variables.USER_STATUS.UNVERIFIED_USER && !showPhoneInput) setShowPhoneInput('login');
-	}, [user]);
+		if (loadingError && !formik.errors.username) formik.setErrors(loadingError);
+	}, [user, loadingError]);
+
+	useEffect(() => {
+		return () => {
+			resetLoginError();
+		};
+	}, []);
 
 	return (
 		<Container noPadding>
