@@ -53,7 +53,7 @@ const Splash = () => {
 					({ receivedBytes, totalBytes }) => setDownloadProgress(receivedBytes / totalBytes)
 				);
 			} catch (error) {
-				console.log('splash error', error);
+
 			}
 		};
 
