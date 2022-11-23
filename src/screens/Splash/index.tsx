@@ -18,30 +18,28 @@ const Splash = () => {
 	const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
 	const updateStatusWrapper = (status: number) => {
-		let statusLabel = 'wait';
 		switch (status) {
 			case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-				statusLabel = 'Checking for updates.';
+				setUpdateStatus('Checking for updates.');
 				break;
 			case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-				statusLabel = 'downloading';
+				setUpdateStatus('downloading');
 				// updatePage = true
 				break;
 			case codePush.SyncStatus.INSTALLING_UPDATE:
-				statusLabel = 'installing';
+				setUpdateStatus('installing');
 				// updatePage = true
 				break;
 			case codePush.SyncStatus.UPDATE_INSTALLED:
-				statusLabel = 'installed';
+				setUpdateStatus('installed');
 				break;
 			case codePush.SyncStatus.UP_TO_DATE:
-				statusLabel = 'Up-to-date.';
-
+				setUpdateStatus('Up-to-date.');
 				break;
 			default:
 				break;
 		}
-		setUpdateStatus(statusLabel);
+
 	};
 
 	useEffect(() => {
@@ -54,41 +52,43 @@ const Splash = () => {
 					status => updateStatusWrapper(status),
 					({ receivedBytes, totalBytes }) => setDownloadProgress(receivedBytes / totalBytes)
 				);
-				console.log('innitiate', updateStatus, isUpdated, 'condition');
-
 			} catch (error) {
 				console.log('splash error', error);
 			}
 		};
 
-		startup();
-		// save timeoutId to clear the timeout when the component re-renders
-		// const tm = setTimeout(() => {
-		// 	if (userReducer) {
-		// 		NavigationHelper.reset('Delivery');
-		// 	} else {
-		// 		NavigationHelper.reset('Login');
-		// 	}
 
-		// }, 1500);
+		// save timeoutId to clear the timeout when the component re-renders
+		const tm = setTimeout(async () => {
+			await startup();
+			if (userReducer) {
+				NavigationHelper.reset('Delivery');
+			} else {
+				NavigationHelper.reset('Login');
+			}
+
+		}, 1500);
 
 		// clear timeout on re-render to avoid memory leaks
 		return () => {
-			//clearTimeout(tm);
+			clearTimeout(tm);
 		};
 	}, []);
 
 	const renderProgressBar = useMemo(() => {
-		console.log('down', downloadProgress);
-		return (
-			<ProgressBar
-				styleAttr='Horizontal'
-				indeterminate={ false }
-				progress={ downloadProgress }
-				color={ Colors.company.red }
-				style={ styles.progressBar }
-			/>
-		);
+		if (downloadProgress == 0) {
+			return (<View />);
+		} else {
+			return (
+				<ProgressBar
+					styleAttr='Horizontal'
+					indeterminate={ false }
+					progress={ downloadProgress }
+					color={ Colors.company.red }
+					style={ styles.progressBar }
+				/>
+			);
+		}
 	}, [downloadProgress]);
 
 	return (
