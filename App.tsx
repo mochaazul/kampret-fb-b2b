@@ -2,11 +2,14 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import Toast from 'react-native-toast-message';
+import codePush from 'react-native-code-push';
 
 import { AppRouter } from '@router';
 import { ReduxConfig } from '@config';
 import { MyToast } from '@components';
 import './src/translations';
+
+const CODE_PUSH_OPTIONS = { checkFrequency: codePush.CheckFrequency.MANUAL };
 
 const App = () => {
 	return (
@@ -23,4 +26,4 @@ const App = () => {
 	);
 };
 
-export default App;
+export default codePush(CODE_PUSH_OPTIONS)(App);

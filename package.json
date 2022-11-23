@@ -11,7 +11,9 @@
     "build:android": "cd android && ./gradlew assembleRelease",
     "build:android:production": "cd android && ./gradlew bundleRelease && cd ..",
     "pods:update": "cd ios && pod install --repo-update && cd ..",
-    "clean": "yarn cache clean && cd android && ./gradlew clean && cd .."
+    "clean": "yarn cache clean && cd android && ./gradlew clean && cd ..",
+		"push:win":"npx appcenter-cli codepush release-react -a rebelworksco/Freshbox-b2b -d Development",
+		"push:mac":"appcenter codepush release-react -a rebelworksco/Freshbox-b2b -d Development  "
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
@@ -20,6 +22,9 @@
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.0",
     "@types/react-native-vector-icons": "^6.4.12",
+    "appcenter": "4.4.5",
+    "appcenter-analytics": "4.4.5",
+    "appcenter-crashes": "4.4.5",
     "axios": "^0.27.2",
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -30,6 +35,7 @@
     "react": "18.1.0",
     "react-i18next": "^12.0.0",
     "react-native": "0.70.5",
+    "react-native-code-push": "^7.0.5",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-onesignal": "^4.4.1",
     "react-native-pager-view": "^6.0.2",
