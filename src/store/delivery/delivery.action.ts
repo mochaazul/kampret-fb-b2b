@@ -39,9 +39,7 @@ export default {
 					payload: items ?? [],
 				});
 			})
-			.catch((err) => {
-				// todo handle error
-				console.log('err', err);
+			.catch(() => {
 			})
 			.finally(() => {
 				dispatch({
