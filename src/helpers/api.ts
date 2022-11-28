@@ -48,7 +48,6 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		})
 		.catch((err: AxiosError) => {
 			const data: MiscInterface.BE<any> | null = parseErrData(err.response?.data);
-			console.log('err data', data);
 
 			switch (data?.stat_code) {
 				case 'ERR:AUTHENTICATION':
