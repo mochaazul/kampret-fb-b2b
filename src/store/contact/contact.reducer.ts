@@ -7,7 +7,7 @@ const initialState: ContactInterface.ContactState = {
 	loading: false,
 };
 
-type Actions = { type: string; payload: any };
+type Actions = { type: string; payload: any; };
 
 const contactReducers = (
 	state = initialState,

@@ -1,7 +1,6 @@
-import { Dimensions, Platform, StatusBar } from 'react-native';
-import { Colors } from '@constant';
+import { Dimensions } from 'react-native';
+import Colors from './colors';
 
-const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const normalize = (fontSize: number, standardScreenHeight = 812) => {

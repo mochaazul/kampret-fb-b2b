@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Toast from 'react-native-toast-message';
 
 import { Dispatches } from '@constant';
 import env from '../../env';
 import { store } from '../config/reduxConfig';
+import { MiscInterface } from '@interfaces';
+import { NavigationHelper } from '@helpers';
 
 let baseUrl = env.baseUrl;
 
@@ -44,25 +46,44 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		.then(res => {
 			return Promise.resolve(res.data);
 		})
-		.catch(err => {
-			store.dispatch({
-				type: Dispatches.API_LOADING_END,
-				payload: '',
-			});
-			switch (err.response.data.stat_code) {
+		.catch((err: AxiosError) => {
+			const data: MiscInterface.BE<any> | null = parseErrData(err.response?.data);
+			console.log('err data', data);
+
+			switch (data?.stat_code) {
 				case 'ERR:AUTHENTICATION':
 				case 'ERR:AUTHORIZED':
-					// to do redirec to login
+					if (data?.stat_msg) {
+						Toast.show({
+							type: 'error',
+							text1: 'Terjadi Kesalahan',
+							text2: data?.stat_msg,
+						});
+					}
+
+					store.dispatch({
+						type: Dispatches.CLEAR_DELIVERY_LIST,
+						payload: '',
+					});
+
+					store.dispatch({
+						type: Dispatches.LOGOUT,
+						payload: '',
+					});
+
+					NavigationHelper.reset('Login');
 					break;
+
 				case 'ERR:NOT_FOUND':
 					// to do redirect to page NOT_FOUND
 					break;
+
 				case 'ERR:BAD_REQUEST':
 				case 'ERR:EMPTY_DATA':
 					Toast.show({
 						type: 'error',
 						text1: 'Error',
-						text2: err.response.data.stat_msg,
+						text2: data?.stat_msg,
 					});
 					return Promise.reject(err);
 					break;
@@ -82,6 +103,14 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 				payload: '',
 			});
 		});
+};
+
+const parseErrData = (data: any | null) => {
+	try {
+		return data as MiscInterface.BE<any>;
+	} catch (e) {
+		return null;
+	}
 };
 
 // function to execute the http get request

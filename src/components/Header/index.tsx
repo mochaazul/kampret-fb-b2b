@@ -5,7 +5,8 @@ import { ComponentInterface } from '@interfaces';
 import { Images } from '@constant';
 import { NavigationHelper } from '@helpers';
 import { styles } from './style';
-import { Text } from '@components';
+
+import Text from '../Text/index';
 import env from '../../../env';
 
 const Header: React.FC<ComponentInterface.IHeader> = props => {
