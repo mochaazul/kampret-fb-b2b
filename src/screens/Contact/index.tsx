@@ -26,7 +26,7 @@ const Contact = () => {
 				refreshing={ contactState.loading }
 				showsVerticalScrollIndicator={ false }
 				keyExtractor={ (item: ContactInterface.Contact) => item.email }
-				data={ contactState.contact }
+				data={ contactState.deliveryList }
 				renderItem={ data => <Card data={ data.item } /> }
 			/>
 		</Container>

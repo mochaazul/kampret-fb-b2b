@@ -2,9 +2,11 @@ import React, { useMemo } from 'react';
 import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors, Fonts, Images } from '@constant';
-import { Button, Text } from '@components';
 import { ComponentInterface } from '@interfaces';
 import { NavigationHelper } from '@helpers';
+
+import Button from '../Button/index';
+import Text from '../Text/index';
 
 const RouteCard = ({
 	locationAddress,

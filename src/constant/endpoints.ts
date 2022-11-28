@@ -6,5 +6,6 @@ export default {
 	OTP_VERIFY: '/v1/otp/login-verify',
 	RESET_PASSWORD: '/v1/auth/update-password',
 	FORGOT_OTP_REQUEST: '/v1/otp/forgot-password-request',
-	FORGOT_OTP_VERIFY: '/v1/otp/forgot-password-verify'
+	FORGOT_OTP_VERIFY: '/v1/otp/forgot-password-verify',
+	DELIVERY_LIST: '/v1/delivery',
 };

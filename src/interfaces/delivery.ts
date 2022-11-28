@@ -1,3 +1,8 @@
+export interface DeliveryState {
+	deliveryList: Array<IDelivery>;
+	loadingList: boolean | undefined;
+}
+
 export interface IDeliveryItem {
 	id: string;
 	name: string | undefined;
@@ -11,8 +16,8 @@ export interface IDeliveryCustomer {
 	id: string;
 	custName: string | undefined;
 	validated: boolean | undefined;
-	numCart: number | undefined;
-	items: Array<IDeliveryItem> | undefined;
+	numCart?: number | undefined;
+	items?: Array<IDeliveryItem> | undefined;
 	address?: string;
 	deliveryTime?: string;
 	success?: boolean;
