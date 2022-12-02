@@ -10,8 +10,11 @@ import { Actions } from "@store";
 import DeliveryList from './List';
 import DeliveryHistory from './History';
 import styles from './style';
+import { NavigationProps } from '@interfaces';
 
 const Tab = createMaterialTopTabNavigator();
+
+type DeliveryProps = NavigationProps<'Delivery'>
 
 const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 	<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -54,7 +57,8 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 	</View>
 );
 
-const Delivery = () => {
+
+const Delivery = ({route}:DeliveryProps) => {
 	const logout = useAppDispatch(Actions.authAction.logout);
 	return (
 		<Container

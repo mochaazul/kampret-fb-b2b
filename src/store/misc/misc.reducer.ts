@@ -6,6 +6,7 @@ const initialState: MiscInterface.MiscState = {
 	loading: false,
 	deviceHeight: 0,
 	tmpImageUri: '',
+	notif: false
 };
 
 type Actions = { type: string; payload: any; };
@@ -35,6 +36,11 @@ const miscReducers = (
 			return {
 				...state,
 				tmpImageUri: payload,
+			};
+			case Dispatches.TMP_NOTIF:
+			return {
+				...state,
+				notif: payload,
 			};
 		default:
 			return state;

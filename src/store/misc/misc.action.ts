@@ -23,4 +23,10 @@ export default {
 			payload: imageUri,
 		};
 	},
+	setNotif: (notif: boolean) => {
+		return {
+			type: Dispatches.TMP_NOTIF,
+			payload: notif,
+		};
+	},
 };

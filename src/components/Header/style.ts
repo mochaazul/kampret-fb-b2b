@@ -10,6 +10,7 @@ interface IStyle {
 	version: TextStyle;
 	rightIcon: ViewStyle;
 	icon: ViewStyle;
+	badge:ViewStyle
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -54,9 +55,19 @@ export const styles = StyleSheet.create<IStyle>({
 	},
 	rightIcon: {
 		flexDirection: 'row',
-		alignItems: 'center'
+		alignItems: 'center',
+		position: 'relative'
 	},
 	icon: {
 		marginRight: 20
+	},
+	badge: {
+		width: 10,
+		height: 10,
+		borderRadius: 50,
+		position: 'absolute',
+		backgroundColor: Colors.red.gradient1,
+		top:-5,
+		right:0
 	}
 });
