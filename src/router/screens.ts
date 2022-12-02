@@ -90,3 +90,5 @@ export const screens = [
 		component: DeliveryHistoryDetail,
 	},
 ] as const;
+
+export type ScreenNameType = typeof screens[number]['name']

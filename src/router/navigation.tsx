@@ -2,17 +2,15 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { NavigationHelper } from '@helpers';
-import { screens } from './screens';
+import { NavigationHelper, useLinking } from '@helpers';
+import { ScreenNameType, screens } from './screens';
 import { Camera } from 'react-native-vision-camera';
-import { Linking } from 'react-native';
-import { store } from '../config/reduxConfig';
-import { Dispatches } from '@constant';
 
 const Stack = createNativeStackNavigator();
 
 const AppRouter = () => {
 
+	const {openedEvent:_} = useLinking()
 	useEffect(() => {
 		requestCamera();
 	}, []);
@@ -24,36 +22,17 @@ const AppRouter = () => {
 	return (
 		<NavigationContainer 
 			ref={ NavigationHelper.navigationRef }
-			linking={{
-				prefixes: ['freshboxb2b://'],
-				async getInitialURL() {
-					// Check if app was opened from a deep link
-					const url = await Linking.getInitialURL();
-					if (url != null) {
-						store.dispatch({
-							type: Dispatches.TMP_NOTIF,
-							payload: true
-						})
-						return url;
-					}
-				},
-				config: {
-					screens: {
-						Delivery: 'delivery/:notification',
-					},
-				}
-			}}
 		>
 			<Stack.Navigator
 				initialRouteName='Splash'
 				screenOptions={ { headerShown: false } }>
 				{
-					screens.map((screen, index) => {
+					screens.map(({name, component}, index) => {
 						return (
 							<Stack.Screen
 								key={ index }
-								name={ screen.name }
-								component={ screen.component } />
+								name={ name}
+								component={ component } />
 						);
 					})
 				}

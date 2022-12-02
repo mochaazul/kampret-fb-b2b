@@ -1,5 +1,5 @@
 import { View, TouchableOpacity } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { ComponentInterface } from '@interfaces';
 import { Dispatches, Images } from '@constant';
@@ -29,6 +29,25 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 	}, [notif])
 
 
+	const handleClickNotification = useCallback(
+		() => {
+			const params = {
+				item: null as boolean | null
+			}
+			if(notif) {
+				params.item = notif
+				store.dispatch({
+					type: Dispatches.TMP_NOTIF,
+					payload: false
+				})
+			}
+			NavigationHelper.push('Notification',{...params}) 
+		},
+		[notif],
+	)
+	
+
+
 	if (!type || type == 'main') {
 		return (
 			<View style={ styles.container }>
@@ -39,13 +58,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 						<TouchableOpacity
 							activeOpacity={ .75 }
 							style={ styles.icon }
-							onPress={ () => {
-								NavigationHelper.push('Notification') 
-								store.dispatch({
-									type: Dispatches.TMP_NOTIF,
-									payload: false
-								})
-							}}
+							onPress={ handleClickNotification}
 						>
 							<Images.Bell />
 							{renderBadge}
