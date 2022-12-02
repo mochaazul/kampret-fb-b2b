@@ -1,67 +1,93 @@
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, TextStyle, FlatList } from 'react-native';
-import React, { useState } from 'react';
+import { shallowEqual } from 'react-redux';
 
 import { Container, Text, Button } from '@components';
 import { Fonts, Colors, Images } from '@constant';
-import { NavigationHelper } from '@helpers';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { NavigationProps } from '@interfaces';
+import { Actions } from '@store';
+
 import ItemChecklist from './ItemChecklist';
 
-interface ItemCheck {
-	item: string,
-	itemCode: string,
-	checked: boolean;
-}
-const ItemChecking = () => {
-	const [dummyData, setDummyData] = useState<ItemCheck[]>([
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: true
-		},
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: false
-		},
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: false
-		},
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: true
-		},
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: false
-		},
-		{
-			item: '5 Pack Rumput Laut',
-			itemCode: 'SO0001-01',
-			checked: false
-		}
-	]);
+const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
+	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
+	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
+	const items = useAppSelector(
+		state => state
+			.deliveryReducers
+			.clientItems
+			.filter(
+				(item) => item.clientId == route.params?.clientId && item.deliveryId == route.params?.deliveryId
+			),
+		shallowEqual
+	);
+	const client = useAppSelector(state => state.deliveryReducers.clientValidation.find((client) => client.id == route.params?.clientId));
 
-	const handleOnItemChecked = (index: number) => {
-		const itemData = dummyData;
-		itemData[index].checked = !dummyData[index].checked;
-		setDummyData([...itemData]);
-	};
+	const getItem = useAppDispatch(Actions.deliveryAction.getClientItems);
+	const validateItem = useAppDispatch(Actions.deliveryAction.validateItem);
+	const validateBulk = useAppDispatch(Actions.deliveryAction.validateBulk);
+
+	useEffect(() => {
+		getItem({
+			deliveryId: route.params?.deliveryId,
+			clientId: route.params?.clientId
+		});
+	}, []);
+
+	useEffect(() => {
+		if (loadingValidate == true)
+			NavigationHelper.pop(1);
+	}, [loadingValidate]);
+
+	const renderListItem = useMemo(() => (
+		<FlatList
+			data={ items }
+			extraData={ items }
+			keyExtractor={ (_item, index) => 'listItem_' + index }
+			showsVerticalScrollIndicator={ false }
+			renderItem={ ({ item, index }) =>
+			(
+				<ItemChecklist
+					item={ item }
+					onCheckClicked={ validateItem }
+				/>)
+			}
+			refreshing={ loading == true }
+			onRefresh={ () => getItem({
+				deliveryId: route.params?.deliveryId,
+				clientId: route.params?.clientId
+			}) }
+		/>
+	), [items, loading]);
+
+	const renderButton = useMemo(() => (
+		<Button
+			mt={ 10 }
+			weight='700'
+			color={ Colors.white.pure }
+			text='Selesai Pemeriksaan'
+			onPress={ () => validateBulk({
+				deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
+			}) }
+			disabled={ (client?.numValidated ?? 0) > 0 }
+		/>
+	), [client?.numValidated]);
 
 	return (
 		<Container
 			header={ { title: 'Pemeriksaan Barang', type: 'regular' } }
-			contentBackgroudColor={ Colors.white.pure } noPadding noScroll>
+			contentBackgroudColor={ Colors.white.pure }
+			noPadding
+			noScroll
+		>
 
 			<View style={ [styles.row, styles.header] }>
 				<View>
-					<Text format={ Fonts.textBody.l.bold as TextStyle }>CID1234567890</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>{ client?.id }</Text>
 					<View style={ styles.row }>
-						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>Sumorice </Text>
-						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text>
+						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ client?.custName } </Text>
+						{/* <Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text> */ }
 					</View>
 
 				</View>
@@ -70,31 +96,13 @@ const ItemChecking = () => {
 					<Images.IconCheck />
 				</View>
 			</View>
-			<FlatList
-				data={ dummyData }
-				extraData={ dummyData }
-				keyExtractor={ (item, index) => 'listItem_' + index }
-				showsVerticalScrollIndicator={ false }
-				renderItem={ ({ item, index }) =>
-				(
-					<ItemChecklist
-						item={ item.item }
-						itemCode={ item.itemCode }
-						isChecked={ item.checked }
-						itemIndex={ index }
-						onCheckClicked={ indexChanged => handleOnItemChecked(indexChanged) }
-					/>)
-				}
-			/>
+
+			{ renderListItem }
+
 			<View style={ styles.footer }>
 				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
-				<Button
-					mt={ 10 }
-					weight='700'
-					color={ Colors.white.pure }
-					text='Selesai Pemeriksaan'
-					onPress={ () => NavigationHelper.pop(1) }
-				/>
+
+				{ renderButton }
 			</View>
 		</Container>
 	);

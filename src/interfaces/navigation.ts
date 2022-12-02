@@ -16,8 +16,13 @@ export type RootStackParamList = {
 	};
 	Reset?: undefined;
 	Delivery?: undefined;
-	ValidateClientID?: undefined;
-	ItemChecking?: undefined;
+	ValidateClientID?: {
+		deliveryId?: string;
+	};
+	ItemChecking?: {
+		deliveryId?: string;
+		clientId?: string;
+	};
 	InputKms?: {
 		photo?: string;
 	};

@@ -6,7 +6,7 @@ import { Dispatches } from '@constant';
 import env from '../../env';
 import { store } from '../config/reduxConfig';
 import { MiscInterface } from '@interfaces';
-import { NavigationHelper } from '@helpers';
+import * as NavigationHelper from './navigationHelper';
 
 let baseUrl = env.baseUrl;
 
@@ -49,52 +49,54 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		.catch((err: AxiosError) => {
 			const data: MiscInterface.BE<any> | null = parseErrData(err.response?.data);
 
-			switch (data?.stat_code) {
-				case 'ERR:AUTHENTICATION':
-				case 'ERR:AUTHORIZED':
-					if (data?.stat_msg) {
+			if (data) {
+				switch (data?.stat_code) {
+					case 'ERR:AUTHENTICATION':
+					case 'ERR:AUTHORIZED':
+						if (data?.stat_msg) {
+							Toast.show({
+								type: 'error',
+								text1: 'Terjadi Kesalahan',
+								text2: data?.stat_msg,
+							});
+						}
+
+						store.dispatch({
+							type: Dispatches.CLEAR_DELIVERY_LIST,
+							payload: '',
+						});
+
+						store.dispatch({
+							type: Dispatches.LOGOUT,
+							payload: '',
+						});
+
+						NavigationHelper.reset('Login');
+						break;
+
+					case 'ERR:NOT_FOUND':
+						// to do redirect to page NOT_FOUND
+						break;
+
+					case 'ERR:BAD_REQUEST':
+					case 'ERR:EMPTY_DATA':
 						Toast.show({
 							type: 'error',
-							text1: 'Terjadi Kesalahan',
+							text1: 'Error',
 							text2: data?.stat_msg,
 						});
-					}
-
-					store.dispatch({
-						type: Dispatches.CLEAR_DELIVERY_LIST,
-						payload: '',
-					});
-
-					store.dispatch({
-						type: Dispatches.LOGOUT,
-						payload: '',
-					});
-
-					NavigationHelper.reset('Login');
-					break;
-
-				case 'ERR:NOT_FOUND':
-					// to do redirect to page NOT_FOUND
-					break;
-
-				case 'ERR:BAD_REQUEST':
-				case 'ERR:EMPTY_DATA':
-					Toast.show({
-						type: 'error',
-						text1: 'Error',
-						text2: data?.stat_msg,
-					});
-					return Promise.reject(err);
-					break;
-				default:
-					Toast.show({
-						type: 'error',
-						text1: 'Error',
-						text2: 'Oops, sorry, we are experiencing some problem',
-					});
-					return Promise.reject(err);
-			}
-			// return Promise.reject(err)
+						return Promise.reject(err);
+						break;
+					default:
+						Toast.show({
+							type: 'error',
+							text1: 'Error',
+							text2: 'Oops, sorry, we are experiencing some problem',
+						});
+						return Promise.reject(err);
+				}
+			} else
+				return Promise.reject(err);
 		})
 		.finally(() => {
 			store.dispatch({
@@ -141,7 +143,7 @@ const postImage = (url: string, request: {
 const put = (url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('put', url, request, headers);
 
 // function to execute the http path request
-const patch = (url: string, request: object | Array<any>, headers?: Record<string, string>) =>
+const patch = <T>(url: string, request?: object | Array<any>, headers?: Record<string, string>) =>
 	apiRequest('patch', url, request, headers);
 
 const API = {

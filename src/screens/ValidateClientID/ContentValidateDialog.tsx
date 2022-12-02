@@ -1,14 +1,32 @@
+import React, { useEffect } from 'react';
 import { StyleSheet, View, TextStyle } from 'react-native';
-import React from 'react';
+import Toast from 'react-native-toast-message';
 
 import { Button, Text } from '@components';
 import { Fonts, Colors, Images } from '@constant';
+import { DeliveryInterface } from '@interfaces';
+import { NavigationHelper } from '@helpers';
 
-type ContentValidateDialogType = {
-	testBarcodeValue?:string
-}
+type ContentValidateDialogParams = {
+	client: DeliveryInterface.IDeliveryCustomer | undefined;
+	onCheckOther: () => void;
+	deliveryId: string | undefined;
+};
 
-const ContentValidateDialog = ({testBarcodeValue = "KMZWAY87AA"}: ContentValidateDialogType) => {
+const ContentValidateDialog = ({ client, onCheckOther, deliveryId }: ContentValidateDialogParams) => {
+
+	useEffect(() => {
+		// check if client undefined
+		if (!client) {
+			Toast.show({
+				type: 'error',
+				text1: 'Terjadi Kesalahan',
+				text2: 'Invalid client'
+			});
+			onCheckOther();
+		}
+	}, []);
+
 	return (
 		<View style={ { alignItems: 'stretch' } }>
 			<View style={ styles.header }>
@@ -20,10 +38,10 @@ const ContentValidateDialog = ({testBarcodeValue = "KMZWAY87AA"}: ContentValidat
 			<View style={ styles.content }>
 				<View style={ [styles.row, { justifyContent: 'space-between', paddingBottom: 15 }] }>
 					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>{testBarcodeValue}</Text>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ client?.id }</Text>
 						<View style={ styles.row }>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>Sumorice </Text>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ client?.custName } </Text>
+							{/* <Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text> */ }
 						</View>
 
 					</View>
@@ -35,16 +53,18 @@ const ContentValidateDialog = ({testBarcodeValue = "KMZWAY87AA"}: ContentValidat
 				<View style={ [styles.row, styles.subContent] }>
 					<View>
 						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-						<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } >10 Barang</Text>
+						<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } >{ client?.numItem } Barang</Text>
 					</View>
 					<Button
 						weight='700'
 						color={ Colors.company.red }
 						text='Periksa'
-
 						backgroundColor='transparent'
 						type='outline'
-					// mt={ 30 }
+						onPress={ () => {
+							onCheckOther();
+							NavigationHelper.push('ItemChecking', { deliveryId: deliveryId, clientId: client?.id });
+						} }
 					/>
 
 				</View>
@@ -54,6 +74,7 @@ const ContentValidateDialog = ({testBarcodeValue = "KMZWAY87AA"}: ContentValidat
 				weight='700'
 				color={ Colors.white.pure }
 				text='Scan Client ID Lainnya'
+				onPress={ onCheckOther }
 			/>
 		</View>
 	);
