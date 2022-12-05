@@ -1,13 +1,14 @@
 import { View, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { ComponentInterface } from '@interfaces';
-import { Images } from '@constant';
-import { NavigationHelper } from '@helpers';
+import { Dispatches, Images } from '@constant';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { styles } from './style';
 
 import Text from '../Text/index';
 import env from '../../../env';
+import { store } from '../../config/reduxConfig';
 
 const Header: React.FC<ComponentInterface.IHeader> = props => {
 	const {
@@ -20,6 +21,32 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 		...resOfProps
 	} = props;
 
+	const {notif} = useAppSelector(state => state.miscReducers)
+	const renderBadge = useMemo(() => {
+		if(notif) {
+			return <View style={styles.badge} />
+		}
+	}, [notif])
+
+
+	const handleClickNotification = useCallback(
+		() => {
+			const params = {
+				item: null as boolean | null
+			}
+			if(notif) {
+				params.item = notif
+				store.dispatch({
+					type: Dispatches.TMP_NOTIF,
+					payload: false
+				})
+			}
+			NavigationHelper.push('Notification',{...params}) 
+		},
+		[notif],
+	)
+	
+
 
 	if (!type || type == 'main') {
 		return (
@@ -31,9 +58,10 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 						<TouchableOpacity
 							activeOpacity={ .75 }
 							style={ styles.icon }
-							onPress={ () => NavigationHelper.push('Notification') }
+							onPress={ handleClickNotification}
 						>
 							<Images.Bell />
+							{renderBadge}
 						</TouchableOpacity>
 						<TouchableOpacity
 							activeOpacity={ .75 }

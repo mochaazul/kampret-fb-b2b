@@ -15,7 +15,9 @@ export type RootStackParamList = {
 		authType: 'login' | 'reset';
 	};
 	Reset?: undefined;
-	Delivery?: undefined;
+	Delivery?: {
+		notif?: boolean;
+	};
 	ValidateClientID?: {
 		deliveryId?: string;
 	};
@@ -28,4 +30,7 @@ export type RootStackParamList = {
 	};
 	DeliveryRoute?: undefined;
 	CapturePhoto?: undefined;
+	Notification?: {
+		item: any;
+	};
 };
