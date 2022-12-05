@@ -1,35 +1,45 @@
 import { StyleSheet, View, TextStyle } from 'react-native';
 import React, { useMemo } from 'react';
+import { shallowEqual } from 'react-redux';
 import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
 import { Button, Text } from '@components';
 import { DeliveryInterface } from '@interfaces';
-import { NavigationHelper } from '@helpers';
+import { NavigationHelper, useAppSelector } from '@helpers';
 
 interface ClientCardProps {
 	customer: DeliveryInterface.IDeliveryCustomer;
 	onOpenScanChoice?: () => void;
+	deliveryId: string;
 }
 
-const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
+const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps) => {
+
+	const items = useAppSelector(
+		state => state
+			.deliveryReducers
+			.clientItems
+			.filter((item) => item.deliveryId == deliveryId && item.clientId == customer.id),
+		shallowEqual
+	);
 
 	const renderItemInfo = useMemo(() => {
 
 		const item = {
-			info: customer.items?.length + ' barang ',
+			info: customer.numItem + ' barang ',
 			infoColor: Colors.company.red,
 			desc: 'perlu diperiksa'
 		};
 
-		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+		const numValidated = items?.filter((item) => item.validated)?.length ?? 0;
 
 		if (numValidated) {
 			item.infoColor = Colors.green.default;
 
-			if (numValidated < (customer.items?.length ?? 0)) {
+			if (numValidated < (customer.numItem ?? 0)) {
 				item.info = numValidated + ' ';
-				item.desc = 'dari ' + customer.items?.length + ' barang sudah sesuai';
+				item.desc = 'dari ' + customer.numItem + ' barang sudah sesuai';
 			} else {
 				item.info = numValidated + ' barang sudah sesuai';
 				item.desc = '';
@@ -44,7 +54,7 @@ const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
 				{ item.desc }
 			</Text>
 		);
-	}, [customer]);
+	}, [customer, items]);
 
 	const renderProgressBar = useMemo(() => {
 		const item = {
@@ -92,7 +102,10 @@ const ClientCard = ({ customer, onOpenScanChoice }: ClientCardProps) => {
 				text={ item.text }
 				backgroundColor='transparent'
 				type='outline'
-				onPress={ () => NavigationHelper.push('ItemChecking') }
+				onPress={ () => NavigationHelper.push(
+					'ItemChecking',
+					{ deliveryId: deliveryId, clientId: customer.id }
+				) }
 			/>
 		);
 	}, [customer]);

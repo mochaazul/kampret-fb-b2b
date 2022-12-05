@@ -94,7 +94,7 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 						useShadow={ true }
 						leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
 						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
-						onPress={ () => NavigationHelper.push('ValidateClientID', props) }
+						onPress={ () => NavigationHelper.push('ValidateClientID', { deliveryId: props.id }) }
 					/>
 				}
 

@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContactInterface, DeliveryInterface } from '@interfaces';
+import { DeliveryInterface } from '@interfaces';
 import { Dispatches } from '@constant';
 
 const initialState: DeliveryInterface.DeliveryState = {
 	deliveryList: [],
 	loadingList: false,
+	clientValidation: [],
+	loadingClient: false,
+	loadingValidateClient: false,
+	resultValidateClient: undefined,
+	clientItems: [],
+	loadingClientItem: undefined,
+	loadingValidateItem: false,
 };
 
 type Actions = { type: string; payload: any; };
@@ -15,6 +22,7 @@ const deliveryReducers = (
 ): DeliveryInterface.DeliveryState => {
 	const { type, payload } = action;
 	switch (type) {
+		// delivery list actions
 		case Dispatches.LOADING_DELIVERY_LIST:
 			return {
 				...state,
@@ -30,6 +38,46 @@ const deliveryReducers = (
 				...state,
 				deliveryList: [],
 			};
+
+		// delivery client actions
+		case Dispatches.SET_DELIVERY_CLIENT:
+			return {
+				...state,
+				clientValidation: [...payload],
+			};
+		case Dispatches.LOADING_DELIVERY_CLIENT:
+			return {
+				...state,
+				loadingClient: payload,
+			};
+		case Dispatches.LOADING_VALIDATE_CLIENT:
+			return {
+				...state,
+				loadingClient: payload,
+			};
+		case Dispatches.VALIDATE_CLIENT_RESULT:
+			return {
+				...state,
+				resultValidateClient: payload,
+			};
+
+		// client items actions
+		case Dispatches.LOADING_CLIENT_ITEMS:
+			return {
+				...state,
+				loadingClient: payload,
+			};
+		case Dispatches.LOADING_VALIDATE_CLIENT_ITEMS:
+			return {
+				...state,
+				loadingValidateItem: payload,
+			};
+		case Dispatches.SET_CLIENT_ITEMS:
+			return {
+				...state,
+				clientValidation: [...payload],
+			};
+
 		case Dispatches.LOGOUT:
 			return initialState;
 		default:

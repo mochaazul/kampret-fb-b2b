@@ -16,16 +16,21 @@ export type RootStackParamList = {
 	};
 	Reset?: undefined;
 	Delivery?: {
-		notif?:boolean
+		notif?: boolean;
 	};
-	ValidateClientID?: undefined;
-	ItemChecking?: undefined;
+	ValidateClientID?: {
+		deliveryId?: string;
+	};
+	ItemChecking?: {
+		deliveryId?: string;
+		clientId?: string;
+	};
 	InputKms?: {
 		photo?: string;
 	};
 	DeliveryRoute?: undefined;
 	CapturePhoto?: undefined;
 	Notification?: {
-		item:any
-	}
+		item: any;
+	};
 };
