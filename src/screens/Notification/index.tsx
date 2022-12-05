@@ -1,11 +1,23 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { FlatList, View } from "react-native";
 
 import { Container, Header, NotifItem } from "@components";
 import styles from "./style";
-import { Colors } from "@constant";
+import { NavigationProps } from '@interfaces';
 
-const Notification = () => {
+type NotificationProps = NavigationProps<'Notification'>
+
+const Notification = ({route}:NotificationProps) => {
+
+	const [arrSize, setArrSize] = useState(0)
+
+	useEffect(() => {
+		if(route.params?.item) {
+			setArrSize(prevState => prevState + 1)
+		}
+	}, [route])
+	
+
 	return (
 		<Container
 			noPadding
@@ -18,7 +30,7 @@ const Notification = () => {
 				bounces={ false }
 				contentContainerStyle={ styles.content }
 				showsVerticalScrollIndicator={ false }
-				data={ [...Array(10).keys()] }
+				data={ [...Array(arrSize).keys()] }
 				renderItem={ ({ i }: any) => (<NotifItem key={ i } />) }
 				ItemSeparatorComponent={ () => (<View style={ styles.line } />) }
 			/>
@@ -26,4 +38,4 @@ const Notification = () => {
 	);
 };
 
-export default Notification;
+export default React.memo(Notification);
