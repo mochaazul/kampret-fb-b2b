@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, TextStyle, FlatList } from 'react-native';
-import { shallowEqual } from 'react-redux';
 
 import { Container, Text, Button } from '@components';
 import { Fonts, Colors, Images } from '@constant';
@@ -11,55 +10,69 @@ import { Actions } from '@store';
 import ItemChecklist from './ItemChecklist';
 
 const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
+	const [saved, setSaved] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
 	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
-	const items = useAppSelector(
-		state => state
-			.deliveryReducers
-			.clientItems
-			.filter(
-				(item) => item.clientId == route.params?.clientId && item.deliveryId == route.params?.deliveryId
-			),
-		shallowEqual
-	);
+	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
+
+	const listItems = useAppSelector(state => state.deliveryReducers.clientItems);
+	const items = useMemo(() => {
+		return listItems.filter(
+			(item) => item.clientId == route.params?.clientId && item.deliveryId == route.params?.deliveryId
+		);
+	}, [listItems]);
+	const currentItems = [...items];
+
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation.find((client) => client.id == route.params?.clientId));
 
 	const getItem = useAppDispatch(Actions.deliveryAction.getClientItems);
+	const setItem = useAppDispatch(Actions.deliveryAction.setItem);
 	const validateItem = useAppDispatch(Actions.deliveryAction.validateItem);
 	const validateBulk = useAppDispatch(Actions.deliveryAction.validateBulk);
+	const setStatusValidateItem = useAppDispatch(Actions.deliveryAction.setStatusValidateItem);
 
 	useEffect(() => {
-		getItem({
-			deliveryId: route.params?.deliveryId,
-			clientId: route.params?.clientId
-		});
+		if (!items.length)
+			getItem({
+				deliveryId: route.params?.deliveryId,
+				clientId: route.params?.clientId
+			});
+
+		return () => {
+			if (!saved) setItem(currentItems);
+		};
 	}, []);
 
 	useEffect(() => {
-		if (loadingValidate == true)
+		if (resultValidate) {
+			setSaved(true);
+			setStatusValidateItem(false);
 			NavigationHelper.pop(1);
-	}, [loadingValidate]);
+		}
+	}, [resultValidate]);
 
-	const renderListItem = useMemo(() => (
-		<FlatList
-			data={ items }
-			extraData={ items }
-			keyExtractor={ (_item, index) => 'listItem_' + index }
-			showsVerticalScrollIndicator={ false }
-			renderItem={ ({ item, index }) =>
-			(
-				<ItemChecklist
-					item={ item }
-					onCheckClicked={ validateItem }
-				/>)
-			}
-			refreshing={ loading == true }
-			onRefresh={ () => getItem({
-				deliveryId: route.params?.deliveryId,
-				clientId: route.params?.clientId
-			}) }
-		/>
-	), [items, loading]);
+	const renderListItem = useMemo(() => {
+		return (
+			<FlatList
+				data={ items }
+				extraData={ items }
+				keyExtractor={ (_item, index) => 'listItem_' + index }
+				showsVerticalScrollIndicator={ false }
+				renderItem={ ({ item, index }) =>
+				(
+					<ItemChecklist
+						item={ item }
+						onCheckClicked={ (id) => validateItem(id) }
+					/>)
+				}
+				refreshing={ loading == true }
+				onRefresh={ () => getItem({
+					deliveryId: route.params?.deliveryId,
+					clientId: route.params?.clientId
+				}) }
+			/>
+		);
+	}, [items, loading]);
 
 	const renderButton = useMemo(() => (
 		<Button
@@ -70,9 +83,10 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 			onPress={ () => validateBulk({
 				deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
 			}) }
-			disabled={ (client?.numValidated ?? 0) > 0 }
+			disabled={ !(items.some((item) => item.validated)) }
+			loading={ loadingValidate }
 		/>
-	), [client?.numValidated]);
+	), [items, loadingValidate]);
 
 	return (
 		<Container

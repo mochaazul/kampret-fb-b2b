@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { shallowEqual } from 'react-redux';
 import Toast from 'react-native-toast-message';
 
 import { Container, BottomSheet, ModalDialog, Button } from '@components';
@@ -22,11 +21,11 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClient);
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
-	const clientList = useAppSelector(
-		state => state.deliveryReducers
-			.clientValidation
-			.filter((value) => value.deliveryId == route.params?.deliveryId),
-		shallowEqual
+
+	const client = useAppSelector(state => state.deliveryReducers.clientValidation);
+	const clientList = useMemo(() =>
+		(client.filter((value) => value.deliveryId == route.params?.deliveryId)),
+		[client]
 	);
 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryClient);
@@ -57,7 +56,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	};
 
 	const renderCustomers = useMemo(() => {
-		if (delivery?.customers && delivery.customers.length)
+		if (clientList)
 			return (
 				<FlatList
 					data={ clientList }
@@ -66,19 +65,20 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 					contentContainerStyle={ styles.listContentStyle }
 					keyExtractor={ (item: DeliveryInterface.IDeliveryCustomer) => item.id }
 					renderItem={
-						({ item: client }) =>
-							<ClientCard
+						({ item: client }) => {
+							return (<ClientCard
 								customer={ client }
-								deliveryId={ delivery.id }
+								deliveryId={ delivery?.id ?? '' }
 								onOpenScanChoice={ () => {
 									setShowScanChoices(true);
 									setSelectedClient(client);
 								} }
-							/>
+							/>);
+						}
 					}
 					ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
 					refreshing={ loading }
-					onRefresh={ () => getClient(delivery.id) }
+					onRefresh={ () => getClient(delivery?.id) }
 				/>
 			);
 	}, [clientList, loading]);

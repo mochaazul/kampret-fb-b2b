@@ -1,12 +1,11 @@
 import { StyleSheet, View, TextStyle } from 'react-native';
 import React, { useMemo } from 'react';
-import { shallowEqual } from 'react-redux';
 import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
 import { Button, Text } from '@components';
 import { DeliveryInterface } from '@interfaces';
-import { NavigationHelper, useAppSelector } from '@helpers';
+import { NavigationHelper } from '@helpers';
 
 interface ClientCardProps {
 	customer: DeliveryInterface.IDeliveryCustomer;
@@ -16,23 +15,15 @@ interface ClientCardProps {
 
 const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps) => {
 
-	const items = useAppSelector(
-		state => state
-			.deliveryReducers
-			.clientItems
-			.filter((item) => item.deliveryId == deliveryId && item.clientId == customer.id),
-		shallowEqual
-	);
-
 	const renderItemInfo = useMemo(() => {
 
 		const item = {
-			info: customer.numItem + ' barang ',
+			info: (customer.numItem ?? 0) + ' barang ',
 			infoColor: Colors.company.red,
 			desc: 'perlu diperiksa'
 		};
 
-		const numValidated = items?.filter((item) => item.validated)?.length ?? 0;
+		const numValidated = customer.numValidated ?? 0;
 
 		if (numValidated) {
 			item.infoColor = Colors.green.default;
@@ -54,7 +45,7 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 				{ item.desc }
 			</Text>
 		);
-	}, [customer, items]);
+	}, [customer.numItem, customer.numValidated]);
 
 	const renderProgressBar = useMemo(() => {
 		const item = {
@@ -62,10 +53,10 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 			color: Colors.gray.default,
 		};
 
-		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+		const numValidated = customer.numValidated ?? 0;
 		if (numValidated) {
 			item.color = Colors.green.default;
-			item.progress = numValidated / (customer.items?.length ?? 0);
+			item.progress = numValidated / (customer.numItem ?? 0);
 		}
 
 		return (
@@ -77,7 +68,7 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 				style={ styles.progressBar }
 			/>
 		);
-	}, [customer]);
+	}, [customer.numItem, customer.numValidated]);
 
 	const renderButton = useMemo(() => {
 		const item = {
@@ -85,9 +76,9 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 			color: Colors.company.red
 		};
 
-		const numValidated = customer.items?.filter((val) => val.validated)?.length ?? 0;
+		const numValidated = customer.numValidated ?? 0;
 		if (numValidated) {
-			if (numValidated < (customer.items?.length ?? 0)) {
+			if (numValidated < (customer.numItem ?? 0)) {
 				item.text = 'Lanjutkan Pemeriksaan';
 			} else {
 				item.text = 'Lihat Detail';
@@ -108,7 +99,7 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 				) }
 			/>
 		);
-	}, [customer]);
+	}, [customer.numItem, customer.numValidated]);
 
 	if (!customer.validated) {
 		return (

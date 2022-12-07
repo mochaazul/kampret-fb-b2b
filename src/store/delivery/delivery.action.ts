@@ -185,22 +185,45 @@ export default {
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
+				// get current items
+				const currentItem = store.getState().deliveryReducers.clientItems;
+
+				// inc validated item
+				let numValidated = 0;
+
 				// convert api response to delivery client
-				const items = data.items.map((item) => ({
-					id: item.sales_detail_id,
-					orderId: item.sales_no,
-					name: item.name,
-					validated: item.is_validate,
-					validatedTime: item.validate_date,
-					deliveryId: params.deliveryId,
-					clientId: params.clientId
-				}));
+				const items = data.items.map((item) => {
+					if (item.is_validate) numValidated++;
+
+					return {
+						id: item.sales_detail_id,
+						orderId: item.sales_no,
+						qty: item.qty,
+						name: item.name,
+						validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
+						validatedTime: item.validate_date,
+						deliveryId: params.deliveryId,
+						clientId: params.clientId
+					};
+				});
 
 				// set client item state
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items,
 				});
+
+				if (numValidated) {
+					dispatch({
+						type: Dispatches.SET_DELIVERY_CLIENT,
+						payload: store.getState().deliveryReducers.clientValidation.map((client) => {
+							if (client.id == params.clientId)
+								client.numValidated = numValidated;
+
+							return client;
+						})
+					});
+				}
 			})
 			.catch(() => { })
 			.finally(() => {
@@ -212,13 +235,21 @@ export default {
 			});
 	},
 
+	setItem: (items: DeliveryInterface.IDeliveryItem[]) => (dispatch: Dispatch) => {
+		// update current client items
+		dispatch({
+			type: Dispatches.SET_CLIENT_ITEMS,
+			payload: items,
+		});
+	},
+
 	// action to validate item locally
 	validateItem: (id: string) => (dispatch: Dispatch) => {
 		// iterate through current client items
 		const items = store.getState().deliveryReducers.clientItems.map(
 			(item) => {
 				if (item.id == id) {
-					item.validated = true;
+					item.validated = !item.validated;
 				}
 
 				return item;
@@ -240,17 +271,25 @@ export default {
 			payload: true
 		});
 
+		// set result validate item to false
+		dispatch({
+			type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
+			payload: false
+		});
+
 		// get current state
 		const state = store.getState();
 
 		// get items validated locally
-		const validatedItems: Array<any> = state
+		const items = state
 			.deliveryReducers
-			.clientItems.filter((item) => item.validated)
-			.map((item) => ({
-				sales_detail_id: item.id,
-				is_validate: true,
-			}));
+			.clientItems.filter((item) => item.clientId == params.clientId && item.validated);
+
+		// map items to req body
+		const validatedItems: Array<any> = items.map((item) => ({
+			sales_detail_id: item.id,
+			is_validate: true,
+		}));
 
 		// request api to validate items
 		API.patch<MiscInterface.BE<DeliveryResponseInterface.DeliveryItemResp>>
@@ -278,8 +317,31 @@ export default {
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items,
 				});
+
+				// update client num validated items
+				dispatch({
+					type: Dispatches.SET_DELIVERY_CLIENT,
+					payload: state.deliveryReducers.clientValidation.map((client) => {
+						if (client.id == params.clientId)
+							client.numValidated = items.filter((item) => item.validated && item.clientId == client.id).length;
+
+						return client;
+					})
+				});
+
+				// set result validate item to true
+				dispatch({
+					type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
+					payload: true
+				});
 			})
-			.catch(() => { })
+			.catch(() => {
+				// update current client items
+				dispatch({
+					type: Dispatches.SET_CLIENT_ITEMS,
+					payload: items,
+				});
+			})
 			.finally(() => {
 				// set loading validate item to false
 				dispatch({
@@ -287,5 +349,13 @@ export default {
 					payload: false
 				});
 			});
+	},
+
+	setStatusValidateItem: (value: boolean | undefined) => (dispatch: Dispatch) => {
+		// set result validate item to true
+		dispatch({
+			type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
+			payload: value
+		});
 	}
 };
