@@ -10,6 +10,7 @@ export interface DeliveryState {
 	clientItems: Array<IDeliveryItem>;
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
+	statusValidateItem: boolean | undefined;
 }
 
 export interface IDeliveryItem {

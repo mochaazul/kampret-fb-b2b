@@ -11,7 +11,8 @@ const initialState: DeliveryInterface.DeliveryState = {
 	resultValidateClient: undefined,
 	clientItems: [],
 	loadingClientItem: undefined,
-	loadingValidateItem: false,
+	loadingValidateItem: undefined,
+	statusValidateItem: undefined
 };
 
 type Actions = { type: string; payload: any; };
@@ -72,10 +73,15 @@ const deliveryReducers = (
 				...state,
 				loadingValidateItem: payload,
 			};
+		case Dispatches.STATUS_VALIDATE_CLIENT_ITEMS:
+			return {
+				...state,
+				statusValidateItem: payload,
+			};
 		case Dispatches.SET_CLIENT_ITEMS:
 			return {
 				...state,
-				clientValidation: [...payload],
+				clientItems: [...payload],
 			};
 
 		case Dispatches.LOGOUT:
