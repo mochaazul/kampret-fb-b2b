@@ -1,10 +1,7 @@
-import { TextInput, TextStyle, NativeSyntheticEvent, View, TextInputKeyPressEventData } from 'react-native';
-import React, { LegacyRef, useEffect, useMemo, useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { TextInput, TextStyle, View } from 'react-native';
+import React, { LegacyRef } from 'react';
 
-import Text from '../Text';
 import { Colors, Fonts } from '@constant';
-import { Ratio } from '@helpers';
 import { ComponentInterface } from '@interfaces';
 
 const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
@@ -22,39 +19,52 @@ const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
 	const inputRef4: LegacyRef<TextInput> | undefined = React.createRef();
 
 	const onOtpKeyPress = (index: number, value: string, formikName: string) => {
-
-		if (index === 0) {
-			if (value === '') {
-				//inputRef1.current?.focus();
-			} else {
-				inputRef2.current?.focus();
+		const focusNext = (index: number) => {
+			switch (index) {
+				case 0:
+					inputRef2.current?.focus();
+					break;
+				case 1:
+					inputRef3.current?.focus();
+					break;
+				case 2:
+					inputRef4.current?.focus();
+					break;
 			}
 
-		} else if (index === 1) {
-			if (value === '') {
-				//inputRef2.current?.focus();
-			} else {
-				inputRef3.current?.focus();
-			}
+		};
 
-		} else if (index === 2) {
-			if (value === '') {
-				//inputRef3.current?.focus();
-			} else {
-				inputRef4.current?.focus();
-			}
+		switch (value.length) {
+			case 0:
+				formik?.setFieldValue(formikName, null);
+				break;
+			case 1:
+				focusNext(index);
+				formik?.setFieldValue(formikName, value);
+				break;
+			case 2:
+				formik?.setFieldValue(formikName, value[1]);
+				focusNext(index);
+				break;
+			case 4:
+				formik.setFieldValue('otp1', value[0]);
+				formik.setFieldValue('otp2', value[1]);
+				formik.setFieldValue('otp3', value[2]);
+				formik.setFieldValue('otp4', value[3]);
+				break;
 		}
-		formik?.setFieldValue(formikName, value);
+
+
 	};
 
 	const isBackspaceHandler = (key: string, index: number, formikName: string) => {
 		if (key == 'Backspace') {
 			if (index == 3) {
-				inputRef3.current?.focus();
+				inputRef4.current?.focus();
 			} else if (index == 2) {
-				inputRef2.current?.focus();
+				inputRef3.current?.focus();
 			} else if (index == 1) {
-				inputRef1.current?.focus();
+				inputRef2.current?.focus();
 			}
 		}
 	};
@@ -64,14 +74,13 @@ const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
 			<TextInput
 				value={ formik?.values['otp1'] }
 				onChangeText={ text => onOtpKeyPress(0, text, 'otp1') }
-				//onKeyPress={ ({ nativeEvent }) => isBackspaceHandler(nativeEvent.key, 1, 'otp1') }
 				style={ { ...Fonts.heading.h2 as TextStyle, padding: 20 } }
 				keyboardType='number-pad'
-				maxLength={ 1 }
+				maxLength={ 4 }
 				ref={ inputRef1 }
 				placeholder='-'
 				placeholderTextColor={ Colors.gray.default }
-
+				autoComplete='sms-otp'
 			/>
 			<TextInput
 				value={ formik?.values['otp2'] }
@@ -79,10 +88,11 @@ const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
 				onKeyPress={ ({ nativeEvent }) => isBackspaceHandler(nativeEvent.key, 1, 'otp2') }
 				style={ { ...Fonts.heading.h2 as TextStyle, padding: 20 } }
 				keyboardType='number-pad'
-				maxLength={ 1 }
+				maxLength={ 4 }
 				ref={ inputRef2 }
 				placeholder='-'
 				placeholderTextColor={ Colors.gray.default }
+				autoComplete='sms-otp'
 			/>
 			<TextInput
 				value={ formik?.values['otp3'] }
@@ -90,10 +100,11 @@ const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
 				onKeyPress={ ({ nativeEvent }) => isBackspaceHandler(nativeEvent.key, 2, 'otp3') }
 				style={ { ...Fonts.heading.h2 as TextStyle, padding: 20 } }
 				keyboardType='number-pad'
-				maxLength={ 1 }
+				maxLength={ 4 }
 				ref={ inputRef3 }
 				placeholder='-'
 				placeholderTextColor={ Colors.gray.default }
+				autoComplete='sms-otp'
 			/>
 			<TextInput
 				value={ formik?.values['otp4'] }
@@ -101,10 +112,11 @@ const InputOTP: React.FC<ComponentInterface.IInputOTP> = props => {
 				onKeyPress={ ({ nativeEvent }) => isBackspaceHandler(nativeEvent.key, 3, 'otp4') }
 				style={ { ...Fonts.heading.h2 as TextStyle, padding: 20 } }
 				keyboardType='number-pad'
-				maxLength={ 1 }
+				maxLength={ 4 }
 				ref={ inputRef4 }
 				placeholder='-'
 				placeholderTextColor={ Colors.gray.default }
+				autoComplete='sms-otp'
 			/>
 		</View>
 	);
