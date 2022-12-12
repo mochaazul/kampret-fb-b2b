@@ -407,65 +407,6 @@ export default {
 				});
 			});
 	},
-	getDeliveryHistoryRoute: (deliveryId: string) => (dispatch: Dispatch) => {
-		// set loading delivery list
-		dispatch({
-			type: Dispatches.LOADING_DELIVERY_LIST,
-			payload: true,
-		});
-
-		// request client delivery list data from api
-		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryList[]>>
-			(`${ Endpoints.DELIVERY_HISTORY_ROUTE(deliveryId) }`)
-			.then(response => {
-				if (response.data) {
-					//count data
-					let dataCount: number = 0;
-					if (response.data.length) {
-						dataCount = response.data.length;
-					}
-					//maping BE response into existing type
-					const clientRoutes: ComponentInterface.IRoute[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
-						const time = route.frame_time.split('-');
-						return {
-							locationTitle: route.client_name,
-							locationAddress: route.client_address,
-							locationTime: {
-								startAt: time[0],
-								estEnd: time[1]
-							},
-							isDelivered: {
-								complain: route.item_reject,
-								receivedCount: route.item_receive,
-								totalDeliveredItem: route.item_order
-							},
-							isLastRoute: index == dataCount - 1,
-							totalItem: route.item_order,
-							disabled: false,
-							numbering: index + 1
-						};
-					});
-					dispatch({
-						type: Dispatches.SET_DELIVERY_HISTORY_ROUTE,
-						payload: clientRoutes,
-					});
-
-				} else {
-					Toast.show({
-						type: 'error',
-						text1: 'Oopps...',
-						text2: 'Get Route has Empty Data',
-					});
-				}
-			})
-			.finally(() => {
-				// set loading delivery list to false
-				dispatch({
-					type: Dispatches.LOADING_DELIVERY_LIST,
-					payload: false,
-				});
-			});
-	},
 	getDeliveryHistoryRouteDetail: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
 		dispatch({
 			type: Dispatches.LOADING_DELIVERY_LIST,
@@ -486,7 +427,16 @@ export default {
 							name: response.data.client_name,
 							time: response.data.frame_time
 						},
-						item: response.data.items,
+						item: response.data.items ? response.data.items.map(item => {
+							return {
+								id: item.sales_no,
+								name: item.item_name,
+								isComplain: item.complaint_notes ? true : false,
+								complainAmount: item.qty_reject + '',
+								complainLabel: item.qty_order + '',
+								complainDesc: item.complaint_notes
+							};
+						}) : null,
 						receipt: {
 							name: response.data.receipt.received_name,
 							date: response.data.receipt.received_date,
@@ -498,6 +448,67 @@ export default {
 					dispatch({
 						type: Dispatches.SET_DELIVERY_HISTORY_DETAIL,
 						payload: clientHistoryDetail,
+					});
+
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'Get History Detail has Empty Data',
+					});
+				}
+			})
+			.finally(() => {
+				// set loading delivery list to false
+				dispatch({
+					type: Dispatches.LOADING_DELIVERY_LIST,
+					payload: false,
+				});
+			});
+	},
+	getDeliveryHistoryRoute: (deliveryId: string) => (dispatch: Dispatch) => {
+
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_LIST,
+			payload: true,
+		});
+		// request client delivery list data from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryList[]>>
+			(`${ Endpoints.DELIVERY_HISTORY_ROUTE(deliveryId) }`)
+			.then(response => {
+
+				if (response.data) {
+
+					//count data
+					let dataCount: number = 0;
+					if (response.data.length) {
+						dataCount = response.data.length;
+					}
+					//maping BE response into existing type
+					const clientRoutes: ComponentInterface.IRoute[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
+						const time = route.frame_time.split('-');
+						return {
+							clientId: route.client_no,
+							locationTitle: route.client_name,
+							locationAddress: route.client_address,
+							locationTime: {
+								startAt: time[0],
+								estEnd: time[1]
+							},
+							isDelivered: {
+								complain: route.item_reject,
+								receivedCount: route.item_receive,
+								totalDeliveredItem: route.item_order
+							},
+							isLastRoute: index == dataCount - 1,
+							totalItem: route.item_order,
+							disabled: false,
+							numbering: index + 1
+						};
+					});
+					dispatch({
+						type: Dispatches.SET_DELIVERY_HISTORY_ROUTE,
+						payload: clientRoutes,
 					});
 
 				} else {

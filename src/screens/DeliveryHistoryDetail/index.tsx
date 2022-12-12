@@ -1,14 +1,22 @@
-import React, { } from "react";
+import React, { useEffect } from "react";
 import { Image, ScrollView, TextStyle, View } from "react-native";
 
 import { Container, Input, Text } from "@components";
 import { Colors, Fonts, Images } from "@constant";
+import { NavigationProps } from '@interfaces';
+import { useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from '@store';
 
 import styles from "./styles";
 import CheckItem, { CheckItemProp } from "../DeliveryCheck/CheckItem";
 
-const DeliveryHistoryDetail = () => {
+const DeliveryHistoryDetail = ({ route }: NavigationProps<'DeliveryHistoryDetail'>) => {
+	const deliveryHistoryDetail = useAppSelector(state => state.deliveryReducers.deliveryHistoryRouteDetail);
+	const loading = useAppSelector(state => state.deliveryReducers.loadingList);
 
+	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistoryRouteDetail);
+
+	useEffect(() => { fetchList(route.params.deliveryId, route.params.clientId); }, []);
 	const dummyItems: Array<CheckItemProp> = [
 		{
 			id: 'SO0001-01',
@@ -38,7 +46,6 @@ const DeliveryHistoryDetail = () => {
 			name: '5 Pack Daging Unta',
 		},
 	];
-
 	return (
 		<Container
 			noPadding
@@ -53,12 +60,12 @@ const DeliveryHistoryDetail = () => {
 			<ScrollView>
 				<View style={ styles.customerInfo }>
 					<Images.IconLocation />
-
-					<View style={ { marginStart: 16 } }>
-
-						<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>Sumorice</Text>
-						<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>Jl. Sultan Iskandar Muda No.6B, RT.7/RW.9, Kby. Lama Sel., Kec. Kby. Lama, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12240</Text>
-					</View>
+					{ deliveryHistoryDetail &&
+						<View style={ { marginStart: 16 } }>
+							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ deliveryHistoryDetail.header.name }</Text>
+							<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ deliveryHistoryDetail.header.address }</Text>
+						</View>
+					}
 				</View>
 
 				<Text
@@ -69,8 +76,8 @@ const DeliveryHistoryDetail = () => {
 					Pesanan
 				</Text>
 
-				{
-					dummyItems.map((value: CheckItemProp, index: number) => {
+				{ deliveryHistoryDetail &&
+					deliveryHistoryDetail.item?.map((value: CheckItemProp, index: number) => {
 						return (
 							<View key={ 'item_' + index }>
 								{ index > 0 && <View style={ { height: 10 } } /> }
@@ -92,13 +99,13 @@ const DeliveryHistoryDetail = () => {
 					<Input
 						name="receiverName"
 						label="Nama Penerima"
-						value="Susi Susanti"
+						value={ deliveryHistoryDetail ? deliveryHistoryDetail.receipt.name : '' }
 						disabled
 					/>
 
 					<Image
 						style={ styles.addImage }
-						source={ require('../../assets/images/dummy_delivery_receiver.png') }
+						source={ deliveryHistoryDetail && deliveryHistoryDetail.receipt.photo !== '' ? { uri: deliveryHistoryDetail.receipt.photo } : require('../../assets/images/dummy_delivery_receiver.png') }
 					/>
 
 				</View>

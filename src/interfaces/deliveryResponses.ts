@@ -44,8 +44,17 @@ export interface ClientDeliveryHistoryDetail {
 	client_address: string;
 	frame_time: string;
 	receipt: Receipt;
-	items: [] | null;
+	items: ClientDeliveryHistoryDetailItem[] | null;
 	carts: Cart[];
+}
+
+interface ClientDeliveryHistoryDetailItem {
+	complaint_notes: string;
+	complaint_photos: null | string;
+	item_name: string;
+	qty_order: number;
+	qty_reject: number;
+	sales_no: string;
 }
 
 export interface Cart {

@@ -1,12 +1,20 @@
 import { FlatList } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Container, RouteCard } from '@components';
 import { Images } from '@constant';
-import { ComponentInterface } from '@interfaces';
+import { ComponentInterface, NavigationProps } from '@interfaces';
 import { NavigationHelper } from '@helpers';
+import { useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from '@store';
 
-const DeliveryRouteHistory = () => {
+const DeliveryRouteHistory = ({ route }: NavigationProps<'DeliveryRouteHistory'>) => {
+	const deliveryHistoryRoute = useAppSelector(state => state.deliveryReducers.deliveryHistoryRoute);
+	const loading = useAppSelector(state => state.deliveryReducers.loadingList);
+
+	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistoryRoute);
+
+	useEffect(() => { fetchList(route.params.deliveryId); }, []);
 
 	const dummyData: ComponentInterface.IRoute[] = [
 		{
@@ -61,8 +69,10 @@ const DeliveryRouteHistory = () => {
 		>
 			<FlatList
 				keyExtractor={ (_item, index) => 'route_' + index }
-				data={ dummyData }
-				renderItem={ ({ item }) => <RouteCard { ...item } /> }
+				data={ deliveryHistoryRoute }
+				renderItem={ ({ item }) => <RouteCard { ...item } deliveryId={ route.params.deliveryId } /> }
+				onRefresh={ fetchList }
+				refreshing={ loading }
 			/>
 		</Container>
 	);

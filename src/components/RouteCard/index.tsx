@@ -9,6 +9,8 @@ import Button from '../Button/index';
 import Text from '../Text/index';
 
 const RouteCard = ({
+	deliveryId,
+	clientId,
 	locationAddress,
 	locationTime,
 	locationTitle,
@@ -34,7 +36,7 @@ const RouteCard = ({
 			style={ containerStyle }
 			key={ 'route_' + numbering }
 			activeOpacity={ .7 }
-			onPress={ () => onClick ? onClick : NavigationHelper.push('DeliveryHistoryDetail') }
+			onPress={ () => onClick ? onClick : NavigationHelper.push('DeliveryHistoryDetail', { deliveryId, clientId }) }
 		>
 
 			<View style={ styles.numbering }>
