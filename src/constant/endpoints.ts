@@ -9,6 +9,8 @@ export default {
 	FORGOT_OTP_VERIFY: '/v1/otp/forgot-password-verify',
 	DELIVERY_LIST: '/v1/delivery',
 	DELIVERY_HISTORY_LIST: '/v1/delivery-history',
+	DELIVERY_HISTORY_CLIENT_DETAIL: (deliveryId: string, clientId: string) => (`v1/delivery-history/${ deliveryId }/client/${ clientId }`),
+	DELIVERY_HISTORY_ROUTE: (deliveryId: string) => (`v1/delivery-history/${ deliveryId }`),
 	DELIVERY_CLIENT: (deliveryId: string) => (`v1/delivery-count-item/${ deliveryId }`),
 	VALIDATE_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-validate/${ deliveryId }/client/${ clientId }`),
 	DELIVERY_CLIENT_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery/${ deliveryId }/client/${ clientId }`),

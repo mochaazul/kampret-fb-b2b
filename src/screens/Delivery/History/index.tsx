@@ -24,6 +24,8 @@ const DeliveryHistory = () => {
 			contentContainerStyle={ styles.content }
 			showsVerticalScrollIndicator={ false }
 			data={ deliveryHistory }
+			onRefresh={ fetchList }
+			refreshing={ loading }
 			renderItem={
 				({ item, index }) => <DeliveryHistoryItem key={ 'item_' + index } { ...item } />
 			}

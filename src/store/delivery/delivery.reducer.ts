@@ -13,7 +13,9 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
-	deliveryHistory: undefined
+	deliveryHistory: undefined,
+	deliveryHistoryRoute: undefined,
+	deliveryHistoryRouteDetail: undefined
 };
 
 type Actions = { type: string; payload: any; };
@@ -88,6 +90,16 @@ const deliveryReducers = (
 			return {
 				...state,
 				deliveryHistory: payload
+			};
+		case Dispatches.SET_DELIVERY_HISTORY_ROUTE:
+			return {
+				...state,
+				deliveryHistoryRoute: payload
+			};
+		case Dispatches.SET_DELIVERY_HISTORY_DETAIL:
+			return {
+				...state,
+				deliveryHistoryRouteDetail: payload
 			};
 		case Dispatches.LOGOUT:
 			return initialState;

@@ -34,7 +34,7 @@ const RouteCard = ({
 			style={ containerStyle }
 			key={ 'route_' + numbering }
 			activeOpacity={ .7 }
-			onPress={ onClick }
+			onPress={ () => onClick ? onClick : NavigationHelper.push('DeliveryHistoryDetail') }
 		>
 
 			<View style={ styles.numbering }>

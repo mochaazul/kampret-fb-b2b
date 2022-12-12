@@ -26,6 +26,39 @@ export interface DeliveryHistoryList {
 	text_status: string;
 }
 
+export interface ClientDeliveryHistoryList {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	frame_time: string;
+	delivery_status: number;
+	text_delivery_status: string;
+	item_order: number;
+	item_receive: number;
+	item_reject: number;
+}
+
+export interface ClientDeliveryHistoryDetail {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	frame_time: string;
+	receipt: Receipt;
+	items: [] | null;
+	carts: Cart[];
+}
+
+export interface Cart {
+	cart_type: string;
+	qty: number;
+}
+
+export interface Receipt {
+	received_name: string;
+	received_date: string;
+	photo: string;
+}
+
 export interface DeliveryClientData {
 	client_no: string;
 	client_name: string;
