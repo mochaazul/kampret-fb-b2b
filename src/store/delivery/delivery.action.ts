@@ -374,22 +374,48 @@ export default {
 		});
 
 		// convert params to form data
-		const formData = new FormData();
-		formData.append('start_lat', params.lat);
-		formData.append('start_long', params.long);
-		formData.append('start_odometer', params.odo);
-		formData.append('start_location', params.location ?? '');
-		formData.append('start_odometer_image', { uri: params.imageUrl ?? '', name: 'test.jpg', 'image/*' });
+		// const formData = new FormData();
+		// formData.append('start_lat', params.lat);
+		// formData.append('start_long', params.long);
+		// formData.append('start_odometer', params.odo);
+		// formData.append('start_location', params.location ?? '');
+		// formData.append('start_odometer_image', { uri: params.imageUrl ?? 'test', name: 'test.jpg', type: 'images/*' });
 
-		API.post(Endpoints.INPUT_KM(params.deliveryId), formData, { "Content-Type": "multipart/form-data" })
-			.then()
-			.catch()
-			.finally(() => {
-				// set loading input km to false
-				dispatch({
-					type: Dispatches.LOADING_INPUT_KM,
-					payload: false
-				});
-			});
+		API.postImage(
+			Endpoints.INPUT_KM(params.deliveryId),
+			{
+				image: {
+					uri: params.imageUrl ?? 'test',
+					name: 'test.jpg',
+					type: 'images/*',
+				},
+				properties: {
+					'start_lat': params.lat,
+					'start_long': params.long,
+					'start_odometer': params.odo,
+					'start_location': params.location ?? '',
+				}
+			}
+		)
+			.then(() => { })
+			.catch(() => { })
+			.finally(() => { })
+			;
+
+
+		// API.post(
+		// 	Endpoints.INPUT_KM(params.deliveryId),
+		// 	formData,
+		// 	{ "Content-Type": "multipart/form-data" }
+		// )
+		// 	.then()
+		// 	.catch()
+		// 	.finally(() => {
+		// 		// set loading input km to false
+		// 		dispatch({
+		// 			type: Dispatches.LOADING_INPUT_KM,
+		// 			payload: false
+		// 		});
+		// 	});
 	},
 };

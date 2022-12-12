@@ -133,13 +133,22 @@ const post = <T>(url: string, request: object | Array<any>, headers?: Record<str
 
 // function to execute the http post image
 const postImage = (url: string, request: {
-	uri: string,
-	name: string,
-	type: string,
+	image: {
+		uri: string,
+		name: string,
+		type: string,
+	},
+	properties: { [key: string]: string | Blob; };
 }, headers?: Record<string, string>) => {
 	const form = new FormData();
-	form.append('image', JSON.stringify(request));
-	apiRequest('post', url, request, headers = { 'Content-Type': 'multipart/form-data', ...headers });
+	form.append('start_odometer_image', JSON.stringify(request.image));
+
+	const keys = Object.keys(request.properties);
+	keys.forEach((key) => {
+		form.append(key, request.properties[key]);
+	});
+
+	return apiRequest('post', url, request, headers = { 'Content-Type': 'multipart/form-data', ...headers });
 };
 
 // function to execute the http put request
