@@ -287,6 +287,7 @@ export default {
 
 		// map items to req body
 		const validatedItems: Array<any> = items.map((item) => ({
+			sales_no: item.orderId,
 			sales_detail_id: item.id,
 			is_validate: true,
 		}));
@@ -341,6 +342,12 @@ export default {
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items,
 				});
+
+				// set result validate item to false
+				dispatch({
+					type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
+					payload: false
+				});
 			})
 			.finally(() => {
 				// set loading validate item to false
@@ -357,5 +364,32 @@ export default {
 			type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
 			payload: value
 		});
-	}
+	},
+
+	inputKms: (params: DeliveryInterface.IInputKmParams) => async (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_INPUT_KM,
+			payload: true
+		});
+
+		// convert params to form data
+		const formData = new FormData();
+		formData.append('start_lat', params.lat);
+		formData.append('start_long', params.long);
+		formData.append('start_odometer', params.odo);
+		formData.append('start_location', params.location ?? '');
+		formData.append('start_odometer_image', { uri: params.imageUrl ?? '', name: 'test.jpg', 'image/*' });
+
+		API.post(Endpoints.INPUT_KM(params.deliveryId), formData, { "Content-Type": "multipart/form-data" })
+			.then()
+			.catch()
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_INPUT_KM,
+					payload: false
+				});
+			});
+	},
 };

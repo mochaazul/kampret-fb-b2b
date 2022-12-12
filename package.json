@@ -12,11 +12,12 @@
     "build:android:production": "cd android && ./gradlew bundleRelease && cd ..",
     "pods:update": "cd ios && pod install --repo-update && cd ..",
     "clean": "yarn cache clean && cd android && ./gradlew clean && cd ..",
-		"push:win":"npx appcenter-cli codepush release-react -a rebelworksco/Freshbox-b2b -d Development",
-		"push:mac":"appcenter codepush release-react -a rebelworksco/Freshbox-b2b -d Development  "
+    "push:win": "npx appcenter-cli codepush release-react -a rebelworksco/Freshbox-b2b -d Development",
+    "push:mac": "appcenter codepush release-react -a rebelworksco/Freshbox-b2b -d Development  "
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/geolocation": "^3.0.4",
     "@react-native-community/progress-bar-android": "^1.0.5",
     "@react-navigation/material-top-tabs": "^6.3.0",
     "@react-navigation/native": "^6.0.13",

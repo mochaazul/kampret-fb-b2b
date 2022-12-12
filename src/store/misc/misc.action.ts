@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { Dispatches } from '@constant';
 
 export default {
@@ -28,5 +29,37 @@ export default {
 			type: Dispatches.TMP_NOTIF,
 			payload: notif,
 		};
+	},
+
+	setLocationStatus: (status: string) => ({
+		type: Dispatches.STATUS_LOCATION,
+		payload: status,
+	}),
+	setLatitude: (latitude: number) => ({
+		type: Dispatches.SET_LATITUDE,
+		payload: latitude,
+	}),
+	setLongitude: (longitude: number) => ({
+		type: Dispatches.SET_LONGITUDE,
+		payload: longitude,
+	}),
+	clearLocation: () => (dispatch: Dispatch) => {
+		// set status loading
+		dispatch({
+			type: Dispatches.STATUS_LOCATION,
+			payload: 'loading',
+		});
+
+		// clear latitude
+		dispatch({
+			type: Dispatches.SET_LATITUDE,
+			payload: undefined,
+		});
+
+		// clear longitude
+		dispatch({
+			type: Dispatches.SET_LONGITUDE,
+			payload: undefined,
+		});
 	},
 };

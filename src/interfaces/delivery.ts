@@ -11,6 +11,9 @@ export interface DeliveryState {
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;
+
+	loadingInputKm: boolean | undefined;
+	statusInputKm: boolean | undefined;
 }
 
 export interface IDeliveryItem {
@@ -50,6 +53,15 @@ export interface IClientValidation {
 export interface IDeliveryClientParams {
 	deliveryId: string;
 	clientId: string;
+}
+
+export interface IInputKmParams {
+	deliveryId: string;
+	lat: string;
+	long: string;
+	odo: string;
+	location?: string;
+	imageUrl?: string;
 }
 
 export interface IDelivery {

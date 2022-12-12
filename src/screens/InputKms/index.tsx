@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
-import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
+import { Colors, Dispatches, Fonts, Images } from "@constant";
+import { NavigationHelper, useAppSelector, useAppDispatch, Location } from "@helpers";
 import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
 import { FormikProps, useFormik } from 'formik';
@@ -20,6 +20,14 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 
+	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
+	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
+	const statusLocation = useAppSelector(state => state.miscReducers.locationStatus);
+	const loading = useAppSelector(state => state.deliveryReducers.loadingInputKm);
+
+	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
+	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
+
 	const { t: translate } = useTranslation();
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
@@ -31,7 +39,9 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			NavigationHelper.reset('Delivery');
+			Location.requestLocationPermission();
+			// doInputKm();
+			// NavigationHelper.reset('Delivery');
 		},
 	});
 
@@ -43,8 +53,25 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	);
 
 	useEffect(() => {
+		if (statusLocation == 'success' && tmpCapturedImg && formik.values.kmSpeedometer) {
+			doInputKm(
+				{
+					lat: latitude,
+					long: longitude,
+					odo: formik.values.kmSpeedometer,
+					imageUrl: tmpCapturedImg,
+				},
+				() => NavigationHelper.reset('Delivery')
+			);
+		}
+	}, [statusLocation]);
+
+	useEffect(() => {
+		clearLocation();
+
 		return function () {
 			setTmpImgUri('');
+			clearLocation();
 		};
 	}, []);
 
@@ -68,6 +95,19 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			</View>
 		);
 	}, [route, tmpCapturedImg]);
+
+	const renderButton = useMemo(() => (
+		<Button
+			onPress={ () => formik.handleSubmit() }
+			text={ translate('actions.continue') }
+			textSize={ 14 }
+			weight='700'
+			mt={ 30 }
+			useShadow={ true }
+			disabled={ !formik.isValid }
+			loading={ loading }
+		/>
+	), [formik, loading]);
 
 	return (
 		<Container
@@ -107,6 +147,8 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				{ renderImage }
 
 			</TouchableOpacity>
+
+			{ renderButton }
 
 			<Button
 				onPress={ () => formik.handleSubmit() }
