@@ -1,3 +1,4 @@
+
 export interface DeliveryState {
 	deliveryList: Array<IDelivery>;
 	loadingList: boolean | undefined;
@@ -11,6 +12,8 @@ export interface DeliveryState {
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;
+
+	deliveryHistory: Array<IDeliveryHistory> | undefined;
 }
 
 export interface IDeliveryItem {
@@ -62,7 +65,7 @@ export interface IDelivery {
 }
 
 export interface IDeliveryHistory {
-	id: string;
+	id: number;
 	customers: Array<IDeliveryCustomer> | undefined;
 	status: 'selesai' | 'gagal' | undefined;
 	date?: string;

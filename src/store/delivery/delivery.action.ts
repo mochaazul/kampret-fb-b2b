@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import Toast from 'react-native-toast-message';
 
 import { Dispatches, Endpoints } from '@constant';
 import { API } from '@helpers';
@@ -357,5 +358,53 @@ export default {
 			type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
 			payload: value
 		});
+	},
+
+	// action to get delivery history list
+	getDeliveryHistory: () => (dispatch: Dispatch) => {
+		// set loading delivery list
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_LIST,
+			payload: true,
+		});
+
+		// request delivery list data from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.DELIVERY_HISTORY_LIST }`)
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+					const deliveryItems: DeliveryInterface.IDeliveryHistory[] = (response.data as DeliveryResponseInterface.DeliveryHistoryList[]).map(item => {
+						return {
+							id: item.delivery_id,
+							customers: undefined, // have to request to BE to provide this properties
+							status: 'selesai', // TBD
+							date: item.date,
+							totalItem: item.item_order,
+							totalAccepted: item.item_receive,
+							totalReturned: item.item_reject
+						};
+					});
+					dispatch({
+						type: Dispatches.SET_DELIVERY_HISTORY,
+						payload: deliveryItems,
+					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'Get Empty Response',
+					});
+				}
+
+			})
+			.finally(() => {
+				// set loading delivery list to false
+				dispatch({
+					type: Dispatches.LOADING_DELIVERY_LIST,
+					payload: false,
+				});
+			});
 	}
 };
