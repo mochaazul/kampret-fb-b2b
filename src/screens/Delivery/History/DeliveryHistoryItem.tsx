@@ -95,7 +95,7 @@ const DeliveryHistoryItem: React.FC<DeliveryInterface.IDeliveryHistory> = props 
 		<TouchableOpacity
 			style={ styles.container }
 			activeOpacity={ .75 }
-			onPress={ () => NavigationHelper.push('DeliveryRouteHistory') }
+			onPress={ () => NavigationHelper.push('DeliveryRouteHistory', { deliveryId: id }) }
 		>
 			<View style={ styles.row }>
 				<Text

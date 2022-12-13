@@ -10,6 +10,8 @@ interface RouteTime {
 }
 
 interface IRoute {
+	deliveryId?: string,
+	clientId?: string,
 	locationTitle: string,
 	locationAddress: string,
 	locationTime: RouteTime,

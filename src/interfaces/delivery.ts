@@ -1,3 +1,6 @@
+import { IRoute } from "./components";
+import { CheckItemProp } from '../screens/DeliveryCheck/CheckItem';
+
 export interface DeliveryState {
 	deliveryList: Array<IDelivery>;
 	loadingList: boolean | undefined;
@@ -11,6 +14,10 @@ export interface DeliveryState {
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;
+
+	deliveryHistory: Array<IDeliveryHistory> | undefined;
+	deliveryHistoryRoute: Array<IRoute> | undefined;
+	deliveryHistoryRouteDetail: IHistoryDetail | undefined;
 }
 
 export interface IDeliveryItem {
@@ -62,11 +69,28 @@ export interface IDelivery {
 }
 
 export interface IDeliveryHistory {
-	id: string;
+	id: number;
 	customers: Array<IDeliveryCustomer> | undefined;
 	status: 'selesai' | 'gagal' | undefined;
 	date?: string;
 	totalItem?: number;
 	totalAccepted?: number;
 	totalReturned?: number;
+}
+
+interface HistoryDetailHeader {
+	clientId: string,
+	address: string,
+	name: string,
+	time: string;
+}
+interface HistoryDetailReceipt {
+	name: string,
+	date: string,
+	photo: string;
+}
+export interface IHistoryDetail {
+	header: HistoryDetailHeader,
+	item: CheckItemProp[] | null,
+	receipt: HistoryDetailReceipt;
 }

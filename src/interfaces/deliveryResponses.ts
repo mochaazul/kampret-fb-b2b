@@ -14,6 +14,60 @@ export interface DeliveryListData {
 	total_item: number,
 };
 
+export interface DeliveryHistoryList {
+	delivery_id: number;
+	delivery_no: string;
+	total_client: number;
+	item_order: number;
+	item_receive: number;
+	item_reject: number;
+	date: string;
+	status: number;
+	text_status: string;
+}
+
+export interface ClientDeliveryHistoryList {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	frame_time: string;
+	delivery_status: number;
+	text_delivery_status: string;
+	item_order: number;
+	item_receive: number;
+	item_reject: number;
+}
+
+export interface ClientDeliveryHistoryDetail {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	frame_time: string;
+	receipt: Receipt;
+	items: ClientDeliveryHistoryDetailItem[] | null;
+	carts: Cart[];
+}
+
+interface ClientDeliveryHistoryDetailItem {
+	complaint_notes: string;
+	complaint_photos: null | string;
+	item_name: string;
+	qty_order: number;
+	qty_reject: number;
+	sales_no: string;
+}
+
+export interface Cart {
+	cart_type: string;
+	qty: number;
+}
+
+export interface Receipt {
+	received_name: string;
+	received_date: string;
+	photo: string;
+}
+
 export interface DeliveryClientData {
 	client_no: string;
 	client_name: string;
