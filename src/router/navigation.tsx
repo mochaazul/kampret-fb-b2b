@@ -1,37 +1,55 @@
 import React, { useEffect } from 'react';
+import { PermissionsAndroid, Platform } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Geolocation from '@react-native-community/geolocation';
+import { Camera } from 'react-native-vision-camera';
 
 import { NavigationHelper, useLinking } from '@helpers';
 import { ScreenNameType, screens } from './screens';
-import { Camera } from 'react-native-vision-camera';
+
 
 const Stack = createNativeStackNavigator();
 
 const AppRouter = () => {
 
-	const {openedEvent:_} = useLinking()
+	const { openedEvent: _ } = useLinking();
 	useEffect(() => {
-		requestCamera();
+		requestLocationPermission();
 	}, []);
 
-	const requestCamera = async () => {
-		await Camera.requestCameraPermission();
-		await Camera.requestMicrophonePermission();
+	const requestLocationPermission = async () => {
+		if (Platform.OS === 'ios') {
+
+		} else {
+			try {
+				const granted = await PermissionsAndroid.requestMultiple([
+					PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+					PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+					PermissionsAndroid.PERMISSIONS.CAMERA,
+					//PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+					//PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+				]);
+				console.log('loc permission', granted);
+			} catch (err) {
+				console.warn(err);
+			}
+		}
 	};
+
 	return (
-		<NavigationContainer 
+		<NavigationContainer
 			ref={ NavigationHelper.navigationRef }
 		>
 			<Stack.Navigator
 				initialRouteName='Splash'
 				screenOptions={ { headerShown: false } }>
 				{
-					screens.map(({name, component}, index) => {
+					screens.map(({ name, component }, index) => {
 						return (
 							<Stack.Screen
 								key={ index }
-								name={ name}
+								name={ name }
 								component={ component } />
 						);
 					})

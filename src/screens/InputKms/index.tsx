@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useEffect } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
+import Geolocation from '@react-native-community/geolocation';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
@@ -18,6 +19,9 @@ type InputKM = {
 };
 const InputKms = ({ route }: InputKmsScreenProps) => {
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
+	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
+
 	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 
 	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
@@ -29,6 +33,8 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
 
 	const { t: translate } = useTranslation();
+
+
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
 		validateOnBlur: true,
@@ -42,10 +48,8 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			// Location.requestLocationPermission();
 			doInputKm(
 				{
-					//lat: latitude,
-					//long: longitude,
-					lat: -123,
-					long: 114,
+					lat: latitude,
+					long: longitude,
 					odo: formik.values.kmSpeedometer,
 					imageUrl: tmpCapturedImg,
 					deliveryId: route.params?.deliveryId
@@ -53,7 +57,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			);
 
-			// NavigationHelper.reset('Delivery');
 		},
 	});
 
@@ -64,24 +67,17 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		[],
 	);
 
-	// useEffect(() => {
-	// 	if (statusLocation == 'success' && tmpCapturedImg && formik.values.kmSpeedometer) {
-	// 		doInputKm(
-	// 			{
-	// 				//lat: latitude,
-	// 				//long: longitude,
-	// 				lat: -123,
-	// 				long: 114,
-	// 				odo: formik.values.kmSpeedometer,
-	// 				imageUrl: tmpCapturedImg,
-	// 			},
-	// 			() => NavigationHelper.reset('Delivery')
-	// 		);
-	// 	}
-	// }, [statusLocation]);
-
 	useEffect(() => {
 		clearLocation();
+
+		Geolocation.getCurrentPosition(
+			info => {
+				setLongitude(info.coords.longitude);
+				setLatitude(info.coords.latitude);
+			},
+
+			error => console.log('geo err', error),
+			{ timeout: 60000, enableHighAccuracy: true });
 
 		return function () {
 			setTmpImgUri('');

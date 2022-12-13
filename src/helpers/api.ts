@@ -133,6 +133,7 @@ const post = <T>(url: string, request: object | Array<any>, headers?: Record<str
 
 // function to execute the http post image
 const postImage = (url: string, request: {
+	imageKey: string,
 	image: {
 		uri: string,
 		name: string,
@@ -142,7 +143,7 @@ const postImage = (url: string, request: {
 }, headers?: Record<string, string>) => {
 	const state = store.getState();
 	const form = new FormData();
-	form.append('start_odometer_image', request.image as any);
+	form.append(request.imageKey, request.image as any);
 
 	const keys = Object.keys(request.properties);
 	keys.forEach((key) => {
@@ -157,23 +158,10 @@ const postImage = (url: string, request: {
 			...headers,
 			'Content-Type': 'multipart/form-data',
 			'Authorization': state.authReducers.user ? state.authReducers.user.token : '',
-			// if backend supports u can use gzip request encoding
-			// "Content-Encoding": "gzip",
 		},
-		// transformRequest: (data, headers) => {
-		// 	// !!! override data to return formData
-		// 	// since axios converts that to string
-		// 	console.log('transform', data, headers);
-		// 	return form;
-		// },
-		// onUploadProgress: (progressEvent) => {
-		// 	// use upload data, since it's an upload progress
-		// 	// iOS: {"isTrusted": false, "lengthComputable": true, "loaded": 123, "total": 98902}
-		// },
+
 		data: form,
 	};
-
-	//return apiRequest('post', url, form, headers = { 'Content-Type': 'multipart/form-data', ...headers });
 	return axiosAPI(config);
 };
 
