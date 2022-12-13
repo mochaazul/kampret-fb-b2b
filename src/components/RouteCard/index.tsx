@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors, Fonts, Images } from '@constant';
@@ -9,6 +9,8 @@ import Button from '../Button/index';
 import Text from '../Text/index';
 
 const RouteCard = ({
+	deliveryId,
+	clientId,
 	locationAddress,
 	locationTime,
 	locationTitle,
@@ -19,6 +21,13 @@ const RouteCard = ({
 	totalItem,
 	onClick,
 }: ComponentInterface.IRoute) => {
+	const onPresssAction = useCallback(() => {
+		if (onClick) {
+			onClick();
+		} else {
+			NavigationHelper.push('DeliveryHistoryDetail', { deliveryId, clientId });
+		}
+	}, [onClick, deliveryId, clientId]);
 
 	const containerStyle = useMemo(() => {
 		const style: ViewStyle = { ...styles.container };
@@ -34,7 +43,7 @@ const RouteCard = ({
 			style={ containerStyle }
 			key={ 'route_' + numbering }
 			activeOpacity={ .7 }
-			onPress={ onClick }
+			onPress={ onPresssAction }
 		>
 
 			<View style={ styles.numbering }>

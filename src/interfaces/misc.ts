@@ -2,11 +2,11 @@ export type MiscState = {
 	loading: boolean,
 	deviceHeight: number,
 	tmpImageUri?: string | null,
-	notif?:boolean
+	notif?: boolean;
 };
 
 export type BE<T> = {
-	data: T | object | null,
+	data: T | null,
 	pagination: any[],
 	stat_code: string,
 	stat_msg: string;

@@ -33,4 +33,11 @@ export type RootStackParamList = {
 	Notification?: {
 		item: any;
 	};
+	DeliveryRouteHistory: {
+		deliveryId: string;
+	};
+	DeliveryHistoryDetail: {
+		deliveryId?: string;
+		clientId?: string;
+	};
 };
