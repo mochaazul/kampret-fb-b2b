@@ -9,7 +9,7 @@ const setStatus = useAppDispatch(Dispatches.STATUS_LOCATION);
 
 export const requestLocationPermission = async () => {
 	if (Platform.OS === 'ios') {
-		getOneTimeLocation();
+		//getOneTimeLocation();
 		// subscribeLocationLocation();
 	} else {
 		try {
@@ -23,7 +23,7 @@ export const requestLocationPermission = async () => {
 			);
 			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 				//To Check, If Permission is granted
-				getOneTimeLocation();
+				//getOneTimeLocation();
 				// subscribeLocationLocation();
 			} else {
 				setStatus('failed');
@@ -32,28 +32,4 @@ export const requestLocationPermission = async () => {
 			console.warn(err);
 		}
 	}
-};
-
-export const getOneTimeLocation = () => {
-	setStatus('loading');
-	Geolocation.getCurrentPosition(
-		//Will give you the current location
-		(position) => {
-			setStatus('success');
-
-			//Setting Longitude state
-			setLatitude(position.coords.longitude);
-
-			//Setting Longitude state
-			setLongitude(position.coords.latitude);
-		},
-		() => {
-			setStatus('failed');
-		},
-		{
-			enableHighAccuracy: false,
-			timeout: 30000,
-			maximumAge: 1000
-		},
-	);
 };
