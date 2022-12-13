@@ -146,7 +146,9 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 
 			<ModalDialog visible={ showWarningStartDelivery }
 				onRequestClose={ () => setShowWarningStartDelivery(false) }>
-				<StartDeliveryWarning onCancel={ () => setShowWarningStartDelivery(false) } />
+				<StartDeliveryWarning onCancel={ () => setShowWarningStartDelivery(false) }
+					deliveryId={ route.params?.deliveryId }
+				/>
 
 			</ModalDialog>
 		</Container>

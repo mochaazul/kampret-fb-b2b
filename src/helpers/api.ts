@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import Toast from 'react-native-toast-message';
+import Config from "react-native-config";
 
 import { Dispatches } from '@constant';
-import env from '../../env';
 import { store } from '../config/reduxConfig';
 import { MiscInterface } from '@interfaces';
 import * as NavigationHelper from './navigationHelper';
 
-let baseUrl = env.baseUrl;
+let baseUrl = Config.RN_baseUrl;
 
-if (env.status === 'staging') {
-	baseUrl = env.baseUrlStaging;
-} else if (env.status === 'production') {
-	baseUrl = env.baseUrlProduction;
+if (Config.RN_status === 'staging') {
+	baseUrl = Config.RN_baseUrlStaging;
+} else if (Config.RN_status === 'production') {
+	baseUrl = Config.RN_baseUrlProduction;
 }
 
 const axiosAPI = axios.create({
@@ -138,7 +138,7 @@ const postImage = (url: string, request: {
 		name: string,
 		type: string,
 	},
-	properties: { [key: string]: string | Blob; };
+	properties: { [key: string]: string; };
 }, headers?: Record<string, string>) => {
 	const form = new FormData();
 	form.append('start_odometer_image', JSON.stringify(request.image));
@@ -148,7 +148,31 @@ const postImage = (url: string, request: {
 		form.append(key, request.properties[key]);
 	});
 
-	return apiRequest('post', url, request, headers = { 'Content-Type': 'multipart/form-data', ...headers });
+	const config: AxiosRequestConfig = {
+		method: "post",
+		url,
+		responseType: "json",
+		headers: {
+			...headers,
+			'Content-Type': 'multipart/form-data',
+			// if backend supports u can use gzip request encoding
+			// "Content-Encoding": "gzip",
+		},
+		transformRequest: (data, headers) => {
+			// !!! override data to return formData
+			// since axios converts that to string
+			console.log('transform', data, headers);
+			return form;
+		},
+		onUploadProgress: (progressEvent) => {
+			// use upload data, since it's an upload progress
+			// iOS: {"isTrusted": false, "lengthComputable": true, "loaded": 123, "total": 98902}
+		},
+		data: form,
+	};
+
+	//return apiRequest('post', url, form, headers = { 'Content-Type': 'multipart/form-data', ...headers });
+	return axiosAPI(config);
 };
 
 // function to execute the http put request

@@ -1,5 +1,6 @@
 import { View, TouchableOpacity } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
+import Config from "react-native-config";
 
 import { ComponentInterface } from '@interfaces';
 import { Dispatches, Images } from '@constant';
@@ -7,7 +8,7 @@ import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { styles } from './style';
 
 import Text from '../Text/index';
-import env from '../../../env';
+import env from '../../../old.env';
 import { store } from '../../config/reduxConfig';
 
 const Header: React.FC<ComponentInterface.IHeader> = props => {
@@ -21,47 +22,47 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 		...resOfProps
 	} = props;
 
-	const {notif} = useAppSelector(state => state.miscReducers)
+	const { notif } = useAppSelector(state => state.miscReducers);
 	const renderBadge = useMemo(() => {
-		if(notif) {
-			return <View style={styles.badge} />
+		if (notif) {
+			return <View style={ styles.badge } />;
 		}
-	}, [notif])
+	}, [notif]);
 
 
 	const handleClickNotification = useCallback(
 		() => {
 			const params = {
 				item: null as boolean | null
-			}
-			if(notif) {
-				params.item = notif
+			};
+			if (notif) {
+				params.item = notif;
 				store.dispatch({
 					type: Dispatches.TMP_NOTIF,
 					payload: false
-				})
+				});
 			}
-			NavigationHelper.push('Notification',{...params}) 
+			NavigationHelper.push('Notification', { ...params });
 		},
 		[notif],
-	)
-	
+	);
+
 
 
 	if (!type || type == 'main') {
 		return (
 			<View style={ styles.container }>
 				<View style={ styles.row }>
-					<Text size={ 9 } style={ styles.version }>ver { env.version }</Text>
+					<Text size={ 9 } style={ styles.version }>ver { Config.RN_buildVersion + '/' + Config.RN_version + '/' + Config.RN_codepushVersion }</Text>
 					<Images.LogoFB />
 					<View style={ styles.rightIcon }>
 						<TouchableOpacity
 							activeOpacity={ .75 }
 							style={ styles.icon }
-							onPress={ handleClickNotification}
+							onPress={ handleClickNotification }
 						>
 							<Images.Bell />
-							{renderBadge}
+							{ renderBadge }
 						</TouchableOpacity>
 						<TouchableOpacity
 							activeOpacity={ .75 }

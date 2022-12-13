@@ -9,7 +9,7 @@ export type MiscState = {
 };
 
 export type BE<T> = {
-	data: T | object | null,
+	data: T | null,
 	pagination: any[],
 	stat_code: string,
 	stat_msg: string;

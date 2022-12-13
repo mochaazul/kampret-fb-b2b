@@ -15,6 +15,9 @@ const initialState: DeliveryInterface.DeliveryState = {
 	statusValidateItem: undefined,
 	loadingInputKm: undefined,
 	statusInputKm: undefined,
+	deliveryHistory: undefined,
+	deliveryHistoryRoute: undefined,
+	deliveryHistoryRouteDetail: undefined
 };
 
 type Actions = { type: string; payload: any; };
@@ -97,6 +100,21 @@ const deliveryReducers = (
 				statusInputKm: payload,
 			};
 
+		case Dispatches.SET_DELIVERY_HISTORY:
+			return {
+				...state,
+				deliveryHistory: payload
+			};
+		case Dispatches.SET_DELIVERY_HISTORY_ROUTE:
+			return {
+				...state,
+				deliveryHistoryRoute: payload
+			};
+		case Dispatches.SET_DELIVERY_HISTORY_DETAIL:
+			return {
+				...state,
+				deliveryHistoryRouteDetail: payload
+			};
 		case Dispatches.LOGOUT:
 			return initialState;
 		default:

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
 import { Colors, Dispatches, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppSelector, useAppDispatch, Location } from "@helpers";
+import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
 import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
 import { FormikProps, useFormik } from 'formik';
@@ -39,8 +39,20 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			Location.requestLocationPermission();
-			// doInputKm();
+			// Location.requestLocationPermission();
+			doInputKm(
+				{
+					//lat: latitude,
+					//long: longitude,
+					lat: -123,
+					long: 114,
+					odo: formik.values.kmSpeedometer,
+					imageUrl: tmpCapturedImg,
+					deliveryId: route.params?.deliveryId
+				}
+
+			);
+
 			// NavigationHelper.reset('Delivery');
 		},
 	});
@@ -52,19 +64,21 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		[],
 	);
 
-	useEffect(() => {
-		if (statusLocation == 'success' && tmpCapturedImg && formik.values.kmSpeedometer) {
-			doInputKm(
-				{
-					lat: latitude,
-					long: longitude,
-					odo: formik.values.kmSpeedometer,
-					imageUrl: tmpCapturedImg,
-				},
-				() => NavigationHelper.reset('Delivery')
-			);
-		}
-	}, [statusLocation]);
+	// useEffect(() => {
+	// 	if (statusLocation == 'success' && tmpCapturedImg && formik.values.kmSpeedometer) {
+	// 		doInputKm(
+	// 			{
+	// 				//lat: latitude,
+	// 				//long: longitude,
+	// 				lat: -123,
+	// 				long: 114,
+	// 				odo: formik.values.kmSpeedometer,
+	// 				imageUrl: tmpCapturedImg,
+	// 			},
+	// 			() => NavigationHelper.reset('Delivery')
+	// 		);
+	// 	}
+	// }, [statusLocation]);
 
 	useEffect(() => {
 		clearLocation();

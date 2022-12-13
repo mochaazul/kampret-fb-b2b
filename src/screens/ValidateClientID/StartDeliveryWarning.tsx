@@ -6,9 +6,10 @@ import { NavigationHelper } from "@helpers";
 
 interface StartWarningProps {
 	onCancel?: () => void;
+	deliveryId?: string;
 };
 
-const StartDeliveryWarning = ({ onCancel }: StartWarningProps) => {
+const StartDeliveryWarning = ({ onCancel, deliveryId }: StartWarningProps) => {
 	return (
 		<View style={ { alignItems: 'stretch' } }>
 			<View style={ styles.header }>
@@ -40,7 +41,7 @@ const StartDeliveryWarning = ({ onCancel }: StartWarningProps) => {
 				weight='700'
 				color={ Colors.white.pure }
 				text='Ya, Mulai Pengiriman'
-				onPress={ () => NavigationHelper.push('InputKms') }
+				onPress={ () => NavigationHelper.push('InputKms', { deliveryId }) }
 			/>
 
 			<Button
