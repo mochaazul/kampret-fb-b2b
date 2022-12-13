@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Image, ScrollView, TextStyle, View } from "react-native";
 
 import { Container, Input, Text } from "@components";
@@ -17,35 +17,39 @@ const DeliveryHistoryDetail = ({ route }: NavigationProps<'DeliveryHistoryDetail
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistoryRouteDetail);
 
 	useEffect(() => { fetchList(route.params.deliveryId, route.params.clientId); }, []);
-	const dummyItems: Array<CheckItemProp> = [
-		{
-			id: 'SO0001-01',
-			name: '5 Pack Rumput Laut',
-			complainAmount: '2 Pack',
-			complainLabel: 'Barang Rusak',
-			complainDesc: 'Lorem ipsum dolor sit amet consectetur. Vivamus facilisis risus morbi imperdiet diam fames vitae etiam. ',
-			complainFiles: [
-				<Images.Complain1 key={ 1 } />,
-				<Images.Complain2 key={ 2 } />
-			],
-		},
-		{
-			id: 'SO0001-02',
-			name: '5 Pack Daging Sapi',
-		},
-		{
-			id: 'SO0001-03',
-			name: '5 Pack Daging Ayam',
-		},
-		{
-			id: 'SO0001-04',
-			name: '5 Pack Daging Kambing',
-		},
-		{
-			id: 'SO0001-05',
-			name: '5 Pack Daging Unta',
-		},
-	];
+
+	const memoizedHeader = useMemo(() => {
+		if (deliveryHistoryDetail) {
+			return (
+				<View style={ { marginStart: 16 } }>
+					<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ deliveryHistoryDetail.header.name }</Text>
+					<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ deliveryHistoryDetail.header.address }</Text>
+				</View>
+			);
+		} else {
+			return (
+				<View />
+			);
+		}
+	}, [deliveryHistoryDetail]
+	);
+
+	const memoizedItems = useMemo(() => {
+		if (deliveryHistoryDetail?.item) {
+			return deliveryHistoryDetail.item?.map((value: CheckItemProp, index: number) => {
+				return (
+					<View key={ 'item_' + index }>
+						{ index > 0 && <View style={ { height: 10 } } /> }
+						<CheckItem { ...value } />
+					</View>
+				);
+			});
+		} else {
+			return (
+				<View />
+			);
+		}
+	}, [deliveryHistoryDetail]);
 	return (
 		<Container
 			noPadding
@@ -60,12 +64,7 @@ const DeliveryHistoryDetail = ({ route }: NavigationProps<'DeliveryHistoryDetail
 			<ScrollView>
 				<View style={ styles.customerInfo }>
 					<Images.IconLocation />
-					{ deliveryHistoryDetail &&
-						<View style={ { marginStart: 16 } }>
-							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ deliveryHistoryDetail.header.name }</Text>
-							<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ deliveryHistoryDetail.header.address }</Text>
-						</View>
-					}
+					{ memoizedHeader }
 				</View>
 
 				<Text
@@ -76,16 +75,7 @@ const DeliveryHistoryDetail = ({ route }: NavigationProps<'DeliveryHistoryDetail
 					Pesanan
 				</Text>
 
-				{ deliveryHistoryDetail &&
-					deliveryHistoryDetail.item?.map((value: CheckItemProp, index: number) => {
-						return (
-							<View key={ 'item_' + index }>
-								{ index > 0 && <View style={ { height: 10 } } /> }
-								<CheckItem { ...value } />
-							</View>
-						);
-					})
-				}
+				{ memoizedItems }
 
 				<Text
 					color={ Colors.gray.default }
