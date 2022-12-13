@@ -386,9 +386,9 @@ export default {
 			Endpoints.INPUT_KM(params.deliveryId),
 			{
 				image: {
-					uri: params.imageUrl ?? 'test',
+					uri: params?.imageUrl ?? 'test',
 					name: 'test.jpg',
-					type: 'image/jpg',
+					type: 'image/jpeg',
 				},
 				properties: {
 					'start_lat': params.lat,
