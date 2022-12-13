@@ -25,6 +25,7 @@ Assuming you have all the requirements installed, you can run the project by run
 
 - `yarn install` to install all depedencies
 - `cd ios && pod install` to install all depedencies
+- rename env.ts.sample to .env and complete the keys
 - `yarn <platform>` to run the *platform* application (remember to start a simulator or connect a device)
 
 ## Reactotron
@@ -34,3 +35,20 @@ Reactotron is a macOS, Windows, and Linux app for inspecting your React JS and R
 ```
  https://github.com/infinitered/reactotron
 ```
+
+## Generate Third-Party Key
+
+# OneSignal 
+used for push notification signaling
+- Create a Firebase project if you haven’t already and configure it for android https://console.firebase.google.com
+- sign in to https://onesignal.com (sign up to create an account)
+- Select Google Android, from the OneSignal Settings → Platforms
+- select React Native on Configure Platform dialog and add Firebase Server Key and a Sender ID 
+- go to settings → Keys & IDs → copy OneSignal App ID to RN_oneSignal on .env file
+
+# AppCenter
+used for OTA update via CodePush
+- login to https://appcenter.ms/ (sign up to create an account)
+- click Add new to create new apps environment
+- copy app secret to RN_CODEPUSH_ANDROID_KEY on .env file
+

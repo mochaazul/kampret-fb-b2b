@@ -12,8 +12,8 @@
     "build:android:production": "cd android && ./gradlew bundleRelease && cd ..",
     "pods:update": "cd ios && pod install --repo-update && cd ..",
     "clean": "yarn cache clean && cd android && ./gradlew clean && cd ..",
-		"push:win":"npx appcenter-cli codepush release-react -a rebelworksco/Freshbox-b2b -d Development",
-		"push:mac":"appcenter codepush release-react -a rebelworksco/Freshbox-b2b -d Development  "
+    "push:win": "npx appcenter-cli codepush release-react -a rebelworksco/Freshbox-b2b -d Development",
+    "push:mac": "appcenter codepush release-react -a rebelworksco/Freshbox-b2b -d Development  "
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
@@ -36,6 +36,7 @@
     "react-i18next": "^12.0.0",
     "react-native": "0.70.5",
     "react-native-code-push": "^7.0.5",
+    "react-native-config": "^1.4.11",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-onesignal": "^4.4.1",
     "react-native-pager-view": "^6.0.2",

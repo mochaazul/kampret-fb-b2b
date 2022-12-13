@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError } from 'axios';
 import Toast from 'react-native-toast-message';
+import Config from "react-native-config";
 
 import { Dispatches } from '@constant';
-import env from '../../env';
 import { store } from '../config/reduxConfig';
 import { MiscInterface } from '@interfaces';
 import * as NavigationHelper from './navigationHelper';
 
-let baseUrl = env.baseUrl;
+let baseUrl = Config.RN_baseUrl;
 
-if (env.status === 'staging') {
-	baseUrl = env.baseUrlStaging;
-} else if (env.status === 'production') {
-	baseUrl = env.baseUrlProduction;
+if (Config.RN_status === 'staging') {
+	baseUrl = Config.RN_baseUrlStaging;
+} else if (Config.RN_status === 'production') {
+	baseUrl = Config.RN_baseUrlProduction;
 }
 
 const axiosAPI = axios.create({
