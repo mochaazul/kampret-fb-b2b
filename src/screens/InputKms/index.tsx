@@ -26,7 +26,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
 	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
-	const statusLocation = useAppSelector(state => state.miscReducers.locationStatus);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingInputKm);
 
 	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
@@ -43,7 +42,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			// Location.requestLocationPermission();
 			doInputKm(
 				{
 					lat: latitude,
