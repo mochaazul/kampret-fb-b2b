@@ -34,8 +34,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	const { t: translate } = useTranslation();
 
-
-
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
 		validateOnBlur: true,
 		validateOnChange: true,
@@ -160,15 +158,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			{ renderButton }
 
-			<Button
-				onPress={ () => formik.handleSubmit() }
-				text={ translate('actions.continue') }
-				textSize={ 14 }
-				weight='700'
-				mt={ 30 }
-				useShadow={ true }
-				disabled={ !formik.isValid }
-			/>
 		</Container >
 	);
 };

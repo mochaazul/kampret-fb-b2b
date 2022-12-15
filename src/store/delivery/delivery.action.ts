@@ -367,31 +367,44 @@ export default {
 		});
 	},
 
-	inputKms: (params: DeliveryInterface.IInputKmParams) => async (dispatch: Dispatch) => {
+	inputKms: (params: DeliveryInterface.IInputKmParams) => (dispatch: Dispatch) => {
 		// set loading input km
 		dispatch({
 			type: Dispatches.LOADING_INPUT_KM,
 			payload: true
 		});
 
-		API.postImage(
+		// create form data
+		const formData = new FormData();
+		formData.append('start_odometer_image', {
+			uri: params?.imageUrl ?? 'test',
+			name: 'test.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('start_lat', params.lat);
+		formData.append('start_long', params.long);
+		formData.append('start_odometer', params.odo);
+		formData.append('start_location', params.location ?? '');
+
+		API.upload(
 			Endpoints.INPUT_KM(params.deliveryId),
-			{
-				imageKey: 'start_odometer_image',
-				image: {
-					uri: params?.imageUrl ?? 'test',
-					name: 'test.jpg',
-					type: 'image/jpeg',
-				},
-				properties: {
-					'start_lat': params.lat,
-					'start_long': params.long,
-					'start_odometer': params.odo,
-					'start_location': params.location ?? '',
-				}
-			}
+			formData
 		)
 			.then((response) => {
+				// update delivery status
+				const deliveries = store.getState().deliveryReducers.deliveryList.map((delivery) => {
+					if (delivery.id == params.deliveryId) {
+						delivery.status = 'deliver';
+					}
+
+					return delivery;
+				});
+
+				dispatch({
+					type: Dispatches.SET_DELIVERY_LIST,
+					payload: deliveries
+				});
+
 				NavigationHelper.reset('Delivery');
 			})
 			.catch((error) => { })
@@ -401,10 +414,9 @@ export default {
 					type: Dispatches.LOADING_INPUT_KM,
 					payload: false
 				});
-			})
-			;
-
+			});
 	},
+
 	// action to get delivery history list
 	getDeliveryHistory: () => (dispatch: Dispatch) => {
 		// set loading delivery list
@@ -452,6 +464,7 @@ export default {
 				});
 			});
 	},
+
 	getDeliveryHistoryRouteDetail: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
 		dispatch({
 			type: Dispatches.LOADING_DELIVERY_LIST,
@@ -511,6 +524,7 @@ export default {
 				});
 			});
 	},
+
 	getDeliveryHistoryRoute: (deliveryId: string) => (dispatch: Dispatch) => {
 
 		dispatch({

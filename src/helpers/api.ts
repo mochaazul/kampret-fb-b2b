@@ -37,7 +37,6 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		type: Dispatches.API_LOADING_START,
 		payload: '',
 	});
-	console.log(method, url, headers, request);
 	return axiosAPI({
 		headers: getHeaders(headers),
 		method,
@@ -45,11 +44,9 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		data: request ?? undefined,
 	})
 		.then(res => {
-			console.log('res', res.data);
 			return Promise.resolve(res.data);
 		})
 		.catch((err: AxiosError) => {
-			console.log('err', err);
 			const data: MiscInterface.BE<any> | null = parseErrData(err.response?.data);
 
 			if (data) {
@@ -131,6 +128,17 @@ const deleteRequest = (url: string, headers?: object) => apiRequest('delete', ur
 // function to execute the http post request
 const post = <T>(url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('post', url, request, headers);
 
+// function to execute the http post multipart request
+const upload = <T>(url: string, request: FormData, headers?: Record<string, string>) => apiRequest(
+	'post',
+	url,
+	request,
+	{
+		...headers,
+		'Content-Type': 'multipart/form-data',
+	}
+);
+
 // function to execute the http post image
 const postImage = (url: string, request: {
 	imageKey: string,
@@ -179,5 +187,6 @@ const API = {
 	put,
 	patch,
 	postImage,
+	upload,
 };
 export default API;
