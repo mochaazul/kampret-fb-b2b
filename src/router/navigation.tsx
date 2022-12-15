@@ -2,11 +2,9 @@ import React, { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Geolocation from '@react-native-community/geolocation';
-import { Camera } from 'react-native-vision-camera';
 
 import { NavigationHelper, useLinking } from '@helpers';
-import { ScreenNameType, screens } from './screens';
+import { screens } from './screens';
 
 
 const Stack = createNativeStackNavigator();
@@ -30,7 +28,6 @@ const AppRouter = () => {
 					//PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
 					//PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
 				]);
-				console.log('loc permission', granted);
 			} catch (err) {
 				console.warn(err);
 			}
