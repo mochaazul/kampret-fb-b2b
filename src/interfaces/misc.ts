@@ -2,7 +2,10 @@ export type MiscState = {
 	loading: boolean,
 	deviceHeight: number,
 	tmpImageUri?: string | null,
-	notif?: boolean;
+	notif?: boolean,
+	locationStatus: 'loading' | 'success' | 'failed',
+	currentLatitude: number | undefined,
+	currentLongitude: number | undefined,
 };
 
 export type BE<T> = {

@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from './hooks';
 import useScanBarcodes from './useScanBarcode';
 import useLinking from './useLinking';
 
-
 export {
 	NavigationHelper,
 	Ratio,
@@ -13,5 +12,5 @@ export {
 	useAppDispatch,
 	useAppSelector,
 	useScanBarcodes,
-	useLinking
+	useLinking,
 };

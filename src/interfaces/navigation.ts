@@ -27,6 +27,7 @@ export type RootStackParamList = {
 	};
 	InputKms?: {
 		photo?: string;
+		deliveryId?: string;
 	};
 	DeliveryRoute?: undefined;
 	CapturePhoto?: undefined;

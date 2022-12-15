@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Platform } from 'react-native';
 import { Camera as CameraVision } from 'react-native-vision-camera';
 
 import { Camera } from '@components';
@@ -15,7 +15,10 @@ const CapturePhoto = () => {
 			const result = await cameraRef?.current?.takePhoto({
 				qualityPrioritization: 'quality',
 			});
-			setTmpImgUri("file://" + result?.path);
+
+			setTmpImgUri(Platform.OS === "ios" ?
+				decodeURIComponent(result?.path ?? '') :
+				"file://" + result?.path);
 
 			NavigationHelper.pop(1);
 		},

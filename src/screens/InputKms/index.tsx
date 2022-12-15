@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useEffect } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
+import Geolocation from '@react-native-community/geolocation';
 
 import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
-import { Colors, Fonts, Images } from "@constant";
+import { Colors, Dispatches, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
 import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
@@ -18,7 +19,17 @@ type InputKM = {
 };
 const InputKms = ({ route }: InputKmsScreenProps) => {
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
+	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
+
 	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
+
+	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
+	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
+	const loading = useAppSelector(state => state.deliveryReducers.loadingInputKm);
+
+	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
+	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
 
 	const { t: translate } = useTranslation();
 
@@ -31,7 +42,17 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			NavigationHelper.reset('Delivery');
+			doInputKm(
+				{
+					lat: latitude,
+					long: longitude,
+					odo: formik.values.kmSpeedometer,
+					imageUrl: tmpCapturedImg,
+					deliveryId: route.params?.deliveryId
+				}
+
+			);
+
 		},
 	});
 
@@ -43,8 +64,20 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	);
 
 	useEffect(() => {
+		clearLocation();
+
+		Geolocation.getCurrentPosition(
+			info => {
+				setLongitude(info.coords.longitude);
+				setLatitude(info.coords.latitude);
+			},
+
+			error => console.log('geo err', error),
+			{ timeout: 60000, enableHighAccuracy: true });
+
 		return function () {
 			setTmpImgUri('');
+			clearLocation();
 		};
 	}, []);
 
@@ -68,6 +101,19 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			</View>
 		);
 	}, [route, tmpCapturedImg]);
+
+	const renderButton = useMemo(() => (
+		<Button
+			onPress={ () => formik.handleSubmit() }
+			text={ translate('actions.continue') }
+			textSize={ 14 }
+			weight='700'
+			mt={ 30 }
+			useShadow={ true }
+			disabled={ !formik.isValid }
+			loading={ loading }
+		/>
+	), [formik, loading]);
 
 	return (
 		<Container
@@ -108,15 +154,8 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			</TouchableOpacity>
 
-			<Button
-				onPress={ () => formik.handleSubmit() }
-				text={ translate('actions.continue') }
-				textSize={ 14 }
-				weight='700'
-				mt={ 30 }
-				useShadow={ true }
-				disabled={ !formik.isValid }
-			/>
+			{ renderButton }
+
 		</Container >
 	);
 };

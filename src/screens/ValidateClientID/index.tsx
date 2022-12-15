@@ -83,6 +83,27 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 			);
 	}, [clientList, loading]);
 
+	const renderButton = useMemo(() => (
+		<Button
+			weight='700'
+			color={ Colors.white.pure }
+			text='Mulai Pengiriman'
+			onPress={ () => {
+				// count validated items
+				const numValidated = clientList.reduce((a, v) => a += (v.numValidated ?? 0), 0);
+
+				// count all items
+				const numItems = clientList.reduce((a, v) => a += (v.numItem ?? 0), 0);
+
+				if (numItems > numValidated)
+					setShowWarningStartDelivery(true);
+				else
+					NavigationHelper.push('InputKms');
+			} }
+			disabled={ clientList.some((client) => !client.validated) }
+		/>
+	), [clientList]);
+
 	return (
 		<Container
 			noPadding
@@ -97,12 +118,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 			<View style={ styles.footer }>
 				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
 
-				<Button
-					weight='700'
-					color={ Colors.white.pure }
-					text='Mulai Pengiriman'
-					onPress={ () => setShowWarningStartDelivery(true) }
-				/>
+				{ renderButton }
 			</View>
 
 			<BottomSheet
@@ -130,7 +146,9 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 
 			<ModalDialog visible={ showWarningStartDelivery }
 				onRequestClose={ () => setShowWarningStartDelivery(false) }>
-				<StartDeliveryWarning onCancel={ () => setShowWarningStartDelivery(false) } />
+				<StartDeliveryWarning onCancel={ () => setShowWarningStartDelivery(false) }
+					deliveryId={ route.params?.deliveryId }
+				/>
 
 			</ModalDialog>
 		</Container>

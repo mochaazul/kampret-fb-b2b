@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import Toast from 'react-native-toast-message';
 import Config from "react-native-config";
 
@@ -128,15 +128,49 @@ const deleteRequest = (url: string, headers?: object) => apiRequest('delete', ur
 // function to execute the http post request
 const post = <T>(url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('post', url, request, headers);
 
+// function to execute the http post multipart request
+const upload = <T>(url: string, request: FormData, headers?: Record<string, string>) => apiRequest(
+	'post',
+	url,
+	request,
+	{
+		...headers,
+		'Content-Type': 'multipart/form-data',
+	}
+);
+
 // function to execute the http post image
 const postImage = (url: string, request: {
-	uri: string,
-	name: string,
-	type: string,
+	imageKey: string,
+	image: {
+		uri: string,
+		name: string,
+		type: string,
+	},
+	properties: { [key: string]: string; };
 }, headers?: Record<string, string>) => {
+	const state = store.getState();
 	const form = new FormData();
-	form.append('image', JSON.stringify(request));
-	apiRequest('post', url, request, headers = { 'Content-Type': 'multipart/form-data', ...headers });
+	form.append(request.imageKey, request.image as any);
+
+	const keys = Object.keys(request.properties);
+	keys.forEach((key) => {
+		form.append(key, request.properties[key]);
+	});
+
+	const config: AxiosRequestConfig = {
+		method: "post",
+		url,
+		responseType: "json",
+		headers: {
+			...headers,
+			'Content-Type': 'multipart/form-data',
+			'Authorization': state.authReducers.user ? state.authReducers.user.token : '',
+		},
+
+		data: form,
+	};
+	return axiosAPI(config);
 };
 
 // function to execute the http put request
@@ -153,5 +187,6 @@ const API = {
 	put,
 	patch,
 	postImage,
+	upload,
 };
 export default API;

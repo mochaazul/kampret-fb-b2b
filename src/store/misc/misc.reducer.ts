@@ -6,7 +6,10 @@ const initialState: MiscInterface.MiscState = {
 	loading: false,
 	deviceHeight: 0,
 	tmpImageUri: '',
-	notif: false
+	notif: false,
+	currentLatitude: undefined,
+	currentLongitude: undefined,
+	locationStatus: 'loading',
 };
 
 type Actions = { type: string; payload: any; };
@@ -37,10 +40,25 @@ const miscReducers = (
 				...state,
 				tmpImageUri: payload,
 			};
-			case Dispatches.TMP_NOTIF:
+		case Dispatches.TMP_NOTIF:
 			return {
 				...state,
 				notif: payload,
+			};
+		case Dispatches.STATUS_LOCATION:
+			return {
+				...state,
+				locationStatus: payload,
+			};
+		case Dispatches.SET_LATITUDE:
+			return {
+				...state,
+				currentLatitude: payload,
+			};
+		case Dispatches.SET_LONGITUDE:
+			return {
+				...state,
+				currentLongitude: payload,
 			};
 		default:
 			return state;

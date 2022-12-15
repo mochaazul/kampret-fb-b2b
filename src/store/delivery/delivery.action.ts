@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import Toast from 'react-native-toast-message';
 
 import { Dispatches, Endpoints } from '@constant';
-import { API } from '@helpers';
+import { API, NavigationHelper } from '@helpers';
 import { DeliveryResponseInterface, DeliveryInterface, MiscInterface, ComponentInterface } from '@interfaces';
 import { store } from '../../config/reduxConfig';
 
@@ -288,6 +288,7 @@ export default {
 
 		// map items to req body
 		const validatedItems: Array<any> = items.map((item) => ({
+			sales_no: item.orderId,
 			sales_detail_id: item.id,
 			is_validate: true,
 		}));
@@ -342,6 +343,12 @@ export default {
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items,
 				});
+
+				// set result validate item to false
+				dispatch({
+					type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
+					payload: false
+				});
 			})
 			.finally(() => {
 				// set loading validate item to false
@@ -358,6 +365,56 @@ export default {
 			type: Dispatches.STATUS_VALIDATE_CLIENT_ITEMS,
 			payload: value
 		});
+	},
+
+	inputKms: (params: DeliveryInterface.IInputKmParams) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_INPUT_KM,
+			payload: true
+		});
+
+		// create form data
+		const formData = new FormData();
+		formData.append('start_odometer_image', {
+			uri: params?.imageUrl ?? 'test',
+			name: 'test.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('start_lat', params.lat);
+		formData.append('start_long', params.long);
+		formData.append('start_odometer', params.odo);
+		formData.append('start_location', params.location ?? '');
+
+		API.upload(
+			Endpoints.INPUT_KM(params.deliveryId),
+			formData
+		)
+			.then((response) => {
+				// update delivery status
+				const deliveries = store.getState().deliveryReducers.deliveryList.map((delivery) => {
+					if (delivery.id == params.deliveryId) {
+						delivery.status = 'deliver';
+					}
+
+					return delivery;
+				});
+
+				dispatch({
+					type: Dispatches.SET_DELIVERY_LIST,
+					payload: deliveries
+				});
+
+				NavigationHelper.reset('Delivery');
+			})
+			.catch((error) => { })
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_INPUT_KM,
+					payload: false
+				});
+			});
 	},
 
 	// action to get delivery history list
@@ -407,6 +464,7 @@ export default {
 				});
 			});
 	},
+
 	getDeliveryHistoryRouteDetail: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
 		dispatch({
 			type: Dispatches.LOADING_DELIVERY_LIST,
@@ -466,6 +524,7 @@ export default {
 				});
 			});
 	},
+
 	getDeliveryHistoryRoute: (deliveryId: string) => (dispatch: Dispatch) => {
 
 		dispatch({

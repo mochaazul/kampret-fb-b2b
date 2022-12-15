@@ -13,6 +13,8 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
+	loadingInputKm: undefined,
+	statusInputKm: undefined,
 	deliveryHistory: undefined,
 	deliveryHistoryRoute: undefined,
 	deliveryHistoryRouteDetail: undefined
@@ -86,6 +88,18 @@ const deliveryReducers = (
 				...state,
 				clientItems: [...payload],
 			};
+
+		case Dispatches.LOADING_INPUT_KM:
+			return {
+				...state,
+				loadingInputKm: payload,
+			};
+		case Dispatches.STATUS_INPUT_KM:
+			return {
+				...state,
+				statusInputKm: payload,
+			};
+
 		case Dispatches.SET_DELIVERY_HISTORY:
 			return {
 				...state,
