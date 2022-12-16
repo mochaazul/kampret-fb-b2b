@@ -71,7 +71,7 @@ const deliveryReducers = (
 		case Dispatches.LOADING_CLIENT_ITEMS:
 			return {
 				...state,
-				loadingClient: payload,
+				loadingClientItem: payload,
 			};
 		case Dispatches.LOADING_VALIDATE_CLIENT_ITEMS:
 			return {

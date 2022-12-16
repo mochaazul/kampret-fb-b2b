@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { TextStyle, View, StyleSheet } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
@@ -16,6 +16,36 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 		totalItem,
 		status,
 	} = props;
+
+	const renderButton = useMemo(() => {
+		if (status == 'new') {
+			return (
+				<Button
+					text='Validasi Client ID'
+					textSize={ 14 }
+					weight='700'
+					useShadow={ true }
+					leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
+					buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
+					onPress={ () => NavigationHelper.push('ValidateClientID', { deliveryId: props.id }) }
+				/>
+			);
+		}
+
+		if (status == 'deliver') {
+			return (
+				<Button
+					text='Lanjut Pengiriman'
+					textSize={ 14 }
+					weight='700'
+					useShadow={ true }
+					leadingIcon={ <Images.IconTruck style={ { marginEnd: 4 } } /> }
+					buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
+					onPress={ () => NavigationHelper.push('DeliveryRoute') }
+				/>
+			);
+		}
+	}, [status]);
 
 	return (
 		<View style={ styles.container } key={ id }>
@@ -76,28 +106,8 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 						{ totalItem } Barang
 					</Text>
 				</View>
-				{ status == 'deliver' &&
-					<Button
-						text='Lanjut Pengiriman'
-						textSize={ 14 }
-						weight='700'
-						useShadow={ true }
-						leadingIcon={ <Images.IconTruck style={ { marginEnd: 4 } } /> }
-						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
-						onPress={ () => NavigationHelper.push('DeliveryRoute') }
-					/>
-				}
-				{ status == 'new' &&
-					<Button
-						text='Validasi Client ID'
-						textSize={ 14 }
-						weight='700'
-						useShadow={ true }
-						leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
-						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
-						onPress={ () => NavigationHelper.push('ValidateClientID', { deliveryId: props.id }) }
-					/>
-				}
+
+				{ renderButton }
 
 			</View>
 

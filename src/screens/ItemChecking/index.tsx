@@ -11,7 +11,6 @@ import ItemChecklist from './ItemChecklist';
 
 const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const [saved, setSaved] = useState<boolean>(false);
-	const [hasChange, setHasChanged] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
 	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
 	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
@@ -52,10 +51,6 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		}
 	}, [resultValidate]);
 
-	useEffect(() => {
-		setHasChanged(true);
-	}, [items]);
-
 	const renderListItem = useMemo(() => {
 		return (
 			<FlatList
@@ -79,24 +74,32 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		);
 	}, [items, loading]);
 
-	const renderButton = useMemo(() => (
-		<Button
-			mt={ 10 }
-			weight='700'
-			color={ Colors.white.pure }
-			text='Selesai Pemeriksaan'
-			onPress={ () => {
-				if (hasChange)
-					NavigationHelper.pop(1);
-				else
-					validateBulk({
-						deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
-					});
-			} }
-			disabled={ !(items.some((item) => item.validated)) || !hasChange }
-			loading={ loadingValidate }
-		/>
-	), [items, loadingValidate, hasChange]);
+	const renderButton = useMemo(() => {
+		if (items.some(item => !item.validated)) {
+			const itemHasChanged = JSON.stringify(items) != JSON.stringify(currentItems);
+			return (
+				<View style={ styles.footer }>
+					<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
+					<Button
+						mt={ 10 }
+						weight='700'
+						color={ Colors.white.pure }
+						text='Selesai Pemeriksaan'
+						onPress={ () => {
+							if (!itemHasChanged)
+								NavigationHelper.pop(1);
+							else
+								validateBulk({
+									deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
+								});
+						} }
+						disabled={ !(items.some((item) => item.validated)) || !itemHasChanged }
+						loading={ loadingValidate }
+					/>
+				</View>
+			);
+		}
+	}, [items, loadingValidate]);
 
 	return (
 		<Container
@@ -123,11 +126,7 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 
 			{ renderListItem }
 
-			<View style={ styles.footer }>
-				<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
-
-				{ renderButton }
-			</View>
+			{ renderButton }
 		</Container>
 	);
 };
