@@ -11,6 +11,7 @@ import ItemChecklist from './ItemChecklist';
 
 const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const [saved, setSaved] = useState<boolean>(false);
+	const [hasChange, setHasChanged] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
 	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
 	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
@@ -51,6 +52,10 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		}
 	}, [resultValidate]);
 
+	useEffect(() => {
+		setHasChanged(true);
+	}, [items]);
+
 	const renderListItem = useMemo(() => {
 		return (
 			<FlatList
@@ -80,13 +85,18 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 			weight='700'
 			color={ Colors.white.pure }
 			text='Selesai Pemeriksaan'
-			onPress={ () => validateBulk({
-				deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
-			}) }
-			disabled={ !(items.some((item) => item.validated)) }
+			onPress={ () => {
+				if (hasChange)
+					NavigationHelper.pop(1);
+				else
+					validateBulk({
+						deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
+					});
+			} }
+			disabled={ !(items.some((item) => item.validated)) || !hasChange }
 			loading={ loadingValidate }
 		/>
-	), [items, loadingValidate]);
+	), [items, loadingValidate, hasChange]);
 
 	return (
 		<Container

@@ -11,7 +11,9 @@ export interface DeliveryListData {
 	clients: DeliveryListClient[],
 	date: string,
 	delivery_id: number,
+	delivery_no: string,
 	total_item: number,
+	status: number,
 };
 
 export interface DeliveryHistoryList {
@@ -73,6 +75,7 @@ export interface DeliveryClientData {
 	client_name: string;
 	is_client_validate: boolean;
 	total_item: number;
+	total_item_validate: number;
 	client_validate_date?: string;
 	is_item_validate: boolean;
 	item_validate_date?: string;

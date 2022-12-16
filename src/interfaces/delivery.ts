@@ -72,6 +72,7 @@ export interface IInputKmParams {
 
 export interface IDelivery {
 	id: string;
+	label: string;
 	customers: Array<IDeliveryCustomer> | undefined;
 	numLocation: number | undefined;
 	date: string | undefined;

@@ -7,9 +7,10 @@ import { NavigationHelper } from "@helpers";
 interface StartWarningProps {
 	onCancel?: () => void;
 	deliveryId?: string;
+	numUnvalidated?: number;
 };
 
-const StartDeliveryWarning = ({ onCancel, deliveryId }: StartWarningProps) => {
+const StartDeliveryWarning = ({ onCancel, deliveryId, numUnvalidated }: StartWarningProps) => {
 	return (
 		<View style={ { alignItems: 'stretch' } }>
 			<View style={ styles.header }>
@@ -18,7 +19,7 @@ const StartDeliveryWarning = ({ onCancel, deliveryId }: StartWarningProps) => {
 				<View style={ { flexDirection: 'row' } }>
 					<Text format={ Fonts.paragraph.xl.boldCenter as TextStyle } align='center' color={ Colors.black.default }>
 						Masih terdapat
-						<Text format={ Fonts.paragraph.xl.bold as TextStyle } color={ Colors.company.red }> 10 barang </Text>
+						<Text format={ Fonts.paragraph.xl.bold as TextStyle } color={ Colors.company.red }> { numUnvalidated } barang </Text>
 						yang belum diperiksa
 					</Text>
 

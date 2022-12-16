@@ -10,6 +10,7 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 
 	const {
 		id,
+		label,
 		numLocation,
 		date,
 		totalItem,
@@ -23,7 +24,7 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 					format={ Fonts.paragraph.xl.bold as TextStyle }
 					color={ Colors.black.default }
 				>
-					{ id }
+					{ label }
 				</Text>
 
 				<Images.More />

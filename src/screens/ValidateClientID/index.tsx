@@ -18,6 +18,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	const [showResult, setShowResult] = useState<boolean>(false);
 	const [selectedClient, setSelectedClient] = useState<DeliveryInterface.IDeliveryCustomer>();
 	const [showWarningStartDelivery, setShowWarningStartDelivery] = useState<boolean>(false);
+	const [numUnvalidated, setNumUnvalidated] = useState<number>(0);
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClient);
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
@@ -95,10 +96,12 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 				// count all items
 				const numItems = clientList.reduce((a, v) => a += (v.numItem ?? 0), 0);
 
-				if (numItems > numValidated)
+				if (numItems > numValidated) {
+					setNumUnvalidated(numItems - numValidated);
 					setShowWarningStartDelivery(true);
+				}
 				else
-					NavigationHelper.push('InputKms');
+					NavigationHelper.push('InputKms', { deliveryId: delivery?.id });
 			} }
 			disabled={ clientList.some((client) => !client.validated) }
 		/>
@@ -148,6 +151,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 				onRequestClose={ () => setShowWarningStartDelivery(false) }>
 				<StartDeliveryWarning onCancel={ () => setShowWarningStartDelivery(false) }
 					deliveryId={ route.params?.deliveryId }
+					numUnvalidated={ numUnvalidated }
 				/>
 
 			</ModalDialog>
