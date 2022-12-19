@@ -30,8 +30,9 @@ export default {
 					(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
 						const delivery = {
 							id: value.delivery_id.toString(),
+							label: value.delivery_no,
 							date: value.date,
-							status: 'new',
+							status: value.status == 5 ? 'deliver' : 'new',
 							totalItem: value.total_item,
 							customers: value.clients.map((client) => ({
 								id: client.client_no,
@@ -87,6 +88,7 @@ export default {
 					custName: client.client_name,
 					validated: client.is_client_validate,
 					numItem: client.total_item,
+					numValidated: client.total_item_validate,
 				}));
 
 				// update current delivery clients in states

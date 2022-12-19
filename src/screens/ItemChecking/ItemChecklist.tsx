@@ -16,7 +16,11 @@ const ItemChecklist = ({ item, onCheckClicked }: ItemChecklistProps) => {
 		if (item.validated)
 			return (<Images.ButtonCheck2 />);
 
-		return (<Images.ButtonCheck />);
+		return (
+			<TouchableOpacity onPress={ () => onCheckClicked(item.id) }>
+				<Images.ButtonCheck />
+			</TouchableOpacity>
+		);
 	}, [item.validated]);
 
 	return (
@@ -27,9 +31,7 @@ const ItemChecklist = ({ item, onCheckClicked }: ItemChecklistProps) => {
 				<Text weight='400' size={ 14 } lineHeight={ 20 } color={ Colors.gray.default } mt={ 5 }>{ item.id }</Text>
 			</View>
 
-			<TouchableOpacity onPress={ () => onCheckClicked(item.id) }>
-				{ renderButton }
-			</TouchableOpacity>
+			{ renderButton }
 		</View>
 	);
 };
