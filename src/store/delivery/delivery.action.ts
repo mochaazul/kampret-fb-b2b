@@ -303,23 +303,25 @@ export default {
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
+				const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
+
 				// loop through current items
-				const items = state.deliveryReducers.clientItems.map((item) => {
-					// check if item is on result
-					const resItem = data.items.find((res) => res.sales_detail_id == item.id);
+				// const items = state.deliveryReducers.clientItems.map((item) => {
+				// 	// check if item is on result
+				// 	const resItem = data.items.find((res) => res.sales_detail_id == item.id);
 
-					if (resItem) {
-						item.validated = resItem.is_validate;
-						item.validatedTime = resItem.validate_date;
-					}
+				// 	if (resItem) {
+				// 		item.validated = resItem.is_validate;
+				// 		item.validatedTime = resItem.validate_date;
+				// 	}
 
-					return item;
-				});
+				// 	return item;
+				// });
 
 				// update current client items
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
+					payload: newItem,
 				});
 
 				// update client num validated items

@@ -82,6 +82,15 @@ const RouteCard = ({
 								<Text color={ Colors.white.pure } format={ Fonts.textBody.s.bold as TextStyle }>30 menit lagi</Text>
 							</View> }
 					</View>
+					<View style={ styles.timeSection }>
+						<View style={ styles.leftIcon } ><Images.IconTime /></View>
+						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah SO: 2 </Text>
+						<Text size={ 14 } lineHeight={ 20 } weight='600'>(SO12345, SO67890)</Text>
+					</View>
+					<View style={ styles.timeSection }>
+						<View style={ styles.leftIcon } ><Images.IconTime /></View>
+						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah Keranjang: 2M, 1L, 3XL</Text>
+					</View>
 					{ !isDelivered &&
 						<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 							<View style={ styles.totalItem }>

@@ -13,15 +13,21 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const [saved, setSaved] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
 	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
+	const loadingValidateItem = useAppSelector(state => state.deliveryReducers.loadingValidateItem);
 	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
 
 	const listItems = useAppSelector(state => state.deliveryReducers.clientItems);
 	const items = useMemo(() => {
-		return listItems.filter(
+		const res = listItems.filter(
 			(item) => item.clientId == route.params?.clientId && item.deliveryId == route.params?.deliveryId
 		);
+		// setCurrItemState(JSON.parse(JSON.stringify(items)));
+		return res;
 	}, [listItems]);
-	const currentItems = [...items];
+	// const currentItems = JSON.parse(JSON.stringify(items));
+	// const currentItems = listItems;
+
+	const [currentItems, setCurrItemState] = useState(JSON.parse(JSON.stringify(items)));
 
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation.find((client) => client.id == route.params?.clientId));
 
@@ -31,12 +37,22 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const validateBulk = useAppDispatch(Actions.deliveryAction.validateBulk);
 	const setStatusValidateItem = useAppDispatch(Actions.deliveryAction.setStatusValidateItem);
 
-	useEffect(() => {
-		if (!items.length)
-			getItem({
+	const init = async () => {
+		if (!items.length) {
+			await getItem({
 				deliveryId: route.params?.deliveryId,
 				clientId: route.params?.clientId
 			});
+
+			setCurrItemState(JSON.parse(JSON.stringify(items)));
+
+			console.log('items', items);
+			console.log('curr items', currentItems);
+		}
+	};
+
+	useEffect(() => {
+		init();
 
 		return () => {
 			if (!saved) setItem(currentItems);
@@ -50,6 +66,11 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 			NavigationHelper.pop(1);
 		}
 	}, [resultValidate]);
+
+
+	useEffect(() => {
+
+	}, [loadingValidateItem]);
 
 	const renderListItem = useMemo(() => {
 		return (
@@ -77,6 +98,9 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const renderButton = useMemo(() => {
 		if (items.some(item => !item.validated)) {
 			const itemHasChanged = JSON.stringify(items) != JSON.stringify(currentItems);
+			// console.log('items', items);
+			// console.log('curr items', currentItems);
+			// console.log('has change', itemHasChanged);
 			return (
 				<View style={ styles.footer }>
 					<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
@@ -93,7 +117,7 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 									deliveryId: route.params?.deliveryId, clientId: route.params?.clientId
 								});
 						} }
-						disabled={ !(items.some((item) => item.validated)) || !itemHasChanged }
+						disabled={ !itemHasChanged }
 						loading={ loadingValidate }
 					/>
 				</View>

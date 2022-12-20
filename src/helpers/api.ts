@@ -37,6 +37,7 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		type: Dispatches.API_LOADING_START,
 		payload: '',
 	});
+	console.log(method, url, JSON.stringify(request));
 	return axiosAPI({
 		headers: getHeaders(headers),
 		method,
@@ -44,9 +45,11 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		data: request ?? undefined,
 	})
 		.then(res => {
+			console.log('res', JSON.stringify(res.data));
 			return Promise.resolve(res.data);
 		})
 		.catch((err: AxiosError) => {
+			console.log('err', err);
 			const data: MiscInterface.BE<any> | null = parseErrData(err.response?.data);
 
 			if (data) {
