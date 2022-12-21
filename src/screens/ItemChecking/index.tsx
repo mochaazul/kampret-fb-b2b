@@ -95,9 +95,6 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const renderButton = useMemo(() => {
 		if (items.some(item => !item.validated)) {
 			const itemHasChanged = JSON.stringify(items) != JSON.stringify(currentItems);
-			// console.log('items', items);
-			// console.log('curr items', currentItems);
-			// console.log('has change', itemHasChanged);
 			return (
 				<View style={ styles.footer }>
 					<Images.ButtonCircleScan style={ { alignSelf: 'flex-end' } } />
