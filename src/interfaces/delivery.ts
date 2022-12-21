@@ -11,6 +11,7 @@ export interface DeliveryState {
 	resultValidateClient: boolean | undefined;
 
 	clientItems: Array<IDeliveryItem>;
+	tmpClientItems: Array<IDeliveryItem>;
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;

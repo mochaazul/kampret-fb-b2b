@@ -186,48 +186,72 @@ export default {
 			(Endpoints.DELIVERY_CLIENT_ITEMS(params.deliveryId, params.clientId))
 			.then((response) => {
 
-				// init data with response type
-				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
-
-				// get current items
-				const currentItem = store.getState().deliveryReducers.clientItems;
-
-				// inc validated item
-				let numValidated = 0;
-
-				// convert api response to delivery client
-				const items = data.items.map((item) => {
-					if (item.is_validate) numValidated++;
-
+				const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
 					return {
 						id: item.sales_detail_id,
-						orderId: item.sales_no,
-						qty: item.qty,
-						name: item.name,
-						validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
+						orderId: item.sales_no ?? '',
+						name: item.name ?? '',
+						qty: item.qty ?? '',
+						validated: item.is_validate,
 						validatedTime: item.validate_date,
 						deliveryId: params.deliveryId,
 						clientId: params.clientId
 					};
+				}) ?? [];
+
+				dispatch({
+					type: Dispatches.SET_TMP_CLIENT_ITEMS,
+					payload: items2
 				});
 
-				// set client item state
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
+					payload: items2
 				});
 
-				if (numValidated) {
-					dispatch({
-						type: Dispatches.SET_DELIVERY_CLIENT,
-						payload: store.getState().deliveryReducers.clientValidation.map((client) => {
-							if (client.id == params.clientId)
-								client.numValidated = numValidated;
+				// // init data with response type
+				// const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
-							return client;
-						})
-					});
-				}
+				// // get current items
+				// const currentItem = store.getState().deliveryReducers.clientItems;
+
+				// // inc validated item
+				// let numValidated = 0;
+
+				// // convert api response to delivery client
+				// const items = data.items.map((item) => {
+				// 	if (item.is_validate) numValidated++;
+
+				// 	return {
+				// 		id: item.sales_detail_id,
+				// 		orderId: item.sales_no,
+				// 		qty: item.qty,
+				// 		name: item.name,
+				// 		validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
+				// 		validatedTime: item.validate_date,
+				// 		deliveryId: params.deliveryId,
+				// 		clientId: params.clientId
+				// 	};
+				// });
+
+				// // set client item state
+				// dispatch({
+				// 	type: Dispatches.SET_CLIENT_ITEMS,
+				// 	payload: items,
+				// });
+
+				// const numValidated = items2?.filter((i) => i.validated);
+				// if (numValidated) {
+				// 	dispatch({
+				// 		type: Dispatches.SET_DELIVERY_CLIENT,
+				// 		payload: store.getState().deliveryReducers.clientValidation.map((client) => {
+				// 			if (client.id == params.clientId)
+				// 				client.numValidated = numValidated;
+
+				// 			return client;
+				// 		})
+				// 	});
+				// }
 			})
 			.catch(() => { })
 			.finally(() => {
@@ -249,11 +273,13 @@ export default {
 
 	// action to validate item locally
 	validateItem: (id: string) => (dispatch: Dispatch) => {
+		const currentItems = [...store.getState().deliveryReducers.clientItems];
+
 		// iterate through current client items
-		const items = store.getState().deliveryReducers.clientItems.map(
+		const items = currentItems.map(
 			(item) => {
 				if (item.id == id) {
-					item.validated = !item.validated;
+					item.validated = true;
 				}
 
 				return item;

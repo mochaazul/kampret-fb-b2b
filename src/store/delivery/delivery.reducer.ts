@@ -10,6 +10,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingValidateClient: false,
 	resultValidateClient: undefined,
 	clientItems: [],
+	tmpClientItems: [],
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
@@ -18,7 +19,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	deliveryHistory: undefined,
 	deliveryHistoryRoute: undefined,
 	deliveryHistoryRouteDetail: undefined,
-	loadingDeliveryProcess: undefined
+	loadingDeliveryProcess: undefined,
 };
 
 type Actions = { type: string; payload: any; };
@@ -88,6 +89,11 @@ const deliveryReducers = (
 			return {
 				...state,
 				clientItems: [...payload],
+			};
+		case Dispatches.SET_TMP_CLIENT_ITEMS:
+			return {
+				...state,
+				tmpClientItems: [...payload],
 			};
 
 		case Dispatches.LOADING_INPUT_KM:
