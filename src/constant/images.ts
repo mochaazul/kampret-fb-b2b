@@ -36,6 +36,7 @@ import IconWarning from '../assets/images/warning.svg';
 import Complain1 from '../assets/images/complain_1.svg';
 import Complain2 from '../assets/images/complain_2.svg';
 import IconLogout from '../assets/images/logout.svg';
+import EmptyBox from '../assets/images/empty_box.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -77,5 +78,6 @@ export default {
 	IconWarning,
 	Complain1,
 	Complain2,
-	IconLogout
+	IconLogout,
+	EmptyBox,
 };

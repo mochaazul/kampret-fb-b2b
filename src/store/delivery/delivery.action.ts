@@ -5,6 +5,7 @@ import { Dispatches, Endpoints } from '@constant';
 import { API, NavigationHelper } from '@helpers';
 import { DeliveryResponseInterface, DeliveryInterface, MiscInterface, ComponentInterface } from '@interfaces';
 import { store } from '../../config/reduxConfig';
+import { string } from 'yup';
 
 export default {
 	// action to get delivery list
@@ -185,48 +186,72 @@ export default {
 			(Endpoints.DELIVERY_CLIENT_ITEMS(params.deliveryId, params.clientId))
 			.then((response) => {
 
-				// init data with response type
-				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
-
-				// get current items
-				const currentItem = store.getState().deliveryReducers.clientItems;
-
-				// inc validated item
-				let numValidated = 0;
-
-				// convert api response to delivery client
-				const items = data.items.map((item) => {
-					if (item.is_validate) numValidated++;
-
+				const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
 					return {
 						id: item.sales_detail_id,
-						orderId: item.sales_no,
-						qty: item.qty,
-						name: item.name,
-						validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
+						orderId: item.sales_no ?? '',
+						name: item.name ?? '',
+						qty: item.qty ?? '',
+						validated: item.is_validate,
 						validatedTime: item.validate_date,
 						deliveryId: params.deliveryId,
 						clientId: params.clientId
 					};
+				}) ?? [];
+
+				dispatch({
+					type: Dispatches.SET_TMP_CLIENT_ITEMS,
+					payload: items2
 				});
 
-				// set client item state
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
+					payload: items2
 				});
 
-				if (numValidated) {
-					dispatch({
-						type: Dispatches.SET_DELIVERY_CLIENT,
-						payload: store.getState().deliveryReducers.clientValidation.map((client) => {
-							if (client.id == params.clientId)
-								client.numValidated = numValidated;
+				// // init data with response type
+				// const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
-							return client;
-						})
-					});
-				}
+				// // get current items
+				// const currentItem = store.getState().deliveryReducers.clientItems;
+
+				// // inc validated item
+				// let numValidated = 0;
+
+				// // convert api response to delivery client
+				// const items = data.items.map((item) => {
+				// 	if (item.is_validate) numValidated++;
+
+				// 	return {
+				// 		id: item.sales_detail_id,
+				// 		orderId: item.sales_no,
+				// 		qty: item.qty,
+				// 		name: item.name,
+				// 		validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
+				// 		validatedTime: item.validate_date,
+				// 		deliveryId: params.deliveryId,
+				// 		clientId: params.clientId
+				// 	};
+				// });
+
+				// // set client item state
+				// dispatch({
+				// 	type: Dispatches.SET_CLIENT_ITEMS,
+				// 	payload: items,
+				// });
+
+				// const numValidated = items2?.filter((i) => i.validated);
+				// if (numValidated) {
+				// 	dispatch({
+				// 		type: Dispatches.SET_DELIVERY_CLIENT,
+				// 		payload: store.getState().deliveryReducers.clientValidation.map((client) => {
+				// 			if (client.id == params.clientId)
+				// 				client.numValidated = numValidated;
+
+				// 			return client;
+				// 		})
+				// 	});
+				// }
 			})
 			.catch(() => { })
 			.finally(() => {
@@ -248,11 +273,13 @@ export default {
 
 	// action to validate item locally
 	validateItem: (id: string) => (dispatch: Dispatch) => {
+		const currentItems = [...store.getState().deliveryReducers.clientItems];
+
 		// iterate through current client items
-		const items = store.getState().deliveryReducers.clientItems.map(
+		const items = currentItems.map(
 			(item) => {
 				if (item.id == id) {
-					item.validated = !item.validated;
+					item.validated = true;
 				}
 
 				return item;
@@ -303,23 +330,25 @@ export default {
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
+				const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
+
 				// loop through current items
-				const items = state.deliveryReducers.clientItems.map((item) => {
-					// check if item is on result
-					const resItem = data.items.find((res) => res.sales_detail_id == item.id);
+				// const items = state.deliveryReducers.clientItems.map((item) => {
+				// 	// check if item is on result
+				// 	const resItem = data.items.find((res) => res.sales_detail_id == item.id);
 
-					if (resItem) {
-						item.validated = resItem.is_validate;
-						item.validatedTime = resItem.validate_date;
-					}
+				// 	if (resItem) {
+				// 		item.validated = resItem.is_validate;
+				// 		item.validatedTime = resItem.validate_date;
+				// 	}
 
-					return item;
-				});
+				// 	return item;
+				// });
 
 				// update current client items
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
+					payload: newItem,
 				});
 
 				// update client num validated items
@@ -588,4 +617,41 @@ export default {
 				});
 			});
 	},
+
+	getDeliveryProcess: (deliveryId: string) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_PROCESS,
+			payload: true,
+		});
+		// request client delivery list data from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryList[]>>
+			(`${ Endpoints.DELIVERY_PROCESS(deliveryId) }`)
+			.then(response => {
+				if (response.data) {
+					dispatch({
+						type: Dispatches.SET_DELIVERY_PROCESS,
+						payload: {
+							deliveryId: deliveryId,
+							data: response.data
+						}
+					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'Failed to get delivery detail',
+					});
+				}
+			})
+			.catch()
+			.finally(() => {
+				() => {
+					// set loading delivery list to false
+					dispatch({
+						type: Dispatches.LOADING_DELIVERY_PROCESS,
+						payload: false,
+					});
+				};
+			});
+	}
 };

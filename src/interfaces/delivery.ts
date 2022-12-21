@@ -11,6 +11,7 @@ export interface DeliveryState {
 	resultValidateClient: boolean | undefined;
 
 	clientItems: Array<IDeliveryItem>;
+	tmpClientItems: Array<IDeliveryItem>;
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;
@@ -20,6 +21,8 @@ export interface DeliveryState {
 	deliveryHistory: Array<IDeliveryHistory> | undefined;
 	deliveryHistoryRoute: Array<IRoute> | undefined;
 	deliveryHistoryRouteDetail: IHistoryDetail | undefined;
+
+	loadingDeliveryProcess: boolean | undefined;
 }
 
 export interface IDeliveryItem {
@@ -48,6 +51,9 @@ export interface IDeliveryCustomer {
 	address?: string;
 	deliveryTime?: string;
 	success?: boolean;
+	status?: number | undefined;
+	sequence?: number | undefined;
+	statusLabel?: string | undefined;
 }
 
 export interface IClientValidation {

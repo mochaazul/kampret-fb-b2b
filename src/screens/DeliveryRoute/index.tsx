@@ -1,12 +1,13 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import { FlatList } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Container, RouteCard, BottomSheet } from '@components';
-import { Colors, Images } from '@constant';
-import { NavigationHelper } from '@helpers';
-import { ComponentInterface } from '@interfaces';
+import { Dispatches, Images } from '@constant';
+import { ComponentInterface, NavigationProps } from '@interfaces';
 import Complain from './Complain';
 import ReportIssue from './ReportIssue';
+import { useAppDispatch, useAppSelector } from '@helpers';
+import { Actions } from '@store';
 
 const dummyData: ComponentInterface.IRoute[] = [{
 	numbering: 1,
@@ -41,15 +42,37 @@ const dummyData: ComponentInterface.IRoute[] = [{
 	isLastRoute: true
 }
 ];
-const DeliveryRoute = () => {
+const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
 	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
 
-	const handleHeaderRightOnPress = () => {
-		// console.log('header right button pressed');
-		setShowReportIssue(true);
-	};
+	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
+	const listClient = useAppSelector(state => state.deliveryReducers.clientValidation);
+	const clients = useMemo(() => listClient.filter((c) => c.deliveryId == route.params?.deliveryId), [listClient]);
+
+	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
+
+	useEffect(() => {
+		getClient(route.params?.deliveryId);
+	}, []);
+
+	const renderList = useMemo(() => (
+		<FlatList
+			keyExtractor={ (_item, index) => 'route_' + index }
+			data={ clients }
+			renderItem={ ({ item, index }) =>
+				<RouteCard
+					client={ item }
+					isLastRoute={ index == clients.length - 1 }
+					onClick={ () => { } }
+					disabled={ false }
+				/>
+			}
+			refreshing={ loading == true }
+			onRefresh={ () => getClient(route.params?.deliveryId) }
+		/>
+	), [clients, loading]);
 
 	return (
 		<Container
@@ -58,14 +81,12 @@ const DeliveryRoute = () => {
 				title: 'Rute Pengiriman',
 				type: 'regular',
 				rightButton: (<Images.IconAlert />),
-				onPressRightButton: () => handleHeaderRightOnPress()
+				onPressRightButton: () => setShowReportIssue(true)
 			} }
 		>
-			<FlatList
-				keyExtractor={ (item, index) => 'route_' + index }
-				data={ dummyData }
-				renderItem={ ({ item, index }) => <RouteCard { ...item } /> }
-			/>
+
+			{ renderList }
+
 			<BottomSheet
 				visible={ showComplain }
 				onRequestClose={ () => setShowComplain(false) }
@@ -73,6 +94,7 @@ const DeliveryRoute = () => {
 			>
 				<Complain onClose={ () => setShowComplain(false) } />
 			</BottomSheet>
+
 			<BottomSheet
 				visible={ showReportIssue }
 				onRequestClose={ () => setShowReportIssue(false) }
@@ -80,11 +102,9 @@ const DeliveryRoute = () => {
 			>
 				<ReportIssue onClose={ () => setShowReportIssue(false) } />
 			</BottomSheet>
-		</Container>
 
+		</Container>
 	);
 };
 
 export default DeliveryRoute;
-
-const styles = StyleSheet.create({});

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DeliveryInterface } from '@interfaces';
+import { DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
 import { Dispatches } from '@constant';
 
 const initialState: DeliveryInterface.DeliveryState = {
@@ -10,6 +10,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingValidateClient: false,
 	resultValidateClient: undefined,
 	clientItems: [],
+	tmpClientItems: [],
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
@@ -17,7 +18,8 @@ const initialState: DeliveryInterface.DeliveryState = {
 	statusInputKm: undefined,
 	deliveryHistory: undefined,
 	deliveryHistoryRoute: undefined,
-	deliveryHistoryRouteDetail: undefined
+	deliveryHistoryRouteDetail: undefined,
+	loadingDeliveryProcess: undefined,
 };
 
 type Actions = { type: string; payload: any; };
@@ -88,6 +90,11 @@ const deliveryReducers = (
 				...state,
 				clientItems: [...payload],
 			};
+		case Dispatches.SET_TMP_CLIENT_ITEMS:
+			return {
+				...state,
+				tmpClientItems: [...payload],
+			};
 
 		case Dispatches.LOADING_INPUT_KM:
 			return {
@@ -114,6 +121,33 @@ const deliveryReducers = (
 			return {
 				...state,
 				deliveryHistoryRouteDetail: payload
+			};
+		case Dispatches.LOADING_DELIVERY_PROCESS:
+			return {
+				...state,
+				loadingDeliveryProcess: payload
+			};
+		case Dispatches.SET_DELIVERY_PROCESS:
+			const { deliveryId, data } = payload;
+			const clients =
+				(data as DeliveryResponseInterface.DeliveryProcessData[]).map((resp) => {
+					return {
+						id: resp.client_no,
+						deliveryId: deliveryId,
+						custName: resp.client_name,
+						validated: true,
+						address: resp.client_address,
+						deliveryTime: resp.frame_time,
+						status: resp.delivery_status,
+						sequence: resp.delivery_sequence,
+						statusLabel: resp.text_delivery_status,
+						numItem: resp.item_order
+					};
+				});
+			return {
+				...state,
+				loadingDeliveryProcess: false,
+				clientValidation: [...clients]
 			};
 		case Dispatches.LOGOUT:
 			return initialState;

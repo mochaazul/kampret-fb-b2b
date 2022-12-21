@@ -1,11 +1,12 @@
-import { FlatList, View } from 'react-native';
+import { FlatList, TextStyle, View } from 'react-native';
 import React, { useEffect } from 'react';
 
 import styles from './style';
-import { dummyDeliveryHistory } from '../dummy';
 import DeliveryHistoryItem from './DeliveryHistoryItem';
 import { useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
+import { Text } from '@components';
+import { Colors, Fonts, Images } from '@constant';
 
 const DeliveryHistory = () => {
 
@@ -15,6 +16,25 @@ const DeliveryHistory = () => {
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistory);
 
 	useEffect(() => { fetchList(); }, []);
+
+	// show empty state when not loading and delivery list is empty
+	if (!loading && deliveryHistory?.length == 0)
+		return (
+			<View style={ styles.emptyContainer }>
+				<Images.EmptyBox
+					height={ 60 }
+				/>
+
+				<Text
+					format={ Fonts.paragraph.xl.bold as TextStyle }
+					color={ Colors.black.default }
+					style={ styles.emptyLabel }
+					mt={ 36 }
+				>
+					Belum ada riwayat pengiriman untuk saat ini.
+				</Text>
+			</View >
+		);
 
 	return (
 		<FlatList

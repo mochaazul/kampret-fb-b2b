@@ -2,9 +2,9 @@ import React from 'react';
 import { View, TouchableOpacity, TextStyle } from 'react-native';
 import { createMaterialTopTabNavigator, MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
-import { Container, Header, Text } from '@components';
+import { Container, Text } from '@components';
 import { Colors, Fonts } from '@constant';
-import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { useAppDispatch } from '@helpers';
 import { Actions } from "@store";
 
 import DeliveryList from './List';
@@ -14,7 +14,7 @@ import { NavigationProps } from '@interfaces';
 
 const Tab = createMaterialTopTabNavigator();
 
-type DeliveryProps = NavigationProps<'Delivery'>
+type DeliveryProps = NavigationProps<'Delivery'>;
 
 const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 	<View style={ { flexDirection: 'row', alignItems: 'center' } }>
@@ -58,7 +58,7 @@ const TabItem: React.FC<MaterialTopTabBarProps> = ({ state, navigation }) => (
 );
 
 
-const Delivery = ({route}:DeliveryProps) => {
+const Delivery = ({ route }: DeliveryProps) => {
 	const logout = useAppDispatch(Actions.authAction.logout);
 	return (
 		<Container
