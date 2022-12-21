@@ -45,9 +45,6 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 			});
 
 			setCurrItemState(JSON.parse(JSON.stringify(items)));
-
-			console.log('items', items);
-			console.log('curr items', currentItems);
 		}
 	};
 

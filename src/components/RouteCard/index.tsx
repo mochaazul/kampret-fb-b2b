@@ -1,62 +1,113 @@
-import React, { useMemo, useCallback } from 'react';
-import { StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useMemo, useCallback, useState } from 'react';
+import { Linking, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors, Fonts, Images } from '@constant';
-import { ComponentInterface } from '@interfaces';
+import { ComponentInterface, DeliveryInterface } from '@interfaces';
 import { NavigationHelper } from '@helpers';
 
 import Button from '../Button/index';
 import Text from '../Text/index';
 
-const RouteCard = ({
-	deliveryId,
-	clientId,
-	locationAddress,
-	locationTime,
-	locationTitle,
-	isLastRoute,
-	isDelivered,
-	disabled,
-	numbering,
-	totalItem,
-	onClick,
-}: ComponentInterface.IRoute) => {
+export interface RouteCardParam {
+	client: DeliveryInterface.IDeliveryCustomer;
+	isLastRoute: boolean | undefined;
+	onClick: () => void;
+	disabled: boolean | undefined;
+}
+
+const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) => {
+
+	const {
+		deliveryId,
+		id,
+		address,
+		deliveryTime,
+		custName,
+		status,
+		sequence,
+		numItem } = client;
+
+	const [isDelivered, setIsDelivered] = useState(status != 0);
+
 	const onPresssAction = useCallback(() => {
 		if (onClick) {
 			onClick();
 		} else {
-			NavigationHelper.push('DeliveryHistoryDetail', { deliveryId, clientId });
+			NavigationHelper.push('DeliveryHistoryDetail', { deliveryId, clientId: id });
 		}
-	}, [onClick, deliveryId, clientId]);
+	}, [onClick, deliveryId, id]);
 
 	const containerStyle = useMemo(() => {
 		const style: ViewStyle = { ...styles.container };
 
-		style.marginTop = numbering == 1 ? 20 : 0;
+		style.marginTop = sequence == 1 ? 20 : 0;
 		style.opacity = disabled ? .7 : 1;
 
 		return style;
-	}, [numbering, disabled]);
+	}, [sequence, disabled]);
+
+	const renderNumber = useMemo(() => {
+		if (!isDelivered)
+			return (
+				<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
+					<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ sequence }</Text>
+				</View>
+			);
+
+		return (
+			<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : [styles.number, { backgroundColor: Colors.white.pure }] }>
+				<Images.IconCheckGreen width={ 23 } height={ 23 } />
+			</View>
+		);
+	}, [isDelivered, sequence]);
+
+	const renderAction = useMemo(() => {
+		if (isDelivered) return (
+			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+				<View style={ styles.deliveredColumn }>
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+				</View>
+				<View style={ styles.deliveredColumn }>
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Diterima</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.green.default }>{ numItem } Barang</Text>
+				</View>
+				<View>
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Keluhan</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.company.red }>{ 0 } Barang</Text>
+				</View>
+			</View>
+		);
+
+		return (
+			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+				<View style={ styles.totalItem }>
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+				</View>
+				<Button
+					disabled={ disabled }
+					weight='700'
+					color={ Colors.white.pure }
+					text='Sudah Sampai'
+					onPress={ () => {
+						NavigationHelper.push('DeliveryCheck');
+					} }
+				/>
+			</View>
+		);
+	}, [isDelivered, numItem]);
 
 	return (
 		<TouchableOpacity
 			style={ containerStyle }
-			key={ 'route_' + numbering }
+			key={ 'route_' + sequence }
 			activeOpacity={ .7 }
 			onPress={ onPresssAction }
 		>
 
 			<View style={ styles.numbering }>
-				{ isDelivered &&
-					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : [styles.number, { backgroundColor: Colors.white.pure }] }>
-						<Images.IconCheckGreen width={ 23 } height={ 23 } />
-					</View>
-				}
-				{ !isDelivered &&
-					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
-						<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ numbering }</Text>
-					</View>
-				}
+				{ renderNumber }
 
 				{ !isLastRoute &&
 					<View style={ styles.dashLine } />
@@ -64,25 +115,32 @@ const RouteCard = ({
 			</View>
 			<View style={ styles.contentContainer }>
 				<View style={ disabled ? styles.contentDisabled : styles.content }>
+
 					<View style={ styles.row }>
 						<View style={ styles.leftIcon }>
 							<Images.IconLocation width={ 16 } height={ 16 } />
 						</View>
-						<Text style={ [Fonts.textBody.l.bold, styles.text] as TextStyle }>{ locationTitle }</Text>
+						<Text style={ [Fonts.textBody.l.bold, styles.text] as TextStyle }>{ custName }</Text>
 					</View>
+
 					<View style={ styles.row }>
 						<View style={ styles.leftIcon }></View>
-						<Text style={ [styles.text, { textDecorationLine: 'underline' }] } size={ 14 } lineHeight={ 20 } color={ Colors.blue.default } weight='400' >{ locationAddress }</Text>
+
+						<TouchableOpacity activeOpacity={ .75 } onPress={ () => Linking.openURL(`https://maps.google.com?q=${ address }`) }>
+							<Text style={ [styles.text, { textDecorationLine: 'underline' }] } size={ 14 } lineHeight={ 20 } color={ Colors.blue.default } weight='400' >{ address }</Text>
+						</TouchableOpacity>
 					</View>
+
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
-						<Text size={ 14 } lineHeight={ 20 } weight='400'>{ locationTime.startAt + ' - ' + locationTime.estEnd } WIB</Text>
+						<Text size={ 14 } lineHeight={ 20 } weight='400'>{ deliveryTime } WIB</Text>
 						{ !disabled && !isDelivered &&
 							<View style={ styles.textBoundaries } >
 								<Text color={ Colors.white.pure } format={ Fonts.textBody.s.bold as TextStyle }>30 menit lagi</Text>
 							</View> }
 					</View>
-					<View style={ styles.timeSection }>
+
+					{/* <View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
 						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah SO: 2 </Text>
 						<Text size={ 14 } lineHeight={ 20 } weight='600'>(SO12345, SO67890)</Text>
@@ -90,42 +148,9 @@ const RouteCard = ({
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
 						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah Keranjang: 2M, 1L, 3XL</Text>
-					</View>
-					{ !isDelivered &&
-						<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-							<View style={ styles.totalItem }>
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ totalItem } Barang</Text>
-							</View>
-							<Button
-								disabled={ disabled }
-								weight='700'
-								color={ Colors.white.pure }
-								text='Sudah Sampai'
-								onPress={ () => {
-									// const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
-									// setTmpImgUri(null);
-									NavigationHelper.push('DeliveryCheck');
-								} }
-							/>
-						</View>
-					}
-					{ isDelivered &&
-						<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-							<View style={ styles.deliveredColumn }>
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ isDelivered.totalDeliveredItem } Barang</Text>
-							</View>
-							<View style={ styles.deliveredColumn }>
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Diterima</Text>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.green.default }>{ isDelivered.receivedCount } Barang</Text>
-							</View>
-							<View>
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Keluhan</Text>
-								<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.company.red }>{ isDelivered.complain } Barang</Text>
-							</View>
-						</View>
-					}
+					</View> */}
+
+					{ renderAction }
 				</View>
 				<View style={ styles.spaceHeight }></View>
 			</View>

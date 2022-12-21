@@ -41,7 +41,7 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 					useShadow={ true }
 					leadingIcon={ <Images.IconTruck style={ { marginEnd: 4 } } /> }
 					buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
-					onPress={ () => NavigationHelper.push('DeliveryRoute') }
+					onPress={ () => NavigationHelper.push('DeliveryRoute', { deliveryId: props.id }) }
 				/>
 			);
 		}

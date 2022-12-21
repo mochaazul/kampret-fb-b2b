@@ -96,3 +96,18 @@ export interface DeliveryItemData {
 	is_validate: boolean;
 	validate_date: string;
 }
+
+export interface DeliveryProcessResp {
+	data: DeliveryProcessData[];
+}
+
+export interface DeliveryProcessData {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	frame_time: string;
+	delivery_status: number;
+	delivery_sequence: number;
+	text_delivery_status: string;
+	item_order: number;
+}

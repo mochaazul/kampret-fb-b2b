@@ -29,7 +29,9 @@ export type RootStackParamList = {
 		photo?: string;
 		deliveryId?: string;
 	};
-	DeliveryRoute?: undefined;
+	DeliveryRoute?: {
+		deliveryId?: string;
+	};
 	CapturePhoto?: undefined;
 	Notification?: {
 		item: any;

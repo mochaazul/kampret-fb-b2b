@@ -5,6 +5,7 @@ import { Dispatches, Endpoints } from '@constant';
 import { API, NavigationHelper } from '@helpers';
 import { DeliveryResponseInterface, DeliveryInterface, MiscInterface, ComponentInterface } from '@interfaces';
 import { store } from '../../config/reduxConfig';
+import { string } from 'yup';
 
 export default {
 	// action to get delivery list
@@ -590,4 +591,41 @@ export default {
 				});
 			});
 	},
+
+	getDeliveryProcess: (deliveryId: string) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_PROCESS,
+			payload: true,
+		});
+		// request client delivery list data from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryList[]>>
+			(`${ Endpoints.DELIVERY_PROCESS(deliveryId) }`)
+			.then(response => {
+				if (response.data) {
+					dispatch({
+						type: Dispatches.SET_DELIVERY_PROCESS,
+						payload: {
+							deliveryId: deliveryId,
+							data: response.data
+						}
+					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'Failed to get delivery detail',
+					});
+				}
+			})
+			.catch()
+			.finally(() => {
+				() => {
+					// set loading delivery list to false
+					dispatch({
+						type: Dispatches.LOADING_DELIVERY_PROCESS,
+						payload: false,
+					});
+				};
+			});
+	}
 };
