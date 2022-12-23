@@ -17,4 +17,5 @@ export default {
 	DELIVERY_VALIDATE_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery-validate-item/${ deliveryId }/client/${ clientId }`),
 	INPUT_KM: (deliveryId: string) => (`v1/delivery/${ deliveryId }/start`),
 	DELIVERY_PROCESS: (deliveryId: string) => (`v1/delivery-process/${ deliveryId }`),
+	START_DELIVERY_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/client/${ clientId }`),
 };

@@ -186,6 +186,7 @@ export default {
 			(Endpoints.DELIVERY_CLIENT_ITEMS(params.deliveryId, params.clientId))
 			.then((response) => {
 
+				// map resopnse items to state item
 				const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
 					return {
 						id: item.sales_detail_id,
@@ -200,58 +201,9 @@ export default {
 				}) ?? [];
 
 				dispatch({
-					type: Dispatches.SET_TMP_CLIENT_ITEMS,
-					payload: items2
-				});
-
-				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items2
 				});
-
-				// // init data with response type
-				// const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
-
-				// // get current items
-				// const currentItem = store.getState().deliveryReducers.clientItems;
-
-				// // inc validated item
-				// let numValidated = 0;
-
-				// // convert api response to delivery client
-				// const items = data.items.map((item) => {
-				// 	if (item.is_validate) numValidated++;
-
-				// 	return {
-				// 		id: item.sales_detail_id,
-				// 		orderId: item.sales_no,
-				// 		qty: item.qty,
-				// 		name: item.name,
-				// 		validated: currentItem.find((v) => v.id == item.sales_detail_id && v.validated)?.validated ?? item.is_validate,
-				// 		validatedTime: item.validate_date,
-				// 		deliveryId: params.deliveryId,
-				// 		clientId: params.clientId
-				// 	};
-				// });
-
-				// // set client item state
-				// dispatch({
-				// 	type: Dispatches.SET_CLIENT_ITEMS,
-				// 	payload: items,
-				// });
-
-				// const numValidated = items2?.filter((i) => i.validated);
-				// if (numValidated) {
-				// 	dispatch({
-				// 		type: Dispatches.SET_DELIVERY_CLIENT,
-				// 		payload: store.getState().deliveryReducers.clientValidation.map((client) => {
-				// 			if (client.id == params.clientId)
-				// 				client.numValidated = numValidated;
-
-				// 			return client;
-				// 		})
-				// 	});
-				// }
 			})
 			.catch(() => { })
 			.finally(() => {
@@ -653,5 +605,33 @@ export default {
 					});
 				};
 			});
-	}
+	},
+
+	startDeliveryClient: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.LOADING_START_DELIVERY_CLIENT,
+			payload: true,
+		});
+		// request client delivery list data from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryDetail>>
+			(`${ Endpoints.DELIVERY_HISTORY_CLIENT_DETAIL(deliveryId, clientId) }`)
+			.then(response => {
+				// update client status to 1
+				dispatch({
+					type: Dispatches.UPDATE_DELIVERY_CLIENT_STATUS,
+					payload: {
+						id: clientId,
+						deliveryId: deliveryId,
+						status: 1
+					}
+				});
+			})
+			.finally(() => {
+				// set loading delivery list to false
+				dispatch({
+					type: Dispatches.LOADING_START_DELIVERY_CLIENT,
+					payload: false,
+				});
+			});
+	},
 };

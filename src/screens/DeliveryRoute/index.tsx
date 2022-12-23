@@ -48,10 +48,12 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
+	const loadingStartClient = useAppSelector(state => state.deliveryReducers.loadingStartDeliveryClient);
 	const listClient = useAppSelector(state => state.deliveryReducers.clientValidation);
 	const clients = useMemo(() => listClient.filter((c) => c.deliveryId == route.params?.deliveryId), [listClient]);
 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
+	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 
 	useEffect(() => {
 		getClient(route.params?.deliveryId);
@@ -67,6 +69,8 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 					isLastRoute={ index == clients.length - 1 }
 					onClick={ () => { } }
 					disabled={ false }
+					loading={ loadingStartClient }
+					onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 				/>
 			}
 			refreshing={ loading == true }

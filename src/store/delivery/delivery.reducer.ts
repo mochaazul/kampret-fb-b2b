@@ -10,7 +10,6 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingValidateClient: false,
 	resultValidateClient: undefined,
 	clientItems: [],
-	tmpClientItems: [],
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
@@ -20,6 +19,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	deliveryHistoryRoute: undefined,
 	deliveryHistoryRouteDetail: undefined,
 	loadingDeliveryProcess: undefined,
+	loadingStartDeliveryClient: undefined
 };
 
 type Actions = { type: string; payload: any; };
@@ -90,11 +90,6 @@ const deliveryReducers = (
 				...state,
 				clientItems: [...payload],
 			};
-		case Dispatches.SET_TMP_CLIENT_ITEMS:
-			return {
-				...state,
-				tmpClientItems: [...payload],
-			};
 
 		case Dispatches.LOADING_INPUT_KM:
 			return {
@@ -141,7 +136,9 @@ const deliveryReducers = (
 						status: resp.delivery_status,
 						sequence: resp.delivery_sequence,
 						statusLabel: resp.text_delivery_status,
-						numItem: resp.item_order
+						numItem: resp.item_order,
+						latitude: resp.client_lat,
+						longitude: resp.client_long,
 					};
 				});
 			return {
@@ -149,6 +146,29 @@ const deliveryReducers = (
 				loadingDeliveryProcess: false,
 				clientValidation: [...clients]
 			};
+
+		case Dispatches.LOADING_START_DELIVERY_CLIENT:
+			return {
+				...state,
+				loadingStartDeliveryClient: payload,
+			};
+
+		case Dispatches.UPDATE_DELIVERY_CLIENT_STATUS:
+			const { id, dID, status } = payload;
+
+			const newClient = [...state.clientValidation].map((c) => {
+				if (c.id == id && c.deliveryId == dID) {
+					c.status = status;
+				}
+
+				return c;
+			});
+
+			return {
+				...state,
+				clientValidation: [...newClient],
+			};
+
 		case Dispatches.LOGOUT:
 			return initialState;
 		default:
