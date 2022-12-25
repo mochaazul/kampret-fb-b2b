@@ -110,4 +110,6 @@ export interface DeliveryProcessData {
 	delivery_sequence: number;
 	text_delivery_status: string;
 	item_order: number;
+	client_lat: number;
+	client_long: number;
 }

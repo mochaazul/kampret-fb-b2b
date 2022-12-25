@@ -1,8 +1,8 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Linking, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors, Fonts, Images } from '@constant';
-import { ComponentInterface, DeliveryInterface } from '@interfaces';
+import { DeliveryInterface } from '@interfaces';
 import { NavigationHelper } from '@helpers';
 
 import Button from '../Button/index';
@@ -13,9 +13,18 @@ export interface RouteCardParam {
 	isLastRoute: boolean | undefined;
 	onClick: () => void;
 	disabled: boolean | undefined;
+	loading: boolean | undefined;
+	onStart: () => void;
 }
 
-const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) => {
+const RouteCard = ({
+	client,
+	isLastRoute,
+	onClick,
+	disabled,
+	loading,
+	onStart
+}: RouteCardParam) => {
 
 	const {
 		deliveryId,
@@ -25,9 +34,10 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 		custName,
 		status,
 		sequence,
-		numItem } = client;
-
-	const [isDelivered, setIsDelivered] = useState(status != 0);
+		numItem,
+		latitude,
+		longitude,
+	} = client;
 
 	const onPresssAction = useCallback(() => {
 		if (onClick) {
@@ -47,7 +57,7 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 	}, [sequence, disabled]);
 
 	const renderNumber = useMemo(() => {
-		if (!isDelivered)
+		if ((status ?? 0) < 6)
 			return (
 				<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
 					<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ sequence }</Text>
@@ -59,10 +69,10 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 				<Images.IconCheckGreen width={ 23 } height={ 23 } />
 			</View>
 		);
-	}, [isDelivered, sequence]);
+	}, [status, sequence]);
 
 	const renderAction = useMemo(() => {
-		if (isDelivered) return (
+		if (status == 6) return (
 			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 				<View style={ styles.deliveredColumn }>
 					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
@@ -79,24 +89,33 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 			</View>
 		);
 
+		const button = status == 0 ? <Button
+			disabled={ disabled }
+			weight='700'
+			color={ Colors.white.pure }
+			text='Mulai Kirim'
+			onPress={ onStart }
+		/> : <Button
+			disabled={ disabled }
+			weight='700'
+			color={ Colors.white.pure }
+			text='Sudah Sampai'
+			onPress={ () => {
+				NavigationHelper.push('DeliveryCheck');
+			} }
+		/>;
+
 		return (
 			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 				<View style={ styles.totalItem }>
 					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
 					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
 				</View>
-				<Button
-					disabled={ disabled }
-					weight='700'
-					color={ Colors.white.pure }
-					text='Sudah Sampai'
-					onPress={ () => {
-						NavigationHelper.push('DeliveryCheck');
-					} }
-				/>
+
+				{ button }
 			</View>
 		);
-	}, [isDelivered, numItem]);
+	}, [numItem, status, loading]);
 
 	return (
 		<TouchableOpacity
@@ -126,7 +145,7 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 					<View style={ styles.row }>
 						<View style={ styles.leftIcon }></View>
 
-						<TouchableOpacity activeOpacity={ .75 } onPress={ () => Linking.openURL(`https://maps.google.com?q=${ address }`) }>
+						<TouchableOpacity activeOpacity={ .75 } onPress={ () => Linking.openURL(`https://maps.google.com?q=${ (latitude && longitude) ? `${ latitude },${ longitude }` : address }`) }>
 							<Text style={ [styles.text, { textDecorationLine: 'underline' }] } size={ 14 } lineHeight={ 20 } color={ Colors.blue.default } weight='400' >{ address }</Text>
 						</TouchableOpacity>
 					</View>
@@ -134,7 +153,7 @@ const RouteCard = ({ client, isLastRoute, onClick, disabled }: RouteCardParam) =
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
 						<Text size={ 14 } lineHeight={ 20 } weight='400'>{ deliveryTime } WIB</Text>
-						{ !disabled && !isDelivered &&
+						{ !disabled && (status ?? 0) < 6 &&
 							<View style={ styles.textBoundaries } >
 								<Text color={ Colors.white.pure } format={ Fonts.textBody.s.bold as TextStyle }>30 menit lagi</Text>
 							</View> }
