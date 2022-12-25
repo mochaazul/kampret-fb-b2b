@@ -4,6 +4,7 @@ import { Linking, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } fro
 import { Colors, Fonts, Images } from '@constant';
 import { DeliveryInterface } from '@interfaces';
 import { NavigationHelper } from '@helpers';
+import { Variables } from '@constant';
 
 import Button from '../Button/index';
 import Text from '../Text/index';
@@ -14,7 +15,8 @@ export interface RouteCardParam {
 	onClick: () => void;
 	disabled: boolean | undefined;
 	loading: boolean | undefined;
-	onStart: () => void;
+	onStart?: () => void;
+	onArrived?: () => void;
 }
 
 const RouteCard = ({
@@ -23,7 +25,8 @@ const RouteCard = ({
 	onClick,
 	disabled,
 	loading,
-	onStart
+	onStart,
+	onArrived
 }: RouteCardParam) => {
 
 	const {
@@ -72,49 +75,66 @@ const RouteCard = ({
 	}, [status, sequence]);
 
 	const renderAction = useMemo(() => {
-		if (status == 6) return (
-			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-				<View style={ styles.deliveredColumn }>
-					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-				</View>
-				<View style={ styles.deliveredColumn }>
-					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Diterima</Text>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.green.default }>{ numItem } Barang</Text>
-				</View>
-				<View>
-					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Keluhan</Text>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.company.red }>{ 0 } Barang</Text>
-				</View>
-			</View>
-		);
-
-		const button = status == 0 ? <Button
-			disabled={ disabled }
-			weight='700'
-			color={ Colors.white.pure }
-			text='Mulai Kirim'
-			onPress={ onStart }
-		/> : <Button
-			disabled={ disabled }
-			weight='700'
-			color={ Colors.white.pure }
-			text='Sudah Sampai'
-			onPress={ () => {
-				NavigationHelper.push('DeliveryCheck');
-			} }
-		/>;
-
-		return (
-			<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-				<View style={ styles.totalItem }>
-					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-					<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-				</View>
-
-				{ button }
-			</View>
-		);
+		//make condition by delivery status
+		switch (status) {
+			case Variables.DELIVERY_STATUS.ARRIVED:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.deliveredColumn }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+						</View>
+						<View style={ styles.deliveredColumn }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Diterima</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.green.default }>{ numItem } Barang</Text>
+						</View>
+						<View>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Keluhan</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.company.red }>{ 0 } Barang</Text>
+						</View>
+					</View>
+				);
+			case Variables.DELIVERY_STATUS.VALIDATE_CLIENT:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+						</View>
+						<Button
+							disabled={ disabled }
+							weight='700'
+							color={ Colors.white.pure }
+							text='Mulai Kirim'
+							onPress={ () => onStart ? onStart() : null }
+						/>
+					</View>
+				);
+			case Variables.DELIVERY_STATUS.SENT:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+						</View>
+						<Button
+							disabled={ disabled }
+							weight='700'
+							color={ Colors.white.pure }
+							text='Sudah Sampai'
+							onPress={ () => onArrived ? onArrived() : null }
+						/>
+					</View>
+				);
+			case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Item Not Validate</Text>
+						</View>
+					</View>
+				);
+		}
 	}, [numItem, status, loading]);
 
 	return (

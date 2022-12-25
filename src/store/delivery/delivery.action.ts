@@ -612,15 +612,18 @@ export default {
 			payload: true,
 		});
 		// request client delivery list data from api
-		API.post(`${ Endpoints.DELIVERY_HISTORY_CLIENT_DETAIL(deliveryId, clientId) }`, [])
+		API.post(`${ Endpoints.START_DELIVERY_CLIENT(deliveryId, clientId) }`, [])
 			.then(response => {
 				// update client status to 1
+
+				//REQ_BE: need BE to provide response newest RouteMap data
+
 				dispatch({
 					type: Dispatches.UPDATE_DELIVERY_CLIENT_STATUS,
 					payload: {
 						id: clientId,
-						deliveryId: deliveryId,
-						status: 1
+						custDeliveryId: deliveryId,
+						status: 5
 					}
 				});
 			})
@@ -641,22 +644,10 @@ export default {
 		});
 
 		// tell BE, driver just arrived
-		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
-			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`)
+		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`, [])
 			.then(response => {
-
-				if (response.data) {
-					//maping BE response into existing type
-					console.log('just arrived response', response);
-					NavigationHelper.push('DeliveryCheck');
-				} else {
-					Toast.show({
-						type: 'error',
-						text1: 'Oopps...',
-						text2: 'just arrived has Empty Data',
-					});
-				}
-
+				NavigationHelper.push('DeliveryCheck', { deliveryId, clientId });
 			})
 			.finally(() => {
 				// turn off loading arrival process
@@ -730,6 +721,38 @@ export default {
 				dispatch({
 					type: Dispatches.ARRIVAL_LOADING,
 					payload: false
+				});
+			});
+	},
+	getClientArrivalData: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// request delivery process from api
+		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.CLIENT_ARRIVAL(deliveryId, clientId) }`, [])
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+					console.log('delivery arrival', response);
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'delivery process has Empty Data',
+					});
+				}
+
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
 				});
 			});
 	},

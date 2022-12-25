@@ -154,14 +154,14 @@ const deliveryReducers = (
 			};
 
 		case Dispatches.UPDATE_DELIVERY_CLIENT_STATUS:
-			const { id, dID, status } = payload;
-
-			const newClient = [...state.clientValidation].map((c) => {
-				if (c.id == id && c.deliveryId == dID) {
-					c.status = status;
+			const { id, custDeliveryId, status } = payload;
+			console.log('reduc', payload, state.clientValidation);
+			const newClient = [...state.clientValidation].map((cust) => {
+				if (cust.id == id && cust.deliveryId == custDeliveryId) {
+					cust.status = status;
 				}
 
-				return c;
+				return cust;
 			});
 
 			return {

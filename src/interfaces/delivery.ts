@@ -54,8 +54,8 @@ export interface IDeliveryCustomer {
 	status?: number | undefined;
 	sequence?: number | undefined;
 	statusLabel?: string | undefined;
-	latitude?: string | undefined;
-	longitude?: string | undefined;
+	latitude?: number | undefined;
+	longitude?: number | undefined;
 }
 
 export interface IClientValidation {

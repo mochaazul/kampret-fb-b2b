@@ -20,5 +20,6 @@ export default {
 	DELIVERY_PROCESS: (deliveryId: string) => (`v1/delivery-process/${ deliveryId }`),
 	START_DELIVERY_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/client/${ clientId }`),
 	JUST_ARRIVE: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
-	ARRIVAL_CONFIRMATION: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
+	ARRIVAL_CONFIRMATION: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }/confirmation`),
+	CLIENT_ARRIVAL: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
 };

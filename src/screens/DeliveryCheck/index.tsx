@@ -7,6 +7,7 @@ import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
+import { NavigationProps } from '@interfaces';
 
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
@@ -21,7 +22,7 @@ interface CheckValues {
 	returnChecked: boolean;
 }
 
-const DeliveryCheck = () => {
+const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -30,8 +31,10 @@ const DeliveryCheck = () => {
 	const miscState = useAppSelector(state => state.miscReducers);
 
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
 
 	useEffect(() => {
+		getArrivalData(route.params.deliveryId, route.params.clientId);
 		return function () {
 			setTmpImgUri('');
 		};

@@ -43,4 +43,8 @@ export type RootStackParamList = {
 		deliveryId?: string;
 		clientId?: string;
 	};
+	DeliveryCheck: {
+		deliveryId?: string;
+		clientId?: string;
+	};
 };
