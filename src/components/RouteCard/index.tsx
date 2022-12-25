@@ -94,7 +94,6 @@ const RouteCard = ({
 			weight='700'
 			color={ Colors.white.pure }
 			text='Mulai Kirim'
-			loading={ loading == true }
 			onPress={ onStart }
 		/> : <Button
 			disabled={ disabled }

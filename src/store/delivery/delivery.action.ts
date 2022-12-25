@@ -5,7 +5,6 @@ import { Dispatches, Endpoints } from '@constant';
 import { API, NavigationHelper } from '@helpers';
 import { DeliveryResponseInterface, DeliveryInterface, MiscInterface, ComponentInterface } from '@interfaces';
 import { store } from '../../config/reduxConfig';
-import { string } from 'yup';
 
 export default {
 	// action to get delivery list
@@ -33,7 +32,7 @@ export default {
 							id: value.delivery_id.toString(),
 							label: value.delivery_no,
 							date: value.date,
-							status: value.status == 5 ? 'deliver' : 'new',
+							status: value.status > 3 ? 'deliver' : 'new',
 							totalItem: value.total_item,
 							customers: value.clients.map((client) => ({
 								id: client.client_no,
@@ -613,8 +612,7 @@ export default {
 			payload: true,
 		});
 		// request client delivery list data from api
-		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientDeliveryHistoryDetail>>
-			(`${ Endpoints.DELIVERY_HISTORY_CLIENT_DETAIL(deliveryId, clientId) }`)
+		API.post(`${ Endpoints.DELIVERY_HISTORY_CLIENT_DETAIL(deliveryId, clientId) }`, [])
 			.then(response => {
 				// update client status to 1
 				dispatch({
