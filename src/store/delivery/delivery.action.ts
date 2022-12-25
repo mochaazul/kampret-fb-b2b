@@ -632,4 +632,105 @@ export default {
 				});
 			});
 	},
+	// action to tell BE just arrived
+	justArrived: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// tell BE, driver just arrived
+		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`)
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+					console.log('just arrived response', response);
+					NavigationHelper.push('DeliveryCheck');
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'just arrived has Empty Data',
+					});
+				}
+
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
+				});
+			});
+	},
+
+	// action to get delivery process data
+	getDeliveryProcessList: () => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// request delivery process from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.GET_DELIVERY_PROCESS }`)
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+					console.log('delivery process', response);
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'delivery process has Empty Data',
+					});
+				}
+
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
+				});
+			});
+	},
+	arrivalConfirmation: (params: DeliveryInterface.IArrivalConfirmation) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true
+		});
+
+		// create form data
+		const formData = new FormData();
+		formData.append('image', {
+			uri: params?.imageUrl ?? 'test',
+			name: 'test.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('recipient_name', params.recipientName);
+
+		API.upload(
+			Endpoints.ARRIVAL_CONFIRMATION(params.deliveryId, params.clientId),
+			formData
+		)
+			.then((response) => {
+
+				console.log('arrival confim', response);
+			})
+			.catch((error) => { })
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false
+				});
+			});
+	},
 };

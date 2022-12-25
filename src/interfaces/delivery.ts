@@ -78,6 +78,13 @@ export interface IInputKmParams {
 	imageUrl?: string;
 }
 
+export interface IArrivalConfirmation {
+	imageUrl?: string;
+	recipientName: string;
+	deliveryId: string;
+	clientId: string;
+}
+
 export interface IDelivery {
 	id: string;
 	label: string;
