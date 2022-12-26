@@ -1,6 +1,6 @@
 import { IRoute } from "./components";
 import { CheckItemProp } from '../screens/DeliveryCheck/CheckItem';
-
+import { ClientArrivalResponse } from './deliveryResponses';
 export interface DeliveryState {
 	deliveryList: Array<IDelivery>;
 	loadingList: boolean | undefined;
@@ -23,8 +23,17 @@ export interface DeliveryState {
 
 	loadingDeliveryProcess: boolean | undefined;
 	loadingStartDeliveryClient: boolean | undefined;
+
+	clientArrivalData: ClientArrivalResponse | null;
+	arrivalConfirmation: IDeliverySuccess | null;
+	arrivalLoading: boolean;
 }
 
+export interface IDeliverySuccess {
+	deliveryId: string,
+	clientName: string,
+	time: string;
+}
 export interface IDeliveryItem {
 	id: string;
 	orderId: string;
@@ -83,6 +92,7 @@ export interface IArrivalConfirmation {
 	recipientName: string;
 	deliveryId: string;
 	clientId: string;
+	clientName: string;
 }
 
 export interface IDelivery {

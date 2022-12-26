@@ -113,3 +113,40 @@ export interface DeliveryProcessData {
 	client_lat: number;
 	client_long: number;
 }
+
+export interface ClientArrivalResponse {
+	client_no: string;
+	client_name: string;
+	client_address: string;
+	client_lat: number;
+	client_long: number;
+	frame_time: string;
+	total_so: number;
+	receipt: Receipt;
+	items: Item[];
+	carts: Cart[];
+}
+
+export interface Cart {
+	cart_type: string;
+	qty: number;
+}
+
+export interface Item {
+	delivery_route_item_id: number;
+	item_name: string;
+	sales_no: string;
+	qty_order: number;
+	qty_received: number;
+	qty_reject: number;
+	complain_date: Date;
+	complaint_category: string;
+	complaint_description: string;
+	complaint_images: null;
+}
+
+export interface Receipt {
+	recipient_name: string;
+	recipient_date: Date;
+	recipient_photo: string;
+}

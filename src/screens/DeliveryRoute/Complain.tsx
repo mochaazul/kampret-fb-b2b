@@ -7,6 +7,7 @@ import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
 interface ComplainProps {
 	onClose: () => void;
+	deliveryRouteItemId: string | null;
 }
 interface IComplain {
 	description: string | null;
@@ -22,7 +23,7 @@ const dummyDropdown = [
 	{ key: '8', value: 'Rusak' },
 ];
 
-const Complain = ({ onClose }: ComplainProps) => {
+const Complain = ({ onClose, deliveryRouteItemId }: ComplainProps) => {
 	const [qty, setQty] = useState<number>(2);
 	const [complainSelected, setComplainSelected] = useState('');
 

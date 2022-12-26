@@ -110,6 +110,22 @@ const RouteCard = ({
 						/>
 					</View>
 				);
+			case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+						</View>
+						<Button
+							disabled={ disabled }
+							weight='700'
+							color={ Colors.white.pure }
+							text='Mulai Kirim'
+							onPress={ () => onStart ? onStart() : null }
+						/>
+					</View>
+				);
 			case Variables.DELIVERY_STATUS.SENT:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
@@ -126,14 +142,14 @@ const RouteCard = ({
 						/>
 					</View>
 				);
-			case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
-				return (
-					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.totalItem }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Item Not Validate</Text>
-						</View>
-					</View>
-				);
+			// case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
+			// 	return (
+			// 		<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+			// 			<View style={ styles.totalItem }>
+			// 				<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Item Not Validate</Text>
+			// 			</View>
+			// 		</View>
+			// 	);
 		}
 	}, [numItem, status, loading]);
 

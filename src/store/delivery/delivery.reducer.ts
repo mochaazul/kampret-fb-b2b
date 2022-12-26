@@ -19,7 +19,11 @@ const initialState: DeliveryInterface.DeliveryState = {
 	deliveryHistoryRoute: undefined,
 	deliveryHistoryRouteDetail: undefined,
 	loadingDeliveryProcess: undefined,
-	loadingStartDeliveryClient: undefined
+	loadingStartDeliveryClient: undefined,
+	clientArrivalData: null,
+	arrivalConfirmation: null,
+	arrivalLoading: false
+
 };
 
 type Actions = { type: string; payload: any; };
@@ -112,6 +116,12 @@ const deliveryReducers = (
 				...state,
 				deliveryHistoryRoute: payload
 			};
+
+		case Dispatches.ARRIVAL_LOADING:
+			return {
+				...state,
+				arrivalLoading: payload
+			};
 		case Dispatches.SET_DELIVERY_HISTORY_DETAIL:
 			return {
 				...state,
@@ -121,6 +131,11 @@ const deliveryReducers = (
 			return {
 				...state,
 				loadingDeliveryProcess: payload
+			};
+		case Dispatches.ARRIVAL_CONFIRMATION_SUCCESS:
+			return {
+				...state,
+				arrivalConfirmation: payload
 			};
 		case Dispatches.SET_DELIVERY_PROCESS:
 			const { deliveryId, data } = payload;
@@ -153,9 +168,15 @@ const deliveryReducers = (
 				loadingStartDeliveryClient: payload,
 			};
 
+		case Dispatches.CLIENT_ARRIVAL_DATA:
+			return {
+				...state,
+				clientArrivalData: payload,
+			};
+
 		case Dispatches.UPDATE_DELIVERY_CLIENT_STATUS:
 			const { id, custDeliveryId, status } = payload;
-			console.log('reduc', payload, state.clientValidation);
+
 			const newClient = [...state.clientValidation].map((cust) => {
 				if (cust.id == id && cust.deliveryId == custDeliveryId) {
 					cust.status = status;

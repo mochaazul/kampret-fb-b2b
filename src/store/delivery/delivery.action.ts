@@ -373,6 +373,7 @@ export default {
 			formData
 		)
 			.then((response) => {
+
 				// update delivery status
 				const deliveries = store.getState().deliveryReducers.deliveryList.map((delivery) => {
 					if (delivery.id == params.deliveryId) {
@@ -389,7 +390,9 @@ export default {
 
 				NavigationHelper.reset('Delivery');
 			})
-			.catch((error) => { })
+			.catch((error) => {
+
+			})
 			.finally(() => {
 				// set loading input km to false
 				dispatch({
@@ -673,7 +676,7 @@ export default {
 
 				if (response.data) {
 					//maping BE response into existing type
-					console.log('delivery process', response);
+
 				} else {
 					Toast.show({
 						type: 'error',
@@ -712,10 +715,21 @@ export default {
 			formData
 		)
 			.then((response) => {
-
-				console.log('arrival confim', response);
+				// show success dialog
+				const date = new Date();
+				dispatch({
+					type: Dispatches.ARRIVAL_CONFIRMATION_SUCCESS,
+					payload: {
+						deliveryId: params.deliveryId,
+						clientId: params.clientId,
+						clientName: params.clientName,
+						time: date.getHours() + ':' + date.getMinutes()
+					}
+				});
 			})
-			.catch((error) => { })
+			.catch((error) => {
+
+			})
 			.finally(() => {
 				// set loading input km to false
 				dispatch({
@@ -732,13 +746,17 @@ export default {
 		});
 
 		// request delivery process from api
-		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
-			(`${ Endpoints.CLIENT_ARRIVAL(deliveryId, clientId) }`, [])
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientArrivalResponse>>
+			(`${ Endpoints.CLIENT_ARRIVAL(deliveryId, clientId) }`)
 			.then(response => {
 
 				if (response.data) {
 					//maping BE response into existing type
-					console.log('delivery arrival', response);
+
+					dispatch({
+						type: Dispatches.CLIENT_ARRIVAL_DATA,
+						payload: response.data,
+					});
 				} else {
 					Toast.show({
 						type: 'error',
@@ -755,5 +773,11 @@ export default {
 					payload: false,
 				});
 			});
+	},
+	closeSuccessArrivalConfirmationDialog: () => {
+		return {
+			type: Dispatches.ARRIVAL_CONFIRMATION_SUCCESS,
+			payload: null,
+		};
 	},
 };

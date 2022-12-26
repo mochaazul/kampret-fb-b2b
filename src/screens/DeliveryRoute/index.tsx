@@ -11,7 +11,7 @@ import { Actions } from '@store';
 
 const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
-	const [showComplain, setShowComplain] = useState<boolean>(false);
+	//const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
@@ -55,13 +55,13 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				onRefresh={ () => getClient(route.params?.deliveryId) }
 			/>
 
-			<BottomSheet
+			{/* <BottomSheet
 				visible={ showComplain }
 				onRequestClose={ () => setShowComplain(false) }
 				noScroll
 			>
 				<Complain onClose={ () => setShowComplain(false) } />
-			</BottomSheet>
+			</BottomSheet> */}
 
 			<BottomSheet
 				visible={ showReportIssue }
