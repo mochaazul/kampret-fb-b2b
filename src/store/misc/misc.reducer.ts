@@ -10,6 +10,7 @@ const initialState: MiscInterface.MiscState = {
 	currentLatitude: undefined,
 	currentLongitude: undefined,
 	locationStatus: 'loading',
+	tmpMultiplePhotoCaptures: null
 };
 
 type Actions = { type: string; payload: any; };
@@ -59,6 +60,11 @@ const miscReducers = (
 			return {
 				...state,
 				currentLongitude: payload,
+			};
+		case Dispatches.TMP_MULTIPLE_IMAGE:
+			return {
+				...state,
+				tmpMultiplePhotoCaptures: payload,
 			};
 		default:
 			return state;

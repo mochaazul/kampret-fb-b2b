@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import { Dispatches } from '@constant';
+import { MiscInterface } from '@interfaces';
 
 export default {
 	startLoader: () => {
@@ -22,6 +23,12 @@ export default {
 		return {
 			type: Dispatches.TMP_IMAGE_URI,
 			payload: imageUri,
+		};
+	},
+	setTmpMultiplePhotoCapture: (multiplePhotoCapture: MiscInterface.MultiplePhotoCapture) => {
+		return {
+			type: Dispatches.TMP_MULTIPLE_IMAGE,
+			payload: multiplePhotoCapture,
 		};
 	},
 	setNotif: (notif: boolean) => {

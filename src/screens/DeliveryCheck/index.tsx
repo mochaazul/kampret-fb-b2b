@@ -25,18 +25,22 @@ interface CheckValues {
 const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
+	const [complainSetter, setComplainSetter] = useState<string | null>(null);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
 	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
+	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 
 	useEffect(() => {
 		getArrivalData(route.params.deliveryId, route.params.clientId);
 		return function () {
 			setTmpImgUri('');
+			setMultiplePhotoCapture(null);
 		};
 	}, []);
 
@@ -248,6 +252,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				<ConfirmArrival
 					onClose={ () => setShowConfirm(false) }
 					onConfirm={ () => {
+						arrivalConfirmation({
+							recipientName: formik.values.receiverName,
+							imageUrl: formik.values.photoUri,
+							deliveryId: route.params.deliveryId,
+							clientId: route.params.clientId
+						});
 						setShowConfirm(false);
 						setShowSuccessDialog(true);
 					} }
