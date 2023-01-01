@@ -9,12 +9,13 @@ type SuccessDeliveryDialogProps = {
 	testBarcodeValue?: string;
 	custName?: string;
 	time?: string;
+	onButtonPressed: () => void;
 };
 
 const SuccessDeliveryDialog = ({
 	testBarcodeValue,
 	custName,
-	time
+	time, onButtonPressed
 }: SuccessDeliveryDialogProps) => {
 	return (
 		<View style={ { alignItems: 'stretch' } }>
@@ -51,7 +52,7 @@ const SuccessDeliveryDialog = ({
 				weight='700'
 				color={ Colors.white.pure }
 				text='Lanjut Pengiriman Lainnya'
-				onPress={ () => NavigationHelper.pop(1) }
+				onPress={ () => onButtonPressed() }
 			/>
 		</View>
 	);

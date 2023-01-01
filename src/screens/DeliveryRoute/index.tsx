@@ -49,6 +49,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 						loading={ loadingStartClient }
 						onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 						onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
+						onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
 					/>
 				}
 				refreshing={ loading == true }

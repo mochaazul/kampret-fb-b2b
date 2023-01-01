@@ -219,6 +219,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					testBarcodeValue={ successArrival?.deliveryId }
 					custName={ successArrival?.clientName }
 					time={ successArrival?.time }
+					onButtonPressed={ () => { closeArrivalSuccessDialog(); NavigationHelper.pop(1); } }
 				/>
 			</ModalDialog>
 

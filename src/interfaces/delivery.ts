@@ -131,3 +131,16 @@ export interface IHistoryDetail {
 	item: CheckItemProp[] | null,
 	receipt: HistoryDetailReceipt;
 }
+
+export interface IDeliveryFinish {
+	finishLocation: string,
+	finishOdometer_image: string,
+	deliveryId: string;
+}
+
+export interface IAddComplainDelivery {
+	deliveryId: string,
+	clientId: string,
+	complaintDescription: string,
+	complainImageUrl: string;
+}

@@ -17,9 +17,12 @@ export default {
 	DELIVERY_CLIENT_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery/${ deliveryId }/client/${ clientId }`),
 	DELIVERY_VALIDATE_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery-validate-item/${ deliveryId }/client/${ clientId }`),
 	INPUT_KM: (deliveryId: string) => (`v1/delivery/${ deliveryId }/start`),
+	INPUT_KM_FINISH: (deliveryId: string) => (`v1/delivery/${ deliveryId }/finish`),
 	DELIVERY_PROCESS: (deliveryId: string) => (`v1/delivery-process/${ deliveryId }`),
 	START_DELIVERY_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/client/${ clientId }`),
 	JUST_ARRIVE: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
 	ARRIVAL_CONFIRMATION: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }/confirmation`),
 	CLIENT_ARRIVAL: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
+	ADD_COMPLAINT: (deliveryId: string, clientId: string) => (`v1/delivery-complaint/${ deliveryId }/client/${ clientId }`),
+
 };

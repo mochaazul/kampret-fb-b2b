@@ -17,6 +17,7 @@ export interface RouteCardParam {
 	loading: boolean | undefined;
 	onStart?: () => void;
 	onArrived?: () => void;
+	onFinish: () => void;
 }
 
 const RouteCard = ({
@@ -26,7 +27,8 @@ const RouteCard = ({
 	disabled,
 	loading,
 	onStart,
-	onArrived
+	onArrived,
+	onFinish
 }: RouteCardParam) => {
 
 	const {
@@ -41,6 +43,14 @@ const RouteCard = ({
 		latitude,
 		longitude,
 	} = client;
+
+	const onArrivedPressed = useCallback(() => {
+		if (isLastRoute) {
+			onFinish();
+		} else if (!isLastRoute && onArrived) {
+			onArrived();
+		}
+	}, [onArrived, onFinish]);
 
 	const onPresssAction = useCallback(() => {
 		if (onClick) {
@@ -138,7 +148,7 @@ const RouteCard = ({
 							weight='700'
 							color={ Colors.white.pure }
 							text='Sudah Sampai'
-							onPress={ () => onArrived ? onArrived() : null }
+							onPress={ onArrivedPressed }
 						/>
 					</View>
 				);

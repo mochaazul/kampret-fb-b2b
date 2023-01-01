@@ -278,6 +278,7 @@ export default {
 			(Endpoints.DELIVERY_VALIDATE_ITEMS(params.deliveryId, params.clientId), validatedItems)
 			.then((response) => {
 
+				console.log('bulk', response);
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
@@ -319,7 +320,8 @@ export default {
 					payload: true
 				});
 			})
-			.catch(() => {
+			.catch((error) => {
+				console.log('bulk error', error);
 				// update current client items
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
@@ -780,4 +782,72 @@ export default {
 			payload: null,
 		};
 	},
+	deliveryFinish: (params: DeliveryInterface.IDeliveryFinish) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_INPUT_KM,
+			payload: true
+		});
+
+		const formData = new FormData();
+		formData.append('finish_odometer_image', {
+			uri: params?.finishLocation ?? 'test',
+			name: 'finish.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('finish_location', params.finishLocation);
+
+		API.upload(
+			Endpoints.INPUT_KM_FINISH(params.deliveryId),
+			formData
+		)
+			.then((response) => {
+
+				NavigationHelper.reset('Delivery');
+			})
+			.catch((error) => {
+
+			})
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_INPUT_KM,
+					payload: false
+				});
+			});
+	},
+
+	addComplaint: (params: DeliveryInterface.IAddComplainDelivery) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_COMPLAIN,
+			payload: true
+		});
+
+		const formData = new FormData();
+		formData.append('finish_odometer_image', {
+			uri: params?.complainImageUrl ?? 'test',
+			name: 'finish.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('complaint_description', params.complaintDescription);
+
+		API.upload(
+			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
+			formData
+		)
+			.then((response) => {
+
+			})
+			.catch((error) => {
+
+			})
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_COMPLAIN,
+					payload: false
+				});
+			});
+	}
 };
