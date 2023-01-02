@@ -25,6 +25,9 @@ export default {
 					type: Dispatches.CLEAR_DELIVERY_LIST,
 				});
 
+				// init customers
+				let customers: DeliveryInterface.IDeliveryCustomer[] = [];
+
 				// convert api response to delivery list items
 				const items: DeliveryInterface.IDelivery[] =
 					(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
@@ -43,11 +46,8 @@ export default {
 							numLocation: Object.keys(value.clients).length,
 						};
 
-						// update delivery client list
-						dispatch({
-							type: Dispatches.SET_DELIVERY_CLIENT,
-							payload: delivery.customers
-						});
+						// push customers to list
+						customers = [...customers, ...delivery.customers];
 
 						return delivery;
 					});
@@ -56,6 +56,12 @@ export default {
 				dispatch({
 					type: Dispatches.SET_DELIVERY_LIST,
 					payload: items ?? [],
+				});
+
+				// update delivery client list
+				dispatch({
+					type: Dispatches.SET_DELIVERY_CLIENT,
+					payload: customers
 				});
 			})
 			.finally(() => {
