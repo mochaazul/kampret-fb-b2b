@@ -18,7 +18,7 @@ export interface DeliveryState {
 	loadingInputKm: boolean | undefined;
 	statusInputKm: boolean | undefined;
 	deliveryHistory: Array<IDeliveryHistory> | undefined;
-	deliveryHistoryRoute: Array<IRoute> | undefined;
+	deliveryHistoryRoute: Array<IDeliveryCustomer> | undefined;
 	deliveryHistoryRouteDetail: IHistoryDetail | undefined;
 
 	loadingDeliveryProcess: boolean | undefined;

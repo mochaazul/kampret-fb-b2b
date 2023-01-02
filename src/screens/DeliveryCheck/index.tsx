@@ -141,7 +141,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						return (
 							<View key={ 'item_' + index }>
 								{ index > 0 && <View style={ { height: 10 } } /> }
-								<CheckItem { ...value } />
+								<CheckItem { ...value } onClickComplain={ () => setShowComplain(true) } />
 							</View>
 						);
 					})

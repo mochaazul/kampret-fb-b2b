@@ -535,25 +535,22 @@ export default {
 						dataCount = response.data.length;
 					}
 					//maping BE response into existing type
-					const clientRoutes: ComponentInterface.IRoute[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
+					const clientRoutes: DeliveryInterface.IDeliveryCustomer[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
 						const time = route.frame_time.split('-');
 						return {
-							clientId: route.client_no,
-							locationTitle: route.client_name,
-							locationAddress: route.client_address,
-							locationTime: {
-								startAt: time[0],
-								estEnd: time[1]
-							},
-							isDelivered: {
-								complain: route.item_reject,
-								receivedCount: route.item_receive,
-								totalDeliveredItem: route.item_order
-							},
-							isLastRoute: index == dataCount - 1,
-							totalItem: route.item_order,
-							disabled: false,
-							numbering: index + 1
+							id: route.client_no,
+							deliveryId: deliveryId,
+							custName: route.client_name,
+							validated: true,
+							numItem: route.item_order,
+							numValidated: route.item_receive,
+							deliveryTime: route.frame_time,
+							address: route.client_address,
+							latitude: route.client_lat,
+							longitude: route.client_long,
+							sequence: route.delivery_sequence,
+							status: route.delivery_status,
+							statusLabel: route.text_delivery_status
 						};
 					});
 					dispatch({

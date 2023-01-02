@@ -17,7 +17,7 @@ export interface RouteCardParam {
 	loading: boolean | undefined;
 	onStart?: () => void;
 	onArrived?: () => void;
-	onFinish: () => void;
+	onFinish?: () => void;
 }
 
 const RouteCard = ({
@@ -45,7 +45,7 @@ const RouteCard = ({
 	} = client;
 
 	const onArrivedPressed = useCallback(() => {
-		if (isLastRoute) {
+		if (isLastRoute && onFinish) {
 			onFinish();
 		} else if (!isLastRoute && onArrived) {
 			onArrived();
@@ -163,6 +163,7 @@ const RouteCard = ({
 		}
 	}, [numItem, status, loading]);
 
+	console.log('client route', client);
 	return (
 		<TouchableOpacity
 			style={ containerStyle }

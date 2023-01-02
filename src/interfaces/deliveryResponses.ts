@@ -32,12 +32,16 @@ export interface ClientDeliveryHistoryList {
 	client_no: string;
 	client_name: string;
 	client_address: string;
+	client_lat: number;
+	client_long: number;
 	frame_time: string;
 	delivery_status: number;
+	delivery_sequence: number;
 	text_delivery_status: string;
 	item_order: number;
 	item_receive: number;
 	item_reject: number;
+	total_so: number;
 }
 
 export interface ClientDeliveryHistoryDetail {
