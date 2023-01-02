@@ -25,7 +25,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	useEffect(() => {
 		getClient(route.params?.deliveryId);
 	}, []);
-	console.log('loading start client', loadingStartClient);
+
 	return (
 		<Container
 			noPadding noScroll

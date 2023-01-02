@@ -1,5 +1,5 @@
 import { StyleSheet, View, TextStyle } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { Children, useMemo } from 'react';
 import { ProgressBar } from '@react-native-community/progress-bar-android';
 
 import { Colors, Images, Fonts } from '@constant';
@@ -101,26 +101,38 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 		);
 	}, [customer.numItem, customer.numValidated]);
 
+	const renderCustName = useMemo(() => (
+		<>
+			<Text format={ Fonts.textBody.l.bold as TextStyle }>{ customer.id }</Text>
+
+			<View style={ styles.row }>
+				{
+					customer.custName &&
+					<Text
+						format={ Fonts.textBody.m.regular as TextStyle }
+						mt={ 10 }
+						numberOfLines={ 3 }
+					>
+						{ customer.custName }
+					</Text>
+				}
+
+				{
+					(customer.numCart ?? 0) > 1 &&
+					<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| { customer.numCart } Keranjang</Text>
+				}
+			</View>
+		</>
+	), [customer.id, customer.custName, customer.numCart]);
+
 	if (!customer.validated) {
 		return (
 			<View key={ customer.id } style={ styles.container }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ customer.id }</Text>
-
-						<View style={ styles.row }>
-							{
-								customer.custName &&
-								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ customer.custName } </Text>
-							}
-
-							{
-								(customer.numCart ?? 0) > 1 &&
-								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| { customer.numCart } Keranjang</Text>
-							}
-						</View>
-
+					<View style={ { flex: 5 } }>
+						{ renderCustName }
 					</View>
+
 					<Button
 						mt={ 20 }
 						weight='700'
@@ -129,6 +141,7 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 						leadingIcon={ <Images.IconScan style={ { marginEnd: 4 } } /> }
 						buttonStyle={ { paddingHorizontal: 20, paddingVertical: 10 } }
 						onPress={ () => onOpenScanChoice ? onOpenScanChoice() : null }
+						style={ { flex: 3 } }
 					/>
 				</View>
 
@@ -138,24 +151,11 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 		return (
 			<View key={ customer.id } style={ styles.container }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-					<View>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ customer.id }</Text>
-
-						<View style={ styles.row }>
-							{
-								customer.custName &&
-								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ customer.custName } </Text>
-							}
-
-							{
-								(customer.numCart ?? 0) > 1 &&
-								<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| { customer.numCart } Keranjang</Text>
-							}
-						</View>
-
+					<View style={ { flex: 5 } }>
+						{ renderCustName }
 					</View>
 
-					<View style={ styles.row }>
+					<View style={ [styles.row, { flex: 2 }] }>
 						<Text format={ Fonts.textBody.m.bold as TextStyle } color={ Colors.green.default }>Tervalidasi </Text>
 						<Images.IconCheck />
 					</View>

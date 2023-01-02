@@ -32,7 +32,7 @@ export default {
 							id: value.delivery_id.toString(),
 							label: value.delivery_no,
 							date: value.date,
-							status: value.status > 3 ? 'deliver' : 'new',
+							status: value.status > 4 ? 'deliver' : 'new',
 							totalItem: value.total_item,
 							customers: value.clients.map((client) => ({
 								id: client.client_no,
@@ -278,29 +278,28 @@ export default {
 			(Endpoints.DELIVERY_VALIDATE_ITEMS(params.deliveryId, params.clientId), validatedItems)
 			.then((response) => {
 
-				console.log('bulk', response);
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
-				const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
+				// const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
 
 				// loop through current items
-				// const items = state.deliveryReducers.clientItems.map((item) => {
-				// 	// check if item is on result
-				// 	const resItem = data.items.find((res) => res.sales_detail_id == item.id);
+				const items = state.deliveryReducers.clientItems.map((item) => {
+					// check if item is on result
+					const resItem = data.items.find((res) => res.sales_detail_id == item.id);
 
-				// 	if (resItem) {
-				// 		item.validated = resItem.is_validate;
-				// 		item.validatedTime = resItem.validate_date;
-				// 	}
+					if (resItem) {
+						item.validated = resItem.is_validate;
+						item.validatedTime = resItem.validate_date;
+					}
 
-				// 	return item;
-				// });
+					return item;
+				});
 
 				// update current client items
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: newItem,
+					payload: items,
 				});
 
 				// update client num validated items
@@ -321,12 +320,11 @@ export default {
 				});
 			})
 			.catch((error) => {
-				console.log('bulk error', error);
 				// update current client items
-				dispatch({
-					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
-				});
+				// dispatch({
+				// 	type: Dispatches.SET_CLIENT_ITEMS,
+				// 	payload: items,
+				// });
 
 				// set result validate item to false
 				dispatch({

@@ -117,7 +117,6 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		}
 	}, [items, currentItems, loadingValidate]);
 
-	console.log('item clients', listItems);
 	return (
 		<Container
 			header={ { title: 'Pemeriksaan Barang', type: 'regular' } }

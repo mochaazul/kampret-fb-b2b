@@ -37,7 +37,7 @@ const ContentValidateDialog = ({ client, onCheckOther, deliveryId }: ContentVali
 			</View>
 			<View style={ styles.content }>
 				<View style={ [styles.row, { justifyContent: 'space-between', paddingBottom: 15 }] }>
-					<View>
+					<View style={ { flex: 5 } }>
 						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ client?.id }</Text>
 						<View style={ styles.row }>
 							<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ client?.custName } </Text>
@@ -45,7 +45,7 @@ const ContentValidateDialog = ({ client, onCheckOther, deliveryId }: ContentVali
 						</View>
 
 					</View>
-					<View style={ styles.row }>
+					<View style={ [styles.row, { flex: 3 }] }>
 						<Text format={ Fonts.textBody.m.bold as TextStyle } color={ Colors.green.default }>Tervalidasi </Text>
 						<Images.IconCheck />
 					</View>

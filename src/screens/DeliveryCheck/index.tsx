@@ -105,7 +105,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	})
 		: [];
 
-	console.log('arrival data', formik.values);
 	return (
 		<Container
 			noPadding
