@@ -2,9 +2,9 @@ import { FlatList } from 'react-native';
 import React, { useEffect } from 'react';
 
 import { Container, RouteCard } from '@components';
-import { Images } from '@constant';
+import { Images, Variables } from '@constant';
 import { NavigationProps } from '@interfaces';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { useAppDispatch, useAppSelector, NavigationHelper } from '@helpers';
 import { Actions } from '@store';
 
 const DeliveryRouteHistory = ({ route }: NavigationProps<'DeliveryRouteHistory'>) => {
@@ -29,7 +29,18 @@ const DeliveryRouteHistory = ({ route }: NavigationProps<'DeliveryRouteHistory'>
 			<FlatList
 				keyExtractor={ (_item, index) => 'route_' + index }
 				data={ deliveryHistoryRoute }
-				renderItem={ ({ item }) => <RouteCard { ...item } deliveryId={ route.params.deliveryId } /> }
+				renderItem={ ({ item, index }) =>
+					<RouteCard
+						client={ item }
+						isLastRoute={ deliveryHistoryRoute ? index == deliveryHistoryRoute.length - 1 : true }
+						onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+						disabled={ false }
+						loading={ false }
+					// onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
+					// onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
+					// onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+					/>
+				}
 				onRefresh={ fetchList }
 				refreshing={ loading }
 			/>

@@ -30,6 +30,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
 	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
+	const inputKmOnFinish = useAppDispatch(Actions.deliveryAction.deliveryFinish);
 
 	const { t: translate } = useTranslation();
 
@@ -42,17 +43,24 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			doInputKm(
-				{
-					lat: latitude,
-					long: longitude,
-					odo: formik.values.kmSpeedometer,
-					imageUrl: tmpCapturedImg,
-					deliveryId: route.params?.deliveryId
-				}
+			if (route.params?.deliveryLocation) {
+				inputKmOnFinish({
+					finishLocation: route.params.deliveryLocation,
+					finishOdometer_image: formik.values.kmSpeedometer,
+					deliveryId: route.params.deliveryId
+				});
+			} else {
+				doInputKm(
+					{
+						lat: latitude,
+						long: longitude,
+						odo: formik.values.kmSpeedometer,
+						imageUrl: tmpCapturedImg,
+						deliveryId: route.params?.deliveryId
+					}
 
-			);
-
+				);
+			}
 		},
 	});
 

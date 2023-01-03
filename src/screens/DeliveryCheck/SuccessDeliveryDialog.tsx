@@ -9,12 +9,13 @@ type SuccessDeliveryDialogProps = {
 	testBarcodeValue?: string;
 	custName?: string;
 	time?: string;
+	onButtonPressed: () => void;
 };
 
 const SuccessDeliveryDialog = ({
-	testBarcodeValue = "KMZWAY87AA",
-	custName = 'Sumorice',
-	time = '08:59 WIB'
+	testBarcodeValue,
+	custName,
+	time, onButtonPressed
 }: SuccessDeliveryDialogProps) => {
 	return (
 		<View style={ { alignItems: 'stretch' } }>
@@ -25,7 +26,7 @@ const SuccessDeliveryDialog = ({
 
 				<Text format={ Fonts.paragraph.m.regular as TextStyle } mt={ 10 } style={ { textAlign: 'center' } }>
 					Terima kasih anda telah berhasil menyelesaikan pengiriman ke
-					<Text format={ Fonts.paragraph.m.bold as TextStyle }> Sumorice.</Text>
+					<Text format={ Fonts.paragraph.m.bold as TextStyle }> { custName }.</Text>
 				</Text>
 
 			</View>
@@ -51,7 +52,7 @@ const SuccessDeliveryDialog = ({
 				weight='700'
 				color={ Colors.white.pure }
 				text='Lanjut Pengiriman Lainnya'
-				onPress={ () => NavigationHelper.pop(1) }
+				onPress={ () => onButtonPressed() }
 			/>
 		</View>
 	);

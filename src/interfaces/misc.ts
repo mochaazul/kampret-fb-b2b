@@ -6,6 +6,7 @@ export type MiscState = {
 	locationStatus: 'loading' | 'success' | 'failed',
 	currentLatitude: number | undefined,
 	currentLongitude: number | undefined,
+	tmpMultiplePhotoCaptures: MultiplePhotoCapture | null;
 };
 
 export type BE<T> = {
@@ -14,3 +15,5 @@ export type BE<T> = {
 	stat_code: string,
 	stat_msg: string;
 };
+
+export type MultiplePhotoCapture = { [id: string]: string; };

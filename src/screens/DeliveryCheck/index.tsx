@@ -7,6 +7,7 @@ import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
+import { NavigationProps } from '@interfaces';
 
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
@@ -21,19 +22,29 @@ interface CheckValues {
 	returnChecked: boolean;
 }
 
-const DeliveryCheck = () => {
+const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
+	const [complainSetter, setComplainSetter] = useState<string | null>(null);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 
 	const miscState = useAppSelector(state => state.miscReducers);
+	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
+	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
+	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
 
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
+	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
+	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
+	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 
 	useEffect(() => {
+		getArrivalData(route.params.deliveryId, route.params.clientId);
 		return function () {
 			setTmpImgUri('');
+			setMultiplePhotoCapture(null);
 		};
 	}, []);
 
@@ -49,45 +60,6 @@ const DeliveryCheck = () => {
 		},
 		onSubmit: () => { setShowConfirm(true); },
 	});
-
-	const dummyItems: Array<CheckItemProp> = [
-		{
-			id: 'SO0001-01',
-			name: '5 Pack Rumput Laut',
-			isComplain: true,
-			complainAmount: '2 Pack',
-			complainLabel: 'Barang Rusak',
-			complainDesc: 'Lorem ipsum dolor sit amet consectetur. Vivamus facilisis risus morbi imperdiet diam fames vitae etiam. ',
-			complainFiles: [
-				<Images.Complain1 key={ 1 } />,
-				<Images.Complain2 key={ 2 } />
-			],
-		},
-		{
-			id: 'SO0001-02',
-			name: '5 Pack Daging Sapi',
-			isComplain: false,
-			onClickComplain: () => setShowComplain(true),
-		},
-		{
-			id: 'SO0001-03',
-			name: '5 Pack Daging Ayam',
-			isComplain: false,
-			onClickComplain: () => setShowComplain(true),
-		},
-		{
-			id: 'SO0001-04',
-			name: '5 Pack Daging Kambing',
-			isComplain: false,
-			onClickComplain: () => setShowComplain(true),
-		},
-		{
-			id: 'SO0001-05',
-			name: '5 Pack Daging Unta',
-			isComplain: false,
-			onClickComplain: () => setShowComplain(true),
-		},
-	];
 
 	const navigateToCapturePhoto = useCallback(
 		() => {
@@ -119,6 +91,20 @@ const DeliveryCheck = () => {
 		);
 	}, [miscState.tmpImageUri]);
 
+
+	const mappingToCheckItemType: CheckItemProp[] = arrivalData && arrivalData.items ? arrivalData.items.map((item) => {
+		return {
+			id: item.sales_no + '-' + item.delivery_route_item_id,
+			name: item.item_name,
+			isComplain: item.complaint_description !== '',
+			complainAmount: item.qty_reject + '',
+			complainLabel: item.complaint_description,
+			complainDesc: item.complaint_description,
+
+		};
+	})
+		: [];
+
 	return (
 		<Container
 			noPadding
@@ -131,16 +117,17 @@ const DeliveryCheck = () => {
 		>
 
 			<ScrollView>
-				<View style={ styles.customerInfo }>
-					<Images.IconLocation />
+				{ arrivalData &&
+					<View style={ styles.customerInfo }>
+						<Images.IconLocation />
 
-					<View style={ { marginStart: 16 } }>
+						<View style={ { marginStart: 16 } }>
 
-						<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>Sumorice</Text>
-						<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>Jl. Sultan Iskandar Muda No.6B, RT.7/RW.9, Kby. Lama Sel., Kec. Kby. Lama, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12240</Text>
+							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
+							<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ arrivalData.client_address }</Text>
+						</View>
 					</View>
-				</View>
-
+				}
 				<Text
 					color={ Colors.gray.default }
 					format={ Fonts.paragraph.xl.bold as TextStyle }
@@ -150,11 +137,11 @@ const DeliveryCheck = () => {
 				</Text>
 
 				{
-					dummyItems.map((value: CheckItemProp, index: number) => {
+					mappingToCheckItemType.map((value: CheckItemProp, index: number) => {
 						return (
 							<View key={ 'item_' + index }>
 								{ index > 0 && <View style={ { height: 10 } } /> }
-								<CheckItem { ...value } />
+								<CheckItem { ...value } onClickComplain={ () => setShowComplain(true) } />
 							</View>
 						);
 					})
@@ -219,14 +206,20 @@ const DeliveryCheck = () => {
 						mt={ 30 }
 						useShadow={ true }
 						onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
-						disabled={ !formik.isValid }
+						loading={ arrivalLoading }
+					//disabled={ !formik.isValid }
 					/>
 				</View>
 			</ScrollView>
 
-			<ModalDialog visible={ showSuccessDialog }
-				onRequestClose={ () => setShowSuccessDialog(false) }>
-				<SuccessDeliveryDialog />
+			<ModalDialog visible={ successArrival !== null }
+				onRequestClose={ () => closeArrivalSuccessDialog() }>
+				<SuccessDeliveryDialog
+					testBarcodeValue={ successArrival?.deliveryId }
+					custName={ successArrival?.clientName }
+					time={ successArrival?.time }
+					onButtonPressed={ () => { closeArrivalSuccessDialog(); NavigationHelper.pop(1); } }
+				/>
 			</ModalDialog>
 
 			<BottomSheet
@@ -234,7 +227,7 @@ const DeliveryCheck = () => {
 				onRequestClose={ () => setShowComplain(false) }
 				noScroll
 			>
-				<Complain onClose={ () => setShowComplain(false) } />
+				<Complain onClose={ () => setShowComplain(false) } deliveryRouteItemId={ complainSetter } />
 			</BottomSheet>
 
 			<BottomSheet
@@ -245,6 +238,13 @@ const DeliveryCheck = () => {
 				<ConfirmArrival
 					onClose={ () => setShowConfirm(false) }
 					onConfirm={ () => {
+						arrivalConfirmation({
+							recipientName: formik.values.receiverName,
+							imageUrl: formik.values.photoUri,
+							deliveryId: route.params.deliveryId,
+							clientId: route.params.clientId,
+							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : ''
+						});
 						setShowConfirm(false);
 						setShowSuccessDialog(true);
 					} }

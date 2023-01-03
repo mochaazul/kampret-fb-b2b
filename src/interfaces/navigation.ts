@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { MultiplePhotoCapture } from './misc';
 
 export type NavigationProps<T extends keyof RootStackParamList> =
 	NativeStackScreenProps<RootStackParamList, T>;
@@ -28,11 +29,17 @@ export type RootStackParamList = {
 	InputKms?: {
 		photo?: string;
 		deliveryId?: string;
+		deliveryLocation?: string;
 	};
 	DeliveryRoute?: {
 		deliveryId?: string;
 	};
-	CapturePhoto?: undefined;
+	CapturePhoto?: {
+		customStore?: {
+			id: string,
+			currentStore: MultiplePhotoCapture | null,
+		};
+	};
 	Notification?: {
 		item: any;
 	};
@@ -40,6 +47,10 @@ export type RootStackParamList = {
 		deliveryId: string;
 	};
 	DeliveryHistoryDetail: {
+		deliveryId?: string;
+		clientId?: string;
+	};
+	DeliveryCheck: {
 		deliveryId?: string;
 		clientId?: string;
 	};

@@ -1,6 +1,6 @@
 import { IRoute } from "./components";
 import { CheckItemProp } from '../screens/DeliveryCheck/CheckItem';
-
+import { ClientArrivalResponse } from './deliveryResponses';
 export interface DeliveryState {
 	deliveryList: Array<IDelivery>;
 	loadingList: boolean | undefined;
@@ -18,13 +18,22 @@ export interface DeliveryState {
 	loadingInputKm: boolean | undefined;
 	statusInputKm: boolean | undefined;
 	deliveryHistory: Array<IDeliveryHistory> | undefined;
-	deliveryHistoryRoute: Array<IRoute> | undefined;
+	deliveryHistoryRoute: Array<IDeliveryCustomer> | undefined;
 	deliveryHistoryRouteDetail: IHistoryDetail | undefined;
 
 	loadingDeliveryProcess: boolean | undefined;
 	loadingStartDeliveryClient: boolean | undefined;
+
+	clientArrivalData: ClientArrivalResponse | null;
+	arrivalConfirmation: IDeliverySuccess | null;
+	arrivalLoading: boolean;
 }
 
+export interface IDeliverySuccess {
+	deliveryId: string,
+	clientName: string,
+	time: string;
+}
 export interface IDeliveryItem {
 	id: string;
 	orderId: string;
@@ -54,8 +63,8 @@ export interface IDeliveryCustomer {
 	status?: number | undefined;
 	sequence?: number | undefined;
 	statusLabel?: string | undefined;
-	latitude?: string | undefined;
-	longitude?: string | undefined;
+	latitude?: number | undefined;
+	longitude?: number | undefined;
 }
 
 export interface IClientValidation {
@@ -76,6 +85,14 @@ export interface IInputKmParams {
 	odo: string;
 	location?: string;
 	imageUrl?: string;
+}
+
+export interface IArrivalConfirmation {
+	imageUrl?: string;
+	recipientName: string;
+	deliveryId: string;
+	clientId: string;
+	clientName: string;
 }
 
 export interface IDelivery {
@@ -113,4 +130,17 @@ export interface IHistoryDetail {
 	header: HistoryDetailHeader,
 	item: CheckItemProp[] | null,
 	receipt: HistoryDetailReceipt;
+}
+
+export interface IDeliveryFinish {
+	finishLocation: string,
+	finishOdometer_image: string,
+	deliveryId: string;
+}
+
+export interface IAddComplainDelivery {
+	deliveryId: string,
+	clientId: string,
+	complaintDescription: string,
+	complainImageUrl: string;
 }

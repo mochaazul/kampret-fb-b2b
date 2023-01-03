@@ -25,6 +25,9 @@ export default {
 					type: Dispatches.CLEAR_DELIVERY_LIST,
 				});
 
+				// init customers
+				let customers: DeliveryInterface.IDeliveryCustomer[] = [];
+
 				// convert api response to delivery list items
 				const items: DeliveryInterface.IDelivery[] =
 					(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
@@ -32,7 +35,7 @@ export default {
 							id: value.delivery_id.toString(),
 							label: value.delivery_no,
 							date: value.date,
-							status: value.status > 3 ? 'deliver' : 'new',
+							status: value.status > 4 ? 'deliver' : 'new',
 							totalItem: value.total_item,
 							customers: value.clients.map((client) => ({
 								id: client.client_no,
@@ -43,11 +46,8 @@ export default {
 							numLocation: Object.keys(value.clients).length,
 						};
 
-						// update delivery client list
-						dispatch({
-							type: Dispatches.SET_DELIVERY_CLIENT,
-							payload: delivery.customers
-						});
+						// push customers to list
+						customers = [...customers, ...delivery.customers];
 
 						return delivery;
 					});
@@ -56,6 +56,12 @@ export default {
 				dispatch({
 					type: Dispatches.SET_DELIVERY_LIST,
 					payload: items ?? [],
+				});
+
+				// update delivery client list
+				dispatch({
+					type: Dispatches.SET_DELIVERY_CLIENT,
+					payload: customers
 				});
 			})
 			.finally(() => {
@@ -281,25 +287,25 @@ export default {
 				// init data with response type
 				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
-				const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
+				// const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
 
 				// loop through current items
-				// const items = state.deliveryReducers.clientItems.map((item) => {
-				// 	// check if item is on result
-				// 	const resItem = data.items.find((res) => res.sales_detail_id == item.id);
+				const items = state.deliveryReducers.clientItems.map((item) => {
+					// check if item is on result
+					const resItem = data.items.find((res) => res.sales_detail_id == item.id);
 
-				// 	if (resItem) {
-				// 		item.validated = resItem.is_validate;
-				// 		item.validatedTime = resItem.validate_date;
-				// 	}
+					if (resItem) {
+						item.validated = resItem.is_validate;
+						item.validatedTime = resItem.validate_date;
+					}
 
-				// 	return item;
-				// });
+					return item;
+				});
 
 				// update current client items
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: newItem,
+					payload: items,
 				});
 
 				// update client num validated items
@@ -319,12 +325,12 @@ export default {
 					payload: true
 				});
 			})
-			.catch(() => {
+			.catch((error) => {
 				// update current client items
-				dispatch({
-					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
-				});
+				// dispatch({
+				// 	type: Dispatches.SET_CLIENT_ITEMS,
+				// 	payload: items,
+				// });
 
 				// set result validate item to false
 				dispatch({
@@ -373,6 +379,7 @@ export default {
 			formData
 		)
 			.then((response) => {
+
 				// update delivery status
 				const deliveries = store.getState().deliveryReducers.deliveryList.map((delivery) => {
 					if (delivery.id == params.deliveryId) {
@@ -389,7 +396,9 @@ export default {
 
 				NavigationHelper.reset('Delivery');
 			})
-			.catch((error) => { })
+			.catch((error) => {
+
+			})
 			.finally(() => {
 				// set loading input km to false
 				dispatch({
@@ -526,25 +535,22 @@ export default {
 						dataCount = response.data.length;
 					}
 					//maping BE response into existing type
-					const clientRoutes: ComponentInterface.IRoute[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
+					const clientRoutes: DeliveryInterface.IDeliveryCustomer[] = (response.data as DeliveryResponseInterface.ClientDeliveryHistoryList[]).map((route, index) => {
 						const time = route.frame_time.split('-');
 						return {
-							clientId: route.client_no,
-							locationTitle: route.client_name,
-							locationAddress: route.client_address,
-							locationTime: {
-								startAt: time[0],
-								estEnd: time[1]
-							},
-							isDelivered: {
-								complain: route.item_reject,
-								receivedCount: route.item_receive,
-								totalDeliveredItem: route.item_order
-							},
-							isLastRoute: index == dataCount - 1,
-							totalItem: route.item_order,
-							disabled: false,
-							numbering: index + 1
+							id: route.client_no,
+							deliveryId: deliveryId,
+							custName: route.client_name,
+							validated: true,
+							numItem: route.item_order,
+							numValidated: route.item_receive,
+							deliveryTime: route.frame_time,
+							address: route.client_address,
+							latitude: route.client_lat,
+							longitude: route.client_long,
+							sequence: route.delivery_sequence,
+							status: route.delivery_status,
+							statusLabel: route.text_delivery_status
 						};
 					});
 					dispatch({
@@ -612,15 +618,18 @@ export default {
 			payload: true,
 		});
 		// request client delivery list data from api
-		API.post(`${ Endpoints.DELIVERY_HISTORY_CLIENT_DETAIL(deliveryId, clientId) }`, [])
+		API.post(`${ Endpoints.START_DELIVERY_CLIENT(deliveryId, clientId) }`, [])
 			.then(response => {
 				// update client status to 1
+
+				//REQ_BE: need BE to provide response newest RouteMap data
+
 				dispatch({
 					type: Dispatches.UPDATE_DELIVERY_CLIENT_STATUS,
 					payload: {
 						id: clientId,
-						deliveryId: deliveryId,
-						status: 1
+						custDeliveryId: deliveryId,
+						status: 5
 					}
 				});
 			})
@@ -632,4 +641,214 @@ export default {
 				});
 			});
 	},
+	// action to tell BE just arrived
+	justArrived: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// tell BE, driver just arrived
+		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`, [])
+			.then(response => {
+				NavigationHelper.push('DeliveryCheck', { deliveryId, clientId });
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
+				});
+			});
+	},
+
+	// action to get delivery process data
+	getDeliveryProcessList: () => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// request delivery process from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
+			(`${ Endpoints.GET_DELIVERY_PROCESS }`)
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'delivery process has Empty Data',
+					});
+				}
+
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
+				});
+			});
+	},
+	arrivalConfirmation: (params: DeliveryInterface.IArrivalConfirmation) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true
+		});
+
+		// create form data
+		const formData = new FormData();
+		formData.append('image', {
+			uri: params?.imageUrl ?? 'test',
+			name: 'test.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('recipient_name', params.recipientName);
+
+		API.upload(
+			Endpoints.ARRIVAL_CONFIRMATION(params.deliveryId, params.clientId),
+			formData
+		)
+			.then((response) => {
+				// show success dialog
+				const date = new Date();
+				dispatch({
+					type: Dispatches.ARRIVAL_CONFIRMATION_SUCCESS,
+					payload: {
+						deliveryId: params.deliveryId,
+						clientId: params.clientId,
+						clientName: params.clientName,
+						time: date.getHours() + ':' + date.getMinutes()
+					}
+				});
+			})
+			.catch((error) => {
+
+			})
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false
+				});
+			});
+	},
+	getClientArrivalData: (deliveryId: string, clientId: string) => (dispatch: Dispatch) => {
+		// set loading arrival process
+		dispatch({
+			type: Dispatches.ARRIVAL_LOADING,
+			payload: true,
+		});
+
+		// request delivery process from api
+		API.get<MiscInterface.BE<DeliveryResponseInterface.ClientArrivalResponse>>
+			(`${ Endpoints.CLIENT_ARRIVAL(deliveryId, clientId) }`)
+			.then(response => {
+
+				if (response.data) {
+					//maping BE response into existing type
+
+					dispatch({
+						type: Dispatches.CLIENT_ARRIVAL_DATA,
+						payload: response.data,
+					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'Oopps...',
+						text2: 'delivery process has Empty Data',
+					});
+				}
+
+			})
+			.finally(() => {
+				// turn off loading arrival process
+				dispatch({
+					type: Dispatches.ARRIVAL_LOADING,
+					payload: false,
+				});
+			});
+	},
+	closeSuccessArrivalConfirmationDialog: () => {
+		return {
+			type: Dispatches.ARRIVAL_CONFIRMATION_SUCCESS,
+			payload: null,
+		};
+	},
+	deliveryFinish: (params: DeliveryInterface.IDeliveryFinish) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_INPUT_KM,
+			payload: true
+		});
+
+		const formData = new FormData();
+		formData.append('finish_odometer_image', {
+			uri: params?.finishLocation ?? 'test',
+			name: 'finish.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('finish_location', params.finishLocation);
+
+		API.upload(
+			Endpoints.INPUT_KM_FINISH(params.deliveryId),
+			formData
+		)
+			.then((response) => {
+
+				NavigationHelper.reset('Delivery');
+			})
+			.catch((error) => {
+
+			})
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_INPUT_KM,
+					payload: false
+				});
+			});
+	},
+
+	addComplaint: (params: DeliveryInterface.IAddComplainDelivery) => (dispatch: Dispatch) => {
+		// set loading input km
+		dispatch({
+			type: Dispatches.LOADING_COMPLAIN,
+			payload: true
+		});
+
+		const formData = new FormData();
+		formData.append('finish_odometer_image', {
+			uri: params?.complainImageUrl ?? 'test',
+			name: 'finish.jpg',
+			type: 'image/jpeg',
+		} as any);
+		formData.append('complaint_description', params.complaintDescription);
+
+		API.upload(
+			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
+			formData
+		)
+			.then((response) => {
+
+			})
+			.catch((error) => {
+
+			})
+			.finally(() => {
+				// set loading input km to false
+				dispatch({
+					type: Dispatches.LOADING_COMPLAIN,
+					payload: false
+				});
+			});
+	}
 };
