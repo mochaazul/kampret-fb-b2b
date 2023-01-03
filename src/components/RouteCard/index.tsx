@@ -163,7 +163,6 @@ const RouteCard = ({
 		}
 	}, [numItem, status, loading]);
 
-	console.log('client route', client);
 	return (
 		<TouchableOpacity
 			style={ containerStyle }
