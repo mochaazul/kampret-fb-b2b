@@ -11,6 +11,7 @@ import ModalDialog from './ModalDialog';
 import RouteCard from './RouteCard';
 import Dropdown from './Dropdown';
 import Camera from './Camera';
+import CameraWidget from './Camera/CameraWidget';
 
 export {
 	Text,
@@ -25,5 +26,6 @@ export {
 	NotifItem,
 	RouteCard,
 	Dropdown,
-	Camera
+	Camera,
+	CameraWidget
 };

@@ -2,14 +2,13 @@ import { StyleSheet, TextStyle, View, Image, ScrollView, ViewStyle, TouchableOpa
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 
-import { Input, Button, Text, Dropdown } from '@components';
+import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
 import { useAppDispatch, useAppSelector } from '@helpers';
 import { useTranslation } from 'react-i18next';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
-import CameraWidget from '../../components/Camera/CameraWidget';
 import { PhotoFile } from 'react-native-vision-camera';
 
 interface ComplainProps {
