@@ -1,82 +1,168 @@
-import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, TextStyle, View, Image, ScrollView, ViewStyle, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 
 import { Input, Button, Text, Dropdown } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
+import { useAppDispatch, useAppSelector } from '@helpers';
+import { useTranslation } from 'react-i18next';
+import { Actions } from '@store';
+import { DeliveryInterface } from '@interfaces';
+
 interface ComplainProps {
+	deliveryId: string;
 	onClose: () => void;
-}
-interface IComplain {
-	description: string | null;
+	onAddPhoto: () => void;
 }
 
-const dummyDropdown = [
-	{ key: '1', value: 'Macet' },
-	{ key: '2', value: 'Hujan' },
-	{ key: '3', value: 'Mendung' },
-	{ key: '4', value: 'Gerimis' },
-];
+const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 
-const ReportIssue = ({ onClose }: ComplainProps) => {
-	const [qty, setQty] = useState<number>(2);
-	const [complainSelected, setComplainSelected] = useState('');
+	const { t: translate } = useTranslation();
 
-	const formik: FormikProps<IComplain> = useFormik<IComplain>({
+	const issueOptions = [
+		{ key: '1', value: translate('deliveryReport.reason1') },
+		{ key: '2', value: translate('deliveryReport.reason2') },
+		{ key: '3', value: translate('deliveryReport.reason3') },
+		{ key: '4', value: translate('deliveryReport.reason4') },
+	];
+
+	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
+	const title = useAppSelector(state => state.miscReducers.deliveryIssueTitle);
+	const desc = useAppSelector(state => state.miscReducers.deliveryIssueDesc);
+	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryIssue);
+	const result = useAppSelector(state => state.deliveryReducers.resultDeliveryIssue);
+
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const updateTitle = useAppDispatch(Actions.miscAction.setDeliveryIssueTitle);
+	const updateDesc = useAppDispatch(Actions.miscAction.setDeliveryIssueDesc);
+	const submitIssue = useAppDispatch(Actions.deliveryAction.submitDeliveryIssue);
+	const setResult = useAppDispatch(Actions.deliveryAction.setDeliveryIssueResult);
+
+	const formik: FormikProps<DeliveryInterface.IComplain> = useFormik<DeliveryInterface.IComplain>({
 		validateOnBlur: true,
+		validateOnChange: true,
 		validationSchema: Auth.ComplainValidationSchema,
 		initialValues: {
-			description: null
+			title: title,
+			description: desc,
+			image: tmpCapturedImg ?? '',
 		},
 		onSubmit: () => {
-			// console.log('submit pressed');
+			submitIssue(deliveryId, formik.values);
 		},
 	});
-	const handleMinusButtonClicked = () => {
-		if (qty >= 1) setQty(qty - 1);
-	};
-	const handlePlusButtonClicked = () => {
-		setQty(qty + 1);
-	};
+
+	const [btnDisable, setBtnDisable] = useState(!formik.isValid || formik.initialValues == formik.values);
+
+	useEffect(() => {
+		if (result) {
+			setTmpImgUri('');
+			updateTitle('');
+			updateDesc('');
+			onClose();
+			setResult(undefined);
+		}
+	}, [result]);
+
+	const renderDropdown = useMemo(() => (
+		<Dropdown
+			boxStyles={ { marginTop: 5 } }
+			setSelected={ (val) => {
+				if (!issueOptions.map((o) => o.value).includes(val ?? '')) return;
+
+				formik.setFieldValue('title', val);
+				updateTitle(val);
+				setBtnDisable(!formik.isValid);
+			} }
+			defaultOption={ issueOptions.find((o) => o.value == title) ?? issueOptions[0] }
+			data={ issueOptions }
+			save="value"
+			inputStyles={ styles.dropdownText as ViewStyle }
+			dropdownTextStyles={ styles.dropdownText as ViewStyle }
+		/>
+	), [title]);
+
+	const renderDesc = useMemo(() => (
+		<Input
+			formik={ formik }
+			name='description'
+			label={ translate('deliveryReport.desc') }
+			placeholder={ translate('deliveryReport.inputDesc') ?? 'Masukkan Deskripsi' }
+			keyboardType='ascii-capable'
+			multiline={ true }
+			numberOfLines={ 5 }
+			mt={ 20 }
+			textAlignVertical='top'
+			value={ desc }
+			onChangeText={ (text) => {
+				updateDesc(text);
+				setBtnDisable(!formik.isValid);
+			} }
+		/>
+	), [desc]);
+
+	const renderImage = useMemo(() => {
+		if (tmpCapturedImg !== '') {
+			formik.setFieldValue('image', tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : '');
+			setBtnDisable(!formik.isValid);
+
+			return (
+				<Image style={ styles.addImage } source={ { uri: tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : '' } } />
+			);
+		}
+
+		return (
+			<View style={ styles.addImage }>
+				<Images.IconCamera />
+				<Text
+					format={ Fonts.textBody.l.bold as TextStyle }
+					color={ Colors.gray.default }
+					mt={ 20 }>
+					+ { translate('deliveryReport.addPhoto') }
+				</Text>
+			</View>
+		);
+	}, [tmpCapturedImg]);
+
+	const renderButton = useMemo(() => (
+		<Button
+			onPress={ () => formik.handleSubmit() }
+			text={ translate('deliveryReport.sendReport') }
+			textSize={ 14 }
+			weight='700'
+			mt={ 30 }
+			useShadow={ true }
+			disabled={ btnDisable }
+			loading={ loading }
+		/>
+	), [loading, btnDisable]);
+
 	return (
 		<View style={ styles.container }>
 			<View style={ styles.header }>
-				<Text format={ Fonts.heading.h3 as TextStyle }>Laporan</Text>
+				<Text format={ Fonts.heading.h3 as TextStyle }>{ translate('deliveryReport.report') }</Text>
 			</View>
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
-				<Text format={ Fonts.textBody.l.bold as TextStyle }>Masalah</Text>
-				<Dropdown
-					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? setComplainSelected(val) : null }
-					defaultOption={ { key: '4', value: 'Gerimis' } }
-					data={ dummyDropdown }
-					save="value"
-				/>
-				<Input
-					formik={ formik }
-					name='description'
-					label='Deskripsi'
-					placeholder='Masukkan Deskripsi'
-					keyboardType='ascii-capable'
-					multiline={ true }
-					numberOfLines={ 5 }
-					mt={ 20 }
-				/>
-				<View style={ styles.card }>
-					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+				<Text format={ Fonts.textBody.l.bold as TextStyle }>{ translate('deliveryReport.problem') }</Text>
 
-					<Image source={ Images.OnBoarding[2] } style={ styles.video } resizeMethod='resize' resizeMode='cover' />
+				{ renderDropdown }
+
+				{ renderDesc }
+
+				<View style={ styles.card }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>{ translate('deliveryReport.photo') }</Text>
+
+					<TouchableOpacity
+						activeOpacity={ .75 }
+						onPress={ onAddPhoto }
+					>
+						{ renderImage }
+					</TouchableOpacity>
+					{/* <Image source={ Images.OnBoarding[2] } style={ styles.video } resizeMethod='resize' resizeMode='cover' /> */ }
 				</View>
-				<Button
-					onPress={ () => { formik.handleSubmit(); } }
-					text='Kirim Laporan'
-					textSize={ 14 }
-					weight='700'
-					mt={ 30 }
-					useShadow={ true }
-					disabled={ formik.values == formik.initialValues }
-				/>
+
+				{ renderButton }
 			</ScrollView>
 		</View>
 	);
@@ -137,5 +223,21 @@ const styles = StyleSheet.create({
 	},
 	scroll: {
 		paddingBottom: 30
-	}
+	},
+	dropdownText: {
+		color: Colors.black.default
+	},
+	addImage: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginTop: 8,
+		paddingHorizontal: 20,
+		paddingTop: 48,
+		paddingBottom: 32,
+		borderRadius: 12,
+		borderColor: Colors.gray.default,
+		borderStyle: 'dashed',
+		borderWidth: 1,
+		height: 167
+	},
 });

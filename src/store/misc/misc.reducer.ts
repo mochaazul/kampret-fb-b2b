@@ -10,7 +10,9 @@ const initialState: MiscInterface.MiscState = {
 	currentLatitude: undefined,
 	currentLongitude: undefined,
 	locationStatus: 'loading',
-	tmpMultiplePhotoCaptures: null
+	tmpMultiplePhotoCaptures: null,
+	deliveryIssueTitle: '',
+	deliveryIssueDesc: ''
 };
 
 type Actions = { type: string; payload: any; };
@@ -65,6 +67,16 @@ const miscReducers = (
 			return {
 				...state,
 				tmpMultiplePhotoCaptures: payload,
+			};
+		case Dispatches.SET_DELIVERY_ISSUE_TITLE:
+			return {
+				...state,
+				deliveryIssueTitle: payload,
+			};
+		case Dispatches.SET_DELIVERY_ISSUE_DESC:
+			return {
+				...state,
+				deliveryIssueDesc: payload,
 			};
 		default:
 			return state;

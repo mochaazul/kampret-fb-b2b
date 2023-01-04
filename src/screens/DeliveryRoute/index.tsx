@@ -3,8 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { Container, RouteCard, BottomSheet } from '@components';
 import { Variables, Images } from '@constant';
-import { ComponentInterface, NavigationProps } from '@interfaces';
-import Complain from './Complain';
+import { NavigationProps } from '@interfaces';
 import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
@@ -69,7 +68,14 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				onRequestClose={ () => setShowReportIssue(false) }
 				noScroll
 			>
-				<ReportIssue onClose={ () => setShowReportIssue(false) } />
+				<ReportIssue
+					deliveryId={ route.params?.deliveryId ?? '' }
+					onClose={ () => setShowReportIssue(false) }
+					onAddPhoto={ () => {
+						setShowReportIssue(false);
+						NavigationHelper.push('CapturePhoto', { onClosed: () => setShowReportIssue(true) });
+					} }
+				/>
 			</BottomSheet>
 
 		</Container>

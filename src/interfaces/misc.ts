@@ -7,6 +7,8 @@ export type MiscState = {
 	currentLatitude: number | undefined,
 	currentLongitude: number | undefined,
 	tmpMultiplePhotoCaptures: MultiplePhotoCapture | null;
+	deliveryIssueTitle: string;
+	deliveryIssueDesc: string;
 };
 
 export type BE<T> = {

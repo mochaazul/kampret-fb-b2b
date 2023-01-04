@@ -39,6 +39,8 @@ export type RootStackParamList = {
 			id: string,
 			currentStore: MultiplePhotoCapture | null,
 		};
+		onSinglePictureTaken?: (path: string) => void;
+		onClosed?: () => void;
 	};
 	Notification?: {
 		item: any;
