@@ -1,12 +1,13 @@
-import { FlatList } from 'react-native';
+import { FlatList, Modal, StyleSheet } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Container, RouteCard, BottomSheet } from '@components';
+import { Container, RouteCard, BottomSheet, Camera, Button } from '@components';
 import { Variables, Images } from '@constant';
 import { NavigationProps } from '@interfaces';
 import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
+import CameraWidget from '../../components/Camera/CameraWidget';
 
 const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
@@ -24,6 +25,8 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	useEffect(() => {
 		getClient(route.params?.deliveryId);
 	}, []);
+
+
 
 	return (
 		<Container
@@ -71,12 +74,10 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
 					onClose={ () => setShowReportIssue(false) }
-					onAddPhoto={ () => {
-						setShowReportIssue(false);
-						NavigationHelper.push('CapturePhoto', { onClosed: () => setShowReportIssue(true) });
-					} }
+				
 				/>
 			</BottomSheet>
+
 
 		</Container>
 	);

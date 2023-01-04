@@ -1,11 +1,9 @@
 import {
-	StyleSheet, Text, View, Modal, TouchableOpacity, TextStyle, ViewStyle, ScrollView, KeyboardAvoidingView, Platform
+	StyleSheet,  View, Modal, TouchableOpacity, TextStyle, ViewStyle, ScrollView
 } from 'react-native';
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Colors, Fonts, Images } from '@constant';
-import { Ratio } from '@helpers';
 
 interface ModalDialogProps {
 	visible: boolean,
@@ -25,7 +23,6 @@ const ModalDialog = ({
 			visible={ visible }
 			transparent
 			onRequestClose={ () => onRequestClose(false) }
-
 		>
 			<ScrollView
 				contentContainerStyle={ {
