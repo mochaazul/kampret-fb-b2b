@@ -2,23 +2,25 @@ import { StyleSheet, TextStyle, View, Image, ScrollView, ViewStyle, TouchableOpa
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 
-import { Input, Button, Text, Dropdown } from '@components';
+import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
 import { useAppDispatch, useAppSelector } from '@helpers';
 import { useTranslation } from 'react-i18next';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
+import { PhotoFile } from 'react-native-vision-camera';
 
 interface ComplainProps {
 	deliveryId: string;
 	onClose: () => void;
-	onAddPhoto: () => void;
 }
 
-const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
+const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 
 	const { t: translate } = useTranslation();
+	const [showCamera, setShowCamera] = useState<boolean>(false)
+	const [previewImgURI, setPreviewImgURI] = useState<string>("")
 
 	const issueOptions = [
 		{ key: '1', value: translate('deliveryReport.reason1') },
@@ -27,7 +29,7 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 		{ key: '4', value: translate('deliveryReport.reason4') },
 	];
 
-	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
+	// const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 	const title = useAppSelector(state => state.miscReducers.deliveryIssueTitle);
 	const desc = useAppSelector(state => state.miscReducers.deliveryIssueDesc);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryIssue);
@@ -46,7 +48,7 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 		initialValues: {
 			title: title,
 			description: desc,
-			image: tmpCapturedImg ?? '',
+			image: previewImgURI,
 		},
 		onSubmit: () => {
 			submitIssue(deliveryId, formik.values);
@@ -102,13 +104,18 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 		/>
 	), [desc]);
 
-	const renderImage = useMemo(() => {
-		if (tmpCapturedImg !== '') {
-			formik.setFieldValue('image', tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : '');
-			setBtnDisable(!formik.isValid);
 
+	const onCapture = (photo: PhotoFile) => {
+		const imageURI = `file://`+photo.path
+		setPreviewImgURI(imageURI)
+	}
+
+	const renderImage = useMemo(() => {
+		if (previewImgURI !== '') {
+			formik.setFieldValue('image', previewImgURI);
+			setBtnDisable(!formik.isValid);
 			return (
-				<Image style={ styles.addImage } source={ { uri: tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : '' } } />
+				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
 			);
 		}
 
@@ -123,7 +130,7 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 				</Text>
 			</View>
 		);
-	}, [tmpCapturedImg]);
+	}, [previewImgURI]);
 
 	const renderButton = useMemo(() => (
 		<Button
@@ -138,6 +145,7 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 		/>
 	), [loading, btnDisable]);
 
+	
 	return (
 		<View style={ styles.container }>
 			<View style={ styles.header }>
@@ -155,7 +163,7 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 
 					<TouchableOpacity
 						activeOpacity={ .75 }
-						onPress={ onAddPhoto }
+						onPress={ () => setShowCamera(true) }
 					>
 						{ renderImage }
 					</TouchableOpacity>
@@ -164,6 +172,12 @@ const ReportIssue = ({ deliveryId, onClose, onAddPhoto }: ComplainProps) => {
 
 				{ renderButton }
 			</ScrollView>
+
+			<CameraWidget
+				isActive={showCamera}
+				onCapture={onCapture}
+				onClose={()=>setShowCamera(false)}
+			/>
 		</View>
 	);
 };
