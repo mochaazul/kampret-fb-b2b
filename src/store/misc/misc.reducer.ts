@@ -12,7 +12,8 @@ const initialState: MiscInterface.MiscState = {
 	locationStatus: 'loading',
 	tmpMultiplePhotoCaptures: null,
 	deliveryIssueTitle: '',
-	deliveryIssueDesc: ''
+	deliveryIssueDesc: '',
+	tmpDeliveryComplainResult: null
 };
 
 type Actions = { type: string; payload: any; };
@@ -72,6 +73,11 @@ const miscReducers = (
 			return {
 				...state,
 				deliveryIssueTitle: payload,
+			};
+		case Dispatches.COMPLAIN_RESULT:
+			return {
+				...state,
+				tmpDeliveryComplainResult: payload,
 			};
 		case Dispatches.SET_DELIVERY_ISSUE_DESC:
 			return {

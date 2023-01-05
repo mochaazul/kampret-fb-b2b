@@ -47,7 +47,18 @@ const DeliveryList = () => {
 			refreshing={ loading }
 			data={ deliveryList }
 			renderItem={
-				({ item, index }) => <DeliveryItem key={ 'item_' + index } { ...item } />
+				({ item, index }) => {
+
+					// hide delivery task when delivery is finished
+					if (item.deliveryTextStatus != 'FINISH') {
+						return (
+							<DeliveryItem key={ 'item_' + index } { ...item } />
+						);
+					} else {
+						return (<View />);
+					}
+
+				}
 			}
 			ItemSeparatorComponent={
 				() => (<View style={ styles.heightSpace } />)

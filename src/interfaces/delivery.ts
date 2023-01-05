@@ -30,6 +30,8 @@ export interface DeliveryState {
 
 	loadingDeliveryIssue: boolean | undefined;
 	resultDeliveryIssue: boolean | undefined;
+
+	loadingComplain: boolean;
 }
 
 export interface IDeliverySuccess {
@@ -106,16 +108,21 @@ export interface IDelivery {
 	date: string | undefined;
 	totalItem: number | undefined;
 	status: string | 'new' | 'deliver' | undefined;
+	deliveryStatus?: number;
+	deliveryTextStatus?: string;
 }
 
 export interface IDeliveryHistory {
 	id: number;
 	customers: Array<IDeliveryCustomer> | undefined;
-	status: 'selesai' | 'gagal' | undefined;
+	status: string | 'selesai' | 'gagal' | undefined;
 	date?: string;
 	totalItem?: number;
 	totalAccepted?: number;
 	totalReturned?: number;
+	deliveryNumber?: string;
+	deliveryStatus?: number;
+	deliveryStatusText?: string;
 }
 
 interface HistoryDetailHeader {
@@ -139,17 +146,29 @@ export interface IDeliveryFinish {
 	finishLocation: string,
 	finishOdometer_image: string,
 	deliveryId: string;
+	lat: number,
+	long: number,
+	odometer: number;
 }
 
 export interface IAddComplainDelivery {
 	deliveryId: string,
 	clientId: string,
 	complaintDescription: string,
-	complainImageUrl: string;
+	complainImageUrl: string[];
+	itemId: string,
+	qty: string,
+	category: string;
 }
 
 export interface IComplain {
 	title: string | null;
 	description: string | null;
 	image: string | null;
+}
+
+export interface IComplainDialogProps {
+	deliveryRouteItemId: string | null;
+	deliveryId: string | undefined;
+	clientId: string | undefined;
 }

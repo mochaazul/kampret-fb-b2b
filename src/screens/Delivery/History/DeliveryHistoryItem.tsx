@@ -16,6 +16,7 @@ const DeliveryHistoryItem: React.FC<DeliveryInterface.IDeliveryHistory> = props 
 		totalReturned,
 		status,
 		customers,
+		deliveryNumber
 	} = props;
 
 	const renderStatus = useMemo(() => {
@@ -103,7 +104,7 @@ const DeliveryHistoryItem: React.FC<DeliveryInterface.IDeliveryHistory> = props 
 					color={ Colors.black.default }
 					style={ { flex: 1 } }
 				>
-					{ id }
+					{ deliveryNumber }
 				</Text>
 
 				{ renderStatus }

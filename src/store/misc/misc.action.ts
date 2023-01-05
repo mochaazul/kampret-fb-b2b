@@ -81,4 +81,10 @@ export default {
 			payload: value,
 		});
 	},
+	setDeliveryComplainResult: (value: string | null) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.COMPLAIN_RESULT,
+			payload: value,
+		});
+	},
 };

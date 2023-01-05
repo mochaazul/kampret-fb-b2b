@@ -24,7 +24,8 @@ const initialState: DeliveryInterface.DeliveryState = {
 	arrivalConfirmation: null,
 	arrivalLoading: false,
 	loadingDeliveryIssue: undefined,
-	resultDeliveryIssue: undefined
+	resultDeliveryIssue: undefined,
+	loadingComplain: false
 };
 
 type Actions = { type: string; payload: any; };
@@ -201,7 +202,11 @@ const deliveryReducers = (
 				...state,
 				resultDeliveryIssue: payload,
 			};
-
+		case Dispatches.LOADING_COMPLAIN:
+			return {
+				...state,
+				loadingComplain: payload
+			};
 		case Dispatches.LOGOUT:
 			return initialState;
 		default:

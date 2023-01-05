@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { Container, RouteCard, BottomSheet, Camera, Button } from '@components';
 import { Variables, Images } from '@constant';
-import { NavigationProps } from '@interfaces';
+import { NavigationProps, DeliveryInterface } from '@interfaces';
 import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
@@ -22,11 +22,24 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
+
 	useEffect(() => {
 		getClient(route.params?.deliveryId);
 	}, []);
 
+	let addWareHouseOnLastData: DeliveryInterface.IDeliveryCustomer[] = [];
 
+	if (clients.length !== 0) {
+		addWareHouseOnLastData = [...clients, {
+			id: '0000',
+			deliveryId: clients[0].deliveryId,
+			custName: 'Warehouse Freshbox',
+			validated: true,
+			address: 'FreshBox HQ',
+			deliveryTime: undefined,
+			sequence: clients.length + 1
+		}];
+	}
 
 	return (
 		<Container
@@ -41,13 +54,13 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 			<FlatList
 				keyExtractor={ (_item, index) => 'route_' + index }
 				extraData={ loadingStartClient }
-				data={ clients }
+				data={ addWareHouseOnLastData }
 				renderItem={ ({ item, index }) =>
 					<RouteCard
 						client={ item }
-						isLastRoute={ index == clients.length - 1 }
+						isLastRoute={ index == addWareHouseOnLastData.length - 1 }
 						onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
-						disabled={ false }
+						disabled={ index == addWareHouseOnLastData.length - 1 ? clients.some(route => route.status !== 1) : false }
 						loading={ loadingStartClient }
 						onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 						onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
@@ -58,14 +71,6 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				onRefresh={ () => getClient(route.params?.deliveryId) }
 			/>
 
-			{/* <BottomSheet
-				visible={ showComplain }
-				onRequestClose={ () => setShowComplain(false) }
-				noScroll
-			>
-				<Complain onClose={ () => setShowComplain(false) } />
-			</BottomSheet> */}
-
 			<BottomSheet
 				visible={ showReportIssue }
 				onRequestClose={ () => setShowReportIssue(false) }
@@ -74,7 +79,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
 					onClose={ () => setShowReportIssue(false) }
-				
+
 				/>
 			</BottomSheet>
 
