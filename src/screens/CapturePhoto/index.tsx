@@ -47,6 +47,7 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 			}
 
 			NavigationHelper.pop(1);
+			route.params?.onClosed?.call(null);
 		},
 		[cameraRef],
 	);

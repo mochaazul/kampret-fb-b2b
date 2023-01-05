@@ -27,6 +27,9 @@ export interface DeliveryState {
 	clientArrivalData: ClientArrivalResponse | null;
 	arrivalConfirmation: IDeliverySuccess | null;
 	arrivalLoading: boolean;
+
+	loadingDeliveryIssue: boolean | undefined;
+	resultDeliveryIssue: boolean | undefined;
 }
 
 export interface IDeliverySuccess {
@@ -143,4 +146,10 @@ export interface IAddComplainDelivery {
 	clientId: string,
 	complaintDescription: string,
 	complainImageUrl: string;
+}
+
+export interface IComplain {
+	title: string | null;
+	description: string | null;
+	image: string | null;
 }

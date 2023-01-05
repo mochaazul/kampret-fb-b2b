@@ -69,4 +69,16 @@ export default {
 			payload: undefined,
 		});
 	},
+	setDeliveryIssueTitle: (value: string) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.SET_DELIVERY_ISSUE_TITLE,
+			payload: value,
+		});
+	},
+	setDeliveryIssueDesc: (value: string) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.SET_DELIVERY_ISSUE_DESC,
+			payload: value,
+		});
+	},
 };

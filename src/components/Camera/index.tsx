@@ -8,7 +8,6 @@ Reanimated.addWhitelistedNativeProps({
 	zoom: true,
 });
 
-
 interface CameraType extends Omit<CameraVisionProps, 'isActive' | 'device'> {
 	notFoundCameraComponent?: ReactNode;
 	isActive?: boolean;
@@ -23,7 +22,6 @@ const photoQuality = {
 	skipMetadata: true,
 };
 
-
 const Camera = ({ notFoundCameraComponent, frameProcessor, isActive = true, photo, cameraRef, ...props }: CameraType) => {
 	const devices = useCameraDevices();
 	const device = devices.back;
@@ -31,7 +29,7 @@ const Camera = ({ notFoundCameraComponent, frameProcessor, isActive = true, phot
 	const renderCamera = useMemo(() => {
 		if (device) {
 			return (
-				<ReanimatedCamera ref={ cameraRef } photo frameProcessor={ frameProcessor } isActive={ isActive } device={ device } { ...props } />
+				<ReanimatedCamera ref={ cameraRef }   photo frameProcessor={ frameProcessor } isActive={ isActive } device={ device } { ...props } />
 			);
 		} else {
 			if (notFoundCameraComponent) {

@@ -850,5 +850,54 @@ export default {
 					payload: false
 				});
 			});
-	}
+	},
+
+	submitDeliveryIssue: (deliveryId: string, complain: DeliveryInterface.IComplain) => (dispatch: Dispatch) => {
+		// set loading submit delivery issue
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_ISSUE,
+			payload: true
+		});
+
+		const formData = new FormData();
+		formData.append('title', complain.title ?? '');
+		formData.append('description', complain.description ?? '');
+		formData.append('image', {
+			uri: complain.image ?? 'test',
+			name: 'complain.jpg',
+			type: 'image/jpeg',
+		} as any);
+
+		API.upload(Endpoints.DELIVERY_PROCESS(deliveryId), formData)
+			.then(() => {
+				// set result submit delivery issue
+				dispatch({
+					type: Dispatches.RESULT_DELIVERY_ISSUE,
+					payload: true
+				});
+			})
+			.catch(() => {
+				// set result submit delivery issue
+				dispatch({
+					type: Dispatches.RESULT_DELIVERY_ISSUE,
+					payload: false
+				});
+			})
+			.finally(() => {
+				// set finish loading submit delivery issue
+				dispatch({
+					type: Dispatches.LOADING_DELIVERY_ISSUE,
+					payload: false
+				});
+			})
+			;
+	},
+
+	setDeliveryIssueResult: (value: boolean | undefined) => (dispatch: Dispatch) => {
+		// set result submit delivery issue
+		dispatch({
+			type: Dispatches.RESULT_DELIVERY_ISSUE,
+			payload: value
+		});
+	},
 };
