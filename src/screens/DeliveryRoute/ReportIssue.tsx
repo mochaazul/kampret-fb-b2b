@@ -1,15 +1,15 @@
 import { StyleSheet, TextStyle, View, Image, ScrollView, ViewStyle, TouchableOpacity } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
+import { PhotoFile } from 'react-native-vision-camera';
 
 import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
 import { useAppDispatch, useAppSelector } from '@helpers';
-import { useTranslation } from 'react-i18next';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
-import { PhotoFile } from 'react-native-vision-camera';
 
 interface ComplainProps {
 	deliveryId: string;
@@ -19,8 +19,8 @@ interface ComplainProps {
 const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 
 	const { t: translate } = useTranslation();
-	const [showCamera, setShowCamera] = useState<boolean>(false)
-	const [previewImgURI, setPreviewImgURI] = useState<string>("")
+	const [showCamera, setShowCamera] = useState<boolean>(false);
+	const [previewImgURI, setPreviewImgURI] = useState<string>("");
 
 	const issueOptions = [
 		{ key: '1', value: translate('deliveryReport.reason1') },
@@ -29,25 +29,18 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 		{ key: '4', value: translate('deliveryReport.reason4') },
 	];
 
-	// const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
-	const title = useAppSelector(state => state.miscReducers.deliveryIssueTitle);
-	const desc = useAppSelector(state => state.miscReducers.deliveryIssueDesc);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryIssue);
 	const result = useAppSelector(state => state.deliveryReducers.resultDeliveryIssue);
 
-	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
-	const updateTitle = useAppDispatch(Actions.miscAction.setDeliveryIssueTitle);
-	const updateDesc = useAppDispatch(Actions.miscAction.setDeliveryIssueDesc);
 	const submitIssue = useAppDispatch(Actions.deliveryAction.submitDeliveryIssue);
 	const setResult = useAppDispatch(Actions.deliveryAction.setDeliveryIssueResult);
 
 	const formik: FormikProps<DeliveryInterface.IComplain> = useFormik<DeliveryInterface.IComplain>({
 		validateOnBlur: true,
-		validateOnChange: true,
 		validationSchema: Auth.ComplainValidationSchema,
 		initialValues: {
-			title: title,
-			description: desc,
+			title: issueOptions[0].value,
+			description: '',
 			image: previewImgURI,
 		},
 		onSubmit: () => {
@@ -59,56 +52,15 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 
 	useEffect(() => {
 		if (result) {
-			setTmpImgUri('');
-			updateTitle('');
-			updateDesc('');
 			onClose();
 			setResult(undefined);
 		}
 	}, [result]);
 
-	const renderDropdown = useMemo(() => (
-		<Dropdown
-			boxStyles={ { marginTop: 5 } }
-			setSelected={ (val) => {
-				if (!issueOptions.map((o) => o.value).includes(val ?? '')) return;
-
-				formik.setFieldValue('title', val);
-				updateTitle(val);
-				setBtnDisable(!formik.isValid);
-			} }
-			defaultOption={ issueOptions.find((o) => o.value == title) ?? issueOptions[0] }
-			data={ issueOptions }
-			save="value"
-			inputStyles={ styles.dropdownText as ViewStyle }
-			dropdownTextStyles={ styles.dropdownText as ViewStyle }
-		/>
-	), [title]);
-
-	const renderDesc = useMemo(() => (
-		<Input
-			formik={ formik }
-			name='description'
-			label={ translate('deliveryReport.desc') }
-			placeholder={ translate('deliveryReport.inputDesc') ?? 'Masukkan Deskripsi' }
-			keyboardType='ascii-capable'
-			multiline={ true }
-			numberOfLines={ 5 }
-			mt={ 20 }
-			textAlignVertical='top'
-			value={ desc }
-			onChangeText={ (text) => {
-				updateDesc(text);
-				setBtnDisable(!formik.isValid);
-			} }
-		/>
-	), [desc]);
-
-
 	const onCapture = (photo: PhotoFile) => {
-		const imageURI = `file://`+photo.path
-		setPreviewImgURI(imageURI)
-	}
+		const imageURI = `file://` + photo.path;
+		setPreviewImgURI(imageURI);
+	};
 
 	const renderImage = useMemo(() => {
 		if (previewImgURI !== '') {
@@ -145,7 +97,7 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 		/>
 	), [loading, btnDisable]);
 
-	
+
 	return (
 		<View style={ styles.container }>
 			<View style={ styles.header }>
@@ -154,9 +106,35 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
 				<Text format={ Fonts.textBody.l.bold as TextStyle }>{ translate('deliveryReport.problem') }</Text>
 
-				{ renderDropdown }
+				<Dropdown
+					boxStyles={ { marginTop: 5 } }
+					setSelected={ (val) => {
+						if (!issueOptions.map((o) => o.value).includes(val ?? '')) return;
 
-				{ renderDesc }
+						formik.setFieldValue('title', val);
+						setBtnDisable(!formik.isValid);
+					} }
+					defaultOption={ issueOptions[0] }
+					data={ issueOptions }
+					save="value"
+					inputStyles={ styles.dropdownText as ViewStyle }
+					dropdownTextStyles={ styles.dropdownText as ViewStyle }
+				/>
+
+				<Input
+					formik={ formik }
+					name='description'
+					label={ translate('deliveryReport.desc') }
+					placeholder={ translate('deliveryReport.inputDesc') ?? 'Masukkan Deskripsi' }
+					keyboardType='ascii-capable'
+					multiline={ true }
+					numberOfLines={ 5 }
+					mt={ 20 }
+					textAlignVertical='top'
+				// onChangeText={ () => {
+				// 	setBtnDisable(!formik.isValid);
+				// } }
+				/>
 
 				<View style={ styles.card }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>{ translate('deliveryReport.photo') }</Text>
@@ -174,9 +152,9 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 			</ScrollView>
 
 			<CameraWidget
-				isActive={showCamera}
-				onCapture={onCapture}
-				onClose={()=>setShowCamera(false)}
+				isActive={ showCamera }
+				onCapture={ onCapture }
+				onClose={ () => setShowCamera(false) }
 			/>
 		</View>
 	);

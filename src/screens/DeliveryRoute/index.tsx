@@ -1,13 +1,12 @@
-import { FlatList, Modal, StyleSheet } from 'react-native';
+import { FlatList } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Container, RouteCard, BottomSheet, Camera, Button } from '@components';
+import { Container, RouteCard, BottomSheet } from '@components';
 import { Variables, Images } from '@constant';
 import { NavigationProps } from '@interfaces';
 import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
-import CameraWidget from '../../components/Camera/CameraWidget';
 
 const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
@@ -58,14 +57,6 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				onRefresh={ () => getClient(route.params?.deliveryId) }
 			/>
 
-			{/* <BottomSheet
-				visible={ showComplain }
-				onRequestClose={ () => setShowComplain(false) }
-				noScroll
-			>
-				<Complain onClose={ () => setShowComplain(false) } />
-			</BottomSheet> */}
-
 			<BottomSheet
 				visible={ showReportIssue }
 				onRequestClose={ () => setShowReportIssue(false) }
@@ -74,7 +65,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
 					onClose={ () => setShowReportIssue(false) }
-				
+
 				/>
 			</BottomSheet>
 

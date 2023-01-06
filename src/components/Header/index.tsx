@@ -4,11 +4,10 @@ import Config from "react-native-config";
 
 import { ComponentInterface } from '@interfaces';
 import { Dispatches, Images } from '@constant';
-import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { NavigationHelper, useAppSelector } from '@helpers';
 import { styles } from './style';
 
 import Text from '../Text/index';
-import env from '../../../old.env';
 import { store } from '../../config/reduxConfig';
 
 const Header: React.FC<ComponentInterface.IHeader> = props => {
@@ -65,6 +64,7 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 							{ renderBadge }
 						</TouchableOpacity>
 						<TouchableOpacity
+							style={ { marginHorizontal: 10 } }
 							activeOpacity={ .75 }
 							onPress={ () => onPressRightButton ? onPressRightButton() : null }
 						>
