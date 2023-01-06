@@ -1,16 +1,17 @@
-import React, { useCallback, useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Geolocation from '@react-native-community/geolocation';
 
-import { Button, Container, Input, Text } from "@components";
+import { Button, CameraWidget, Container, Input, Text } from "@components";
 import styles from "./style";
-import { Colors, Dispatches, Fonts, Images } from "@constant";
+import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
 import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
 import { FormikProps, useFormik } from 'formik';
 import { Delivery } from '@validator';
+import { PhotoFile } from "react-native-vision-camera";
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 type InputKM = {
@@ -18,11 +19,11 @@ type InputKM = {
 	photoUri: string | null;
 };
 const InputKms = ({ route }: InputKmsScreenProps) => {
-	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const [showCamera, setShowCamera] = useState<boolean>(false);
+	const [previewImgURI, setPreviewImgURI] = useState<string>("");
+
 	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
 	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
-
-	const tmpCapturedImg = useAppSelector(state => state.miscReducers.tmpImageUri);
 
 	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
 	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
@@ -33,6 +34,11 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const inputKmOnFinish = useAppDispatch(Actions.deliveryAction.deliveryFinish);
 
 	const { t: translate } = useTranslation();
+
+	const onCapture = (photo: PhotoFile) => {
+		const imageURI = `file://` + photo.path;
+		setPreviewImgURI(imageURI);
+	};
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
 		validateOnBlur: true,
@@ -55,7 +61,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 						lat: latitude,
 						long: longitude,
 						odo: formik.values.kmSpeedometer,
-						imageUrl: tmpCapturedImg,
+						imageUrl: previewImgURI,
 						deliveryId: route.params?.deliveryId
 					}
 
@@ -63,13 +69,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			}
 		},
 	});
-
-	const navigateToCapturePhoto = useCallback(
-		() => {
-			NavigationHelper.push('CapturePhoto');
-		},
-		[],
-	);
 
 	useEffect(() => {
 		clearLocation();
@@ -84,16 +83,15 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			{ timeout: 60000, enableHighAccuracy: true });
 
 		return function () {
-			setTmpImgUri('');
 			clearLocation();
 		};
 	}, []);
 
 	const renderImage = useMemo(() => {
-		if ((route && route.params?.photo) || tmpCapturedImg !== '') {
-			formik.setFieldValue('photoUri', tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : route.params?.photo);
+		if ((route && route.params?.photo) || previewImgURI !== '') {
+			formik.setFieldValue('photoUri', previewImgURI);
 			return (
-				<Image style={ styles.addImage } source={ { uri: tmpCapturedImg !== '' && tmpCapturedImg ? tmpCapturedImg : route.params?.photo } } />
+				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
 			);
 		}
 
@@ -108,7 +106,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				</Text>
 			</View>
 		);
-	}, [route, tmpCapturedImg]);
+	}, [route, previewImgURI]);
 
 	const renderButton = useMemo(() => (
 		<Button
@@ -156,13 +154,19 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={ navigateToCapturePhoto }
+				onPress={ () => setShowCamera(true) }
 			>
 				{ renderImage }
 
 			</TouchableOpacity>
 
 			{ renderButton }
+
+			<CameraWidget
+				isActive={ showCamera }
+				onCapture={ onCapture }
+				onClose={ () => setShowCamera(false) }
+			/>
 
 		</Container >
 	);

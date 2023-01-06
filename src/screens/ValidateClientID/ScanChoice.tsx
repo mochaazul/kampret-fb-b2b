@@ -1,5 +1,5 @@
-import { StyleSheet, TextStyle, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { StyleSheet, TextStyle, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Images, Fonts, Colors } from '@constant';
 import { Text, Input, Button, Camera } from '@components';
@@ -21,7 +21,12 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
 	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
 
-	const { frameProcessor } = useScanBarcodes({ callback: (value) => onChoosen(value) });
+	const { frameProcessor } = useScanBarcodes({
+		callback: (value) => validateClient({
+			deliveryId: deliveryId,
+			clientId: value
+		})
+	});
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
 	const result = useAppSelector(state => state.deliveryReducers.resultValidateClient);
@@ -51,6 +56,26 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 			onChoosen(formik.values.clientID ?? '');
 	}, [result]);
 
+	const renderButton = useMemo(() => (
+		<Button
+			onPress={ () => { formik.handleSubmit(); } }
+			text='Validasi'
+			textSize={ 14 }
+			weight='700'
+			mt={ 30 }
+			useShadow={ true }
+			loading={ loading }
+			disabled={ loading }
+		/>
+	), [loading]);
+
+	const renderLoading = useMemo(() => {
+		if (loading) {
+			return <ActivityIndicator size="large" color={ Colors.white.pure } style={ styles.loadingStyle } />;
+		}
+		return null;
+	}, [loading]);
+
 	if (!inputManualMode && !inputFromScanner) {
 		return (
 			<View style={ styles.container }>
@@ -74,7 +99,12 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 				</TouchableOpacity>
 				<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Barcode di Keranjang
 					untuk Validasi Client ID</Text>
-				<Camera frameProcessor={ frameProcessor } style={ { paddingHorizontal: -20, marginTop: 20, width: '100%', height: 300 } } />
+
+				<View style={ styles.cameraContainer }>
+					<Camera frameProcessor={ frameProcessor } style={ styles.camera } />
+					{ renderLoading }
+				</View>
+
 				<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan barcode berada di dalam area kotak
 					yang sudah tersedia</Text>
 
@@ -93,16 +123,8 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 					keyboardType='ascii-capable'
 					mt={ 20 }
 				/>
-				<Button
-					onPress={ () => { formik.handleSubmit(); } }
-					text='Validasi'
-					textSize={ 14 }
-					weight='700'
-					mt={ 30 }
-					useShadow={ true }
-					loading={ loading }
-					disabled={ loading }
-				/>
+
+				{ renderButton }
 			</View>
 		);
 	}
@@ -121,5 +143,24 @@ const styles = StyleSheet.create({
 		paddingVertical: 20,
 		borderBottomColor: Colors.gray.line,
 		borderBottomWidth: 1
-	}
+	},
+	cameraContainer: {
+		paddingHorizontal: -20,
+		marginTop: 20,
+		width: '100%',
+		height: 300
+	},
+	camera: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		bottom: 0,
+		right: 0,
+	},
+	loadingStyle: {
+		position: 'absolute',
+		justifyContent: 'center',
+		alignItems: 'center',
+		top: 0, left: 0, right: 0, bottom: 0
+	},
 });
