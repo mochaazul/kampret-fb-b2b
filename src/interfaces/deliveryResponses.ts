@@ -14,6 +14,11 @@ export interface DeliveryListData {
 	delivery_no: string,
 	total_item: number,
 	status: number,
+	total_client: number;
+	item_order: number;
+	item_receive: number;
+	item_reject: number;
+	text_status: string;
 };
 
 export interface DeliveryHistoryList {

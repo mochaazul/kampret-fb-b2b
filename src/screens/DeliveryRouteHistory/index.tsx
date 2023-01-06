@@ -31,9 +31,11 @@ const DeliveryRouteHistory = ({ route }: NavigationProps<'DeliveryRouteHistory'>
 				data={ deliveryHistoryRoute }
 				renderItem={ ({ item, index }) =>
 					<RouteCard
+						historyMode={ true }
 						client={ item }
 						isLastRoute={ deliveryHistoryRoute ? index == deliveryHistoryRoute.length - 1 : true }
-						onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+						// onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+						onClick={ () => null }
 						disabled={ false }
 						loading={ false }
 					// onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }

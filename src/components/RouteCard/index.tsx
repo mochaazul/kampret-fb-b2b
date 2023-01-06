@@ -18,6 +18,7 @@ export interface RouteCardParam {
 	onStart?: () => void;
 	onArrived?: () => void;
 	onFinish?: () => void;
+	historyMode?: boolean;
 }
 
 const RouteCard = ({
@@ -28,7 +29,8 @@ const RouteCard = ({
 	loading,
 	onStart,
 	onArrived,
-	onFinish
+	onFinish,
+	historyMode
 }: RouteCardParam) => {
 
 	const {
@@ -70,24 +72,50 @@ const RouteCard = ({
 	}, [sequence, disabled]);
 
 	const renderNumber = useMemo(() => {
-		if ((status ?? 0) < 6)
+		if (status != 1) {
+			if (!historyMode) {
+				return (
+					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
+						<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ sequence }</Text>
+					</View>
+				);
+			} else {
+				return (
+					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : [styles.number, { backgroundColor: Colors.white.pure }] }>
+						<Images.IconCheckGreen width={ 23 } height={ 23 } />
+					</View>
+				);
+			}
+
+		} else {
 			return (
-				<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
-					<Text style={ [Fonts.textBody.l.bold, { color: Colors.white.pure }] as TextStyle }>{ sequence }</Text>
+				<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : [styles.number, { backgroundColor: Colors.white.pure }] }>
+					<Images.IconCheckGreen width={ 23 } height={ 23 } />
 				</View>
 			);
+		}
 
-		return (
-			<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : [styles.number, { backgroundColor: Colors.white.pure }] }>
-				<Images.IconCheckGreen width={ 23 } height={ 23 } />
-			</View>
-		);
 	}, [status, sequence]);
 
 	const renderAction = useMemo(() => {
 		//make condition by delivery status
 		switch (status) {
-			case Variables.DELIVERY_STATUS.ARRIVED:
+			case undefined:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem } />
+						{ !historyMode &&
+							<Button
+								disabled={ disabled }
+								weight='700'
+								color={ Colors.white.pure }
+								text='Selesai Pengiriman'
+								onPress={ onArrivedPressed }
+							/>
+						}
+					</View>
+				);
+			case Variables.DELIVERY_STATUS.FINISH:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
 						<View style={ styles.deliveredColumn }>
@@ -111,13 +139,15 @@ const RouteCard = ({
 							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
 							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
 						</View>
-						<Button
-							disabled={ disabled }
-							weight='700'
-							color={ Colors.white.pure }
-							text='Mulai Kirim'
-							onPress={ () => onStart ? onStart() : null }
-						/>
+						{ !historyMode &&
+							<Button
+								disabled={ disabled }
+								weight='700'
+								color={ Colors.white.pure }
+								text='Mulai Kirim'
+								onPress={ () => onStart ? onStart() : null }
+							/>
+						}
 					</View>
 				);
 			case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
@@ -127,15 +157,18 @@ const RouteCard = ({
 							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
 							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
 						</View>
-						<Button
-							disabled={ disabled }
-							weight='700'
-							color={ Colors.white.pure }
-							text='Mulai Kirim'
-							onPress={ () => onStart ? onStart() : null }
-						/>
+						{ !historyMode &&
+							<Button
+								disabled={ disabled }
+								weight='700'
+								color={ Colors.white.pure }
+								text='Mulai Kirim'
+								onPress={ () => onStart ? onStart() : null }
+							/>
+						}
 					</View>
 				);
+			case Variables.DELIVERY_STATUS.ARRIVED:
 			case Variables.DELIVERY_STATUS.SENT:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
@@ -143,13 +176,15 @@ const RouteCard = ({
 							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
 							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
 						</View>
-						<Button
-							disabled={ disabled }
-							weight='700'
-							color={ Colors.white.pure }
-							text='Sudah Sampai'
-							onPress={ onArrivedPressed }
-						/>
+						{ !historyMode &&
+							<Button
+								disabled={ disabled }
+								weight='700'
+								color={ Colors.white.pure }
+								text='Sudah Sampai'
+								onPress={ onArrivedPressed }
+							/>
+						}
 					</View>
 				);
 			// case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
@@ -161,7 +196,7 @@ const RouteCard = ({
 			// 		</View>
 			// 	);
 		}
-	}, [numItem, status, loading]);
+	}, [numItem, status, loading, disabled]);
 
 	return (
 		<TouchableOpacity

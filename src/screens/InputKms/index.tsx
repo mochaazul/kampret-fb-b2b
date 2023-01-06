@@ -50,10 +50,14 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		},
 		onSubmit: () => {
 			if (route.params?.deliveryLocation) {
+
 				inputKmOnFinish({
 					finishLocation: route.params.deliveryLocation,
-					finishOdometer_image: formik.values.kmSpeedometer,
-					deliveryId: route.params.deliveryId
+					finishOdometer_image: tmpCapturedImg,
+					deliveryId: route.params.deliveryId,
+					lat: latitude,
+					long: longitude,
+					odometer: formik.values.kmSpeedometer
 				});
 			} else {
 				doInputKm(

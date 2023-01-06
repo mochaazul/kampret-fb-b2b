@@ -32,6 +32,8 @@ export default {
 				const items: DeliveryInterface.IDelivery[] =
 					(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
 						const delivery = {
+							deliveryStatus: value.status,
+							deliveryTextStatus: value.text_status,
 							id: value.delivery_id.toString(),
 							label: value.delivery_no,
 							date: value.date,
@@ -427,11 +429,14 @@ export default {
 						return {
 							id: item.delivery_id,
 							customers: undefined, // have to request to BE to provide this properties
-							status: 'selesai', // TBD
+							status: item.text_status, // TBD
 							date: item.date,
 							totalItem: item.item_order,
 							totalAccepted: item.item_receive,
-							totalReturned: item.item_reject
+							totalReturned: item.item_reject,
+							deliveryNumber: item.delivery_no,
+							deliveryStatus: item.status,
+							deliveryStatusText: item.text_status,
 						};
 					});
 					dispatch({
@@ -784,6 +789,7 @@ export default {
 		};
 	},
 	deliveryFinish: (params: DeliveryInterface.IDeliveryFinish) => (dispatch: Dispatch) => {
+
 		// set loading input km
 		dispatch({
 			type: Dispatches.LOADING_INPUT_KM,
@@ -792,11 +798,15 @@ export default {
 
 		const formData = new FormData();
 		formData.append('finish_odometer_image', {
-			uri: params?.finishLocation ?? 'test',
-			name: 'finish.jpg',
+			uri: params.finishOdometer_image,
+			name: 'finish' + '_' + params.deliveryId + '.jpg',
 			type: 'image/jpeg',
 		} as any);
 		formData.append('finish_location', params.finishLocation);
+		formData.append('finish_lat', params.lat + '');
+		formData.append('finish_long', params.long + '');
+		formData.append('finish_odometer', params.odometer + '');
+
 
 		API.upload(
 			Endpoints.INPUT_KM_FINISH(params.deliveryId),
@@ -826,18 +836,37 @@ export default {
 		});
 
 		const formData = new FormData();
-		formData.append('finish_odometer_image', {
-			uri: params?.complainImageUrl ?? 'test',
-			name: 'finish.jpg',
-			type: 'image/jpeg',
-		} as any);
+		// convert string array to string obj like Blob model
+		const imageObj = params.complainImageUrl.map((img, index) => ({
+			uri: img,
+			name: params.itemId + '_' + index + '.jpeg',
+			type: 'image/jpeg'
+		}));
+
+		// forming multiple file upload
+		[...imageObj].forEach(image => {
+			formData.append("complaint_images", image as any);
+		});
+
 		formData.append('complaint_description', params.complaintDescription);
+		formData.append('delivery_route_item_id', params.itemId);
+		formData.append('complaint_qty', params.qty);
+		formData.append('complaint_category', params.category);
 
 		API.upload(
 			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
 			formData
 		)
 			.then((response) => {
+
+				dispatch({
+					type: Dispatches.CLIENT_ARRIVAL_DATA,
+					payload: response.data,
+				});
+				dispatch({
+					type: Dispatches.COMPLAIN_RESULT,
+					payload: 'success',
+				});
 
 			})
 			.catch((error) => {

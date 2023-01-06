@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, TextStyle, TouchableOpacity, View } from "react-n
 
 import { Text } from "@components";
 import { Colors, Fonts } from "@constant";
-import { number } from "yup";
+import { DeliveryInterface } from "@interfaces";
 
 export interface CheckItemProp {
 	id: string;
@@ -13,7 +13,9 @@ export interface CheckItemProp {
 	complainLabel?: string;
 	complainDesc?: string;
 	complainFiles?: Array<ReactNode>;
-	onClickComplain?: () => void;
+	onClickComplain?: (payload: DeliveryInterface.IComplainDialogProps) => void;
+	deliveryId?: string,
+	clientId?: string;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
@@ -29,10 +31,21 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 			prop.color = Colors.company.red;
 		}
 
+		const handleClickComplain = () => {
+			if (!item.isComplain && item.onClickComplain) {
+				item.onClickComplain(
+					{
+						deliveryRouteItemId: item.id,
+						deliveryId: item.deliveryId,
+						clientId: item.clientId
+					}
+				);
+			}
+		};
 		return (
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={ item.isComplain ? undefined : item.onClickComplain }
+				onPress={ () => handleClickComplain() }
 			>
 				<Text
 					format={ Fonts.paragraph.m.bold as TextStyle }

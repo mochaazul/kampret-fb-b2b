@@ -9,6 +9,7 @@ export type MiscState = {
 	tmpMultiplePhotoCaptures: MultiplePhotoCapture | null;
 	deliveryIssueTitle: string;
 	deliveryIssueDesc: string;
+	tmpDeliveryComplainResult: string | null;
 };
 
 export type BE<T> = {

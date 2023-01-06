@@ -7,7 +7,7 @@ import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
-import { NavigationProps } from '@interfaces';
+import { NavigationProps, DeliveryInterface } from '@interfaces';
 
 import Complain from "../DeliveryRoute/Complain";
 import CheckItem, { CheckItemProp } from "./CheckItem";
@@ -23,7 +23,7 @@ interface CheckValues {
 }
 
 const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
-	const [showComplain, setShowComplain] = useState<boolean>(false);
+	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [complainSetter, setComplainSetter] = useState<string | null>(null);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -33,12 +33,14 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
 	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
 	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
+	const apiComplainResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
 
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
 	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
 	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
+	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
 
 	useEffect(() => {
 		getArrivalData(route.params.deliveryId, route.params.clientId);
@@ -47,6 +49,14 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			setMultiplePhotoCapture(null);
 		};
 	}, []);
+
+	//watcher to hide bottomSheet after receive api response
+	useEffect(() => {
+		if (apiComplainResult) {
+			setShowComplain(null);
+			setApiComplainResult(null);
+		}
+	}, [apiComplainResult]);
 
 
 	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
@@ -141,7 +151,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						return (
 							<View key={ 'item_' + index }>
 								{ index > 0 && <View style={ { height: 10 } } /> }
-								<CheckItem { ...value } onClickComplain={ () => setShowComplain(true) } />
+								<CheckItem { ...value }
+									onClickComplain={ (data) => setShowComplain(data) }
+									deliveryId={ route.params.deliveryId }
+									clientId={ route.params.clientId }
+								/>
 							</View>
 						);
 					})
@@ -223,11 +237,16 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			</ModalDialog>
 
 			<BottomSheet
-				visible={ showComplain }
-				onRequestClose={ () => setShowComplain(false) }
+				visible={ showComplain ? true : false }
+				onRequestClose={ () => setShowComplain(null) }
 				noScroll
 			>
-				<Complain onClose={ () => setShowComplain(false) } deliveryRouteItemId={ complainSetter } />
+				<Complain
+					onClose={ () => setShowComplain(null) }
+					deliveryRouteItemId={ showComplain ? showComplain.deliveryRouteItemId : 'null' }
+					deliveryId={ showComplain ? showComplain.deliveryId : undefined }
+					clientId={ showComplain ? showComplain.clientId : undefined }
+				/>
 			</BottomSheet>
 
 			<BottomSheet
