@@ -1,7 +1,8 @@
 import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { PhotoFile } from 'react-native-vision-camera';
+import Toast from 'react-native-toast-message';
 
 import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
@@ -19,6 +20,7 @@ interface IComplain {
 	qty: string | null;
 	complainSelected: string | null;
 	followupSelected: string | null;
+	photoTaken: boolean;
 }
 const complainDropdown = [
 	{ key: '1', value: 'Kuantitas Tidak Sesuai' },
@@ -34,7 +36,7 @@ const followupDropdown = [
 const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: ComplainProps) => {
 	// states
 	const [qty, setQty] = useState<number>(2);
-	const [complainSelected, setComplainSelected] = useState('');
+	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
 
@@ -45,13 +47,16 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
 
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
-		validateOnMount: false,
+
 		validationSchema: Auth.ComplainValidationSchema,
+		validateOnChange: enableFormikValidation,
+		validateOnBlur: enableFormikValidation,
 		initialValues: {
 			description: null,
 			qty: null,
-			followupSelected: null,
-			complainSelected: null
+			followupSelected: '9',
+			complainSelected: '9',
+			photoTaken: false
 		},
 		onSubmit: () => {
 			//split itemID by '-'
@@ -59,8 +64,16 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 			if (deliveryRouteItemId) {
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
-
-			if (pureItemId) {
+			console.log('prepare', {
+				deliveryId,
+				clientId,
+				complaintDescription: formik.values.description,
+				complainImageUrl: photos,
+				itemId: pureItemId,
+				qty: formik.values.qty,
+				category: formik.values.complainSelected
+			});
+			if (pureItemId == 'asd') {
 				sendComplain({
 					deliveryId,
 					clientId,
@@ -75,12 +88,20 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 		},
 	});
 
+	const handleButtonSubmit = () => {
+		setEnableFormikValidation(true);
+		formik.handleSubmit();
+	};
+
 	const onCapture = (photo: PhotoFile) => {
 		const imageURI = `file://` + photo.path;
 		if (!photos) {
 			setPhotos([imageURI]);
 		} else {
 			setPhotos([...photos, imageURI]);
+		}
+		if (!formik.values.photoTaken) {
+			formik.setFieldValue('photoTaken', true);
 		}
 	};
 
@@ -150,11 +171,17 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 				</TouchableOpacity>
 			</View>
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
-				<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
+				<View style={ styles.row }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
+					{ formik.errors.complainSelected &&
+						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.complainSelected }</Text>
+					}
+				</View>
+
 				<Dropdown
 					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? formik.setFieldValue('complainSelected', val) : null }
-					defaultOption={ { key: '1', value: 'Kuantitas Tidak Sesuai' } }
+					setSelected={ val => val ? formik.setFieldValue('complainSelected', val) : '9' }
+					defaultOption={ { key: '9', value: 'Pilih Salah Satu' } }
 					data={ complainDropdown }
 					save="value"
 					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
@@ -174,7 +201,12 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 				/>
 				<View style={ styles.card }>
 					<View style={ styles.row }>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>Jumlah Barang</Text>
+						<View style={ styles.row }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle }>Jumlah Barang</Text>
+							{ formik.errors.qty &&
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
+							}
+						</View>
 						<TextInput
 							value={ formik.values.qty ? formik.values.qty : undefined }
 							onChangeText={ text => formik.setFieldValue('qty', text) }
@@ -187,17 +219,28 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 						/>
 					</View>
 				</View>
-				<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+				<View style={ styles.row }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+					{ formik.errors.photoTaken &&
+						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
+					}
+				</View>
 				{ memoizedRenderImage }
 				{/* TAKE_OUT <View style={ styles.card }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Video</Text>
 
 					<Image source={ Images.OnBoarding[2] } style={ styles.video } resizeMethod='resize' resizeMode='cover' />
 				</View> */}
+				<View style={ styles.row }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Tindak Lanjut</Text>
+					{ formik.errors.followupSelected &&
+						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.followupSelected }</Text>
+					}
+				</View>
 				<Dropdown
 					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? formik.setFieldValue('followupSelected', val) : null }
-					defaultOption={ { key: '1', value: 'Disusulkan' } }
+					setSelected={ val => val ? formik.setFieldValue('followupSelected', val) : '9' }
+					defaultOption={ { key: '9', value: 'Pilih Salah Satu' } }
 					data={ followupDropdown }
 					save="value"
 					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
@@ -206,13 +249,16 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 					search={ false }
 				/>
 				<Button
-					onPress={ () => { formik.handleSubmit(); } }
+					// onPress={ () => {
+					// 	formik.isValid ?
+					// 		formik.handleSubmit() : console.log('formik', formik.errors, formik.values);
+					// } }
+					onPress={ () => handleButtonSubmit() }
 					text='Simpan'
 					textSize={ 14 }
 					weight='700'
 					mt={ 30 }
 					useShadow={ true }
-					disabled={ !formik.isValid }
 					loading={ complainLoading }
 				/>
 			</ScrollView>

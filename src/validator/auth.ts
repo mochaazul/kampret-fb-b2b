@@ -46,5 +46,9 @@ export const InputClientID = yup.object().shape({
 });
 
 export const ComplainValidationSchema = yup.object().shape({
-	description: yup.string().required('Wajib diisi').nullable()
+	description: yup.string().required('wajib diisi').nullable(),
+	followupSelected: yup.string().notOneOf(['9'], 'wajib pilih salah satu'),
+	complainSelected: yup.string().notOneOf(['9'], 'wajib pilih salah satu').nullable(),
+	photoTaken: yup.bool().isTrue('wajib lampirkan photo'),
+	qty: yup.string().required('Qty wajib diisi').nullable()
 });
