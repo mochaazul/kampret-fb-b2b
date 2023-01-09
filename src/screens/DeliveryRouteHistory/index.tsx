@@ -34,13 +34,9 @@ const DeliveryRouteHistory = ({ route }: NavigationProps<'DeliveryRouteHistory'>
 						historyMode={ true }
 						client={ item }
 						isLastRoute={ deliveryHistoryRoute ? index == deliveryHistoryRoute.length - 1 : true }
-						// onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
 						onClick={ () => null }
 						disabled={ false }
 						loading={ false }
-					// onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
-					// onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
-					// onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
 					/>
 				}
 				onRefresh={ fetchList }

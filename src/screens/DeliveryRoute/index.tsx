@@ -71,6 +71,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 						onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 						onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
 						onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+						onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
 					/>
 				}
 				refreshing={ loading == true }

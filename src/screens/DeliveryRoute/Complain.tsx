@@ -64,7 +64,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 			if (deliveryRouteItemId) {
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
-			console.log('prepare', {
+			console.log('prepare', pureItemId, {
 				deliveryId,
 				clientId,
 				complaintDescription: formik.values.description,
@@ -73,7 +73,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 				qty: formik.values.qty,
 				category: formik.values.complainSelected
 			});
-			if (pureItemId == 'asd') {
+			if (pureItemId) {
 				sendComplain({
 					deliveryId,
 					clientId,
@@ -249,10 +249,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 					search={ false }
 				/>
 				<Button
-					// onPress={ () => {
-					// 	formik.isValid ?
-					// 		formik.handleSubmit() : console.log('formik', formik.errors, formik.values);
-					// } }
+
 					onPress={ () => handleButtonSubmit() }
 					text='Simpan'
 					textSize={ 14 }
