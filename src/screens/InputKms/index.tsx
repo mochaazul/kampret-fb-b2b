@@ -53,7 +53,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 				inputKmOnFinish({
 					finishLocation: route.params.deliveryLocation,
-					finishOdometer_image: tmpCapturedImg,
+					finishOdometer_image: previewImgURI,
 					deliveryId: route.params.deliveryId,
 					lat: latitude,
 					long: longitude,

@@ -162,6 +162,13 @@ export default {
 						type: Dispatches.VALIDATE_CLIENT_RESULT,
 						payload: true,
 					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'checking client ID ' + params.clientId,
+						text2: 'data tidak ditemukan',
+						position: 'top'
+					});
 				}
 			})
 			.catch((err) => {

@@ -8,7 +8,7 @@ import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
 
-const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
+const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) => {
 
 	//const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
@@ -23,7 +23,14 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
 
 	useEffect(() => {
-		getClient(route.params?.deliveryId);
+		//auto reload using focus listener as trigger
+		const setFocusListener = navigation.addListener('focus', () => {
+			getClient(route.params?.deliveryId);
+		});
+
+		return () => {
+			setFocusListener();
+		};
 	}, []);
 
 	let addWareHouseOnLastData: DeliveryInterface.IDeliveryCustomer[] = [];
@@ -52,7 +59,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 		>
 			<FlatList
 				keyExtractor={ (_item, index) => 'route_' + index }
-				extraData={ loadingStartClient }
+				extraData={ [loadingStartClient, listClient] }
 				data={ addWareHouseOnLastData }
 				renderItem={ ({ item, index }) =>
 					<RouteCard
