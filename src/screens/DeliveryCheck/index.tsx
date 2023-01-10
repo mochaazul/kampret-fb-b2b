@@ -10,6 +10,7 @@ import { Actions } from "@store";
 import { NavigationProps, DeliveryInterface } from '@interfaces';
 
 import Complain from "../DeliveryRoute/Complain";
+import ConfirmItem from "./ConfirmItem";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
 import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
@@ -24,6 +25,7 @@ interface CheckValues {
 
 const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
+	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [complainSetter, setComplainSetter] = useState<string | null>(null);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -110,6 +112,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			complainAmount: item.qty_reject + '',
 			complainLabel: item.complaint_description,
 			complainDesc: item.complaint_description,
+			existingComplain: item.complaint_description ? {
+				category: item.complaint_category,
+				description: item.complaint_description,
+				qty: item.qty_reject,
+				imageUrl: item.complaint_images,
+				followUp: item.complaint_follow_up
+			} : undefined
 
 		};
 	})
@@ -155,6 +164,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 									onClickComplain={ (data) => setShowComplain(data) }
 									deliveryId={ route.params.deliveryId }
 									clientId={ route.params.clientId }
+									onClickConfirm={ (data) => setShowConfirmItem(data) }
 								/>
 							</View>
 						);
@@ -247,6 +257,26 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					deliveryId={ showComplain ? showComplain.deliveryId : undefined }
 					clientId={ showComplain ? showComplain.clientId : undefined }
 					itemName={ showComplain ? showComplain.itemName : undefined }
+					existing={ showComplain ? showComplain.existing : undefined }
+				/>
+			</BottomSheet>
+
+			<BottomSheet
+				visible={ showConfirmItem ? true : false }
+				onRequestClose={ () => setShowConfirmItem(null) }
+				noScroll
+			>
+				<ConfirmItem
+					onClose={ () => setShowConfirmItem(null) }
+					deliveryRouteItemId={ showConfirmItem ? showConfirmItem.deliveryRouteItemId : 'null' }
+					deliveryId={ showConfirmItem ? showConfirmItem.deliveryId : undefined }
+					clientId={ showConfirmItem ? showConfirmItem.clientId : undefined }
+					itemName={ showConfirmItem ? showConfirmItem.itemName : undefined }
+					onOpenComplain={ (item) => {
+						console.log('open kom', item);
+						setShowConfirmItem(null);
+						setShowComplain(item);
+					} }
 				/>
 			</BottomSheet>
 

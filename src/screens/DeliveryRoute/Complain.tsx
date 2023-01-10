@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { PhotoFile } from 'react-native-vision-camera';
 import Toast from 'react-native-toast-message';
@@ -9,12 +9,14 @@ import { Auth } from '@validator';
 import { useAppDispatch, useAppSelector } from '@helpers';
 import { Colors, Fonts, Images } from '@constant';
 import { Actions } from '@store';
+import { DeliveryInterface } from '@interfaces';
 interface ComplainProps {
 	onClose: () => void;
 	deliveryRouteItemId: string | null;
 	deliveryId: string | undefined;
 	clientId: string | undefined;
 	itemName: string | undefined;
+	existing?: DeliveryInterface.IExistingComplain;
 }
 interface IComplain {
 	description: string | null;
@@ -29,14 +31,8 @@ const complainDropdown = [
 	{ key: '3', value: 'Barang Tidak Sesuai Spek' },
 ];
 
-const followupDropdown = [
-	{ key: '1', value: 'Disusulkan' },
-	{ key: '2', value: 'Disesuaikan' }
-];
-
-const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName }: ComplainProps) => {
+const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName, existing }: ComplainProps) => {
 	// states
-	const [qty, setQty] = useState<number>(2);
 	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
@@ -72,7 +68,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				complainImageUrl: photos,
 				itemId: pureItemId,
 				qty: formik.values.qty,
-				category: formik.values.complainSelected
+				category: formik.values.complainSelected,
+				followUp: formik.values.followupSelected
 			});
 			if (pureItemId) {
 				sendComplain({
@@ -82,12 +79,29 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					complainImageUrl: photos,
 					itemId: pureItemId,
 					qty: formik.values.qty,
-					category: formik.values.complainSelected
+					category: formik.values.complainSelected,
+					followUp: formik.values.followupSelected
 				});
 			}
 
 		},
 	});
+
+	useEffect(() => {
+		if (existing) {
+			formik.setValues({
+				description: existing.description,
+				qty: existing.qty + '',
+				followupSelected: existing.followUp,
+				complainSelected: existing.category,
+				photoTaken: existing.imageUrl && existing.imageUrl.length !== 0 ? true : false
+			});
+			if (existing.imageUrl && existing.imageUrl.length !== 0) {
+				setPhotos(existing.imageUrl);
+			}
+		}
+	}, []);
+
 
 	const handleButtonSubmit = () => {
 		setEnableFormikValidation(true);
@@ -112,7 +126,15 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	};
 
 	const memoizedRenderOption = useCallback((textOption: string) => {
+
 		if (formik.values.followupSelected == textOption) {
+			return (
+				<TouchableOpacity style={ styles.option } disabled={ true }>
+					<Images.Selected />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		} else if (existing && existing.followUp == textOption) {
 			return (
 				<TouchableOpacity style={ styles.option } disabled={ true }>
 					<Images.Selected />
@@ -133,7 +155,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	}, [formik.values.followupSelected]);
 
 	const memoizedRenderComplainTitle = useMemo(() => {
-		console.log('item name', itemName);
+		console.log('item name', existing);
 		if (!itemName) return <View />;
 		return (
 			<View>
@@ -216,7 +238,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				<Dropdown
 					boxStyles={ { marginTop: 5 } }
 					setSelected={ val => val ? formik.setFieldValue('complainSelected', val) : '9' }
-					defaultOption={ { key: '9', value: 'Pilih Salah Satu' } }
+					defaultOption={ { key: '9', value: existing ? existing.category : 'Pilih Salah Satu' } }
 					data={ complainDropdown }
 					save="value"
 					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
@@ -292,6 +314,19 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					useShadow={ true }
 					loading={ complainLoading }
 				/>
+				{ existing &&
+					<Button
+						onPress={ () => handleButtonSubmit() }
+						text='Hapus'
+						textSize={ 14 }
+						weight='700'
+						backgroundColor='transparent'
+						type='outline'
+						color={ Colors.company.red }
+						loading={ complainLoading }
+						mt={ 20 }
+					/>
+				}
 			</ScrollView>
 			<CameraWidget
 				isActive={ showCamera }

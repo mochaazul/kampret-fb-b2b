@@ -14,47 +14,53 @@ export interface CheckItemProp {
 	complainDesc?: string;
 	complainFiles?: Array<ReactNode>;
 	onClickComplain?: (payload: DeliveryInterface.IComplainDialogProps) => void;
+	onClickConfirm?: (payload: DeliveryInterface.IComplainDialogProps) => void;
 	deliveryId?: string,
 	clientId?: string;
+	existingComplain?: DeliveryInterface.IExistingComplain;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
 
 	const renderComplainBtn = useMemo(() => {
-		const prop = {
-			label: 'Hapus Keluhan',
-			color: Colors.gray.default
-		};
-
-		if (!item.isComplain) {
-			prop.label = 'Keluhan';
-			prop.color = Colors.company.red;
-		}
 
 		const handleClickComplain = () => {
-			if (!item.isComplain && item.onClickComplain) {
+			if (item.onClickComplain) {
 				item.onClickComplain(
 					{
 						deliveryRouteItemId: item.id,
 						deliveryId: item.deliveryId,
 						clientId: item.clientId,
-						itemName: item.name
+						itemName: item.name,
+						existing: item.existingComplain
 					}
 				);
 			}
 		};
-		return (
-			<View style={ styles.buttonContainer }>
-				<Button
-					weight='700'
-					backgroundColor='transparent'
-					type='outline'
-					color={ Colors.company.red }
-					text='Buat Keluhan'
-					onPress={ () => handleClickComplain() }
-				/></View>
+		if (!item.isComplain) {
+			return (
+				<View style={ styles.buttonContainer }>
+					<Button
+						weight='700'
+						backgroundColor='transparent'
+						type='outline'
+						color={ Colors.company.red }
+						text='Buat Keluhan'
+						onPress={ () => handleClickComplain() }
+					/></View>
+			);
+		} else {
+			return (
+				<View style={ styles.buttonContainer }>
+					<Button
+						weight='700'
+						backgroundColor='transparent'
+						color={ Colors.gray.default }
+						text='Ubah Keluhan'
+						onPress={ () => handleClickComplain() }
+					/></View>);
+		}
 
-		);
 	}, [item.isComplain]);
 
 	const renderComplain = useMemo(() => {
@@ -93,16 +99,37 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 			);
 	}, [item.isComplain]);
 
+	const handleOnClickConfirm = () => {
+		if (item.onClickConfirm) {
+			console.log('klik konfirm', {
+				deliveryRouteItemId: item.id,
+				deliveryId: item.deliveryId,
+				clientId: item.clientId,
+				itemName: item.name
+			});
+			item.onClickConfirm(
+				{
+					deliveryRouteItemId: item.id,
+					deliveryId: item.deliveryId,
+					clientId: item.clientId,
+					itemName: item.name
+				}
+			);
+		}
+	};
+
 	return (
 		<View style={ styles.container }>
 
 			<View style={ styles.header }>
-				<View style={ { flex: 2 } }>
+				<TouchableOpacity style={ { flex: 5, marginRight: 10 } }
+					onPress={ () => handleOnClickConfirm() }
+				>
 					<Text
 						format={ Fonts.paragraph.xl.bold as TextStyle }
 						color={ Colors.black.default }
 						ellipsizeMode={ 'middle' }
-						numberOfLines={ 1 }
+						numberOfLines={ 2 }
 					>
 						{ item.name }
 					</Text>
@@ -114,12 +141,12 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					>
 						{ item.id }
 					</Text>
-				</View>
+				</TouchableOpacity>
 
-				{ item.isComplain !== undefined && renderComplainBtn }
+				{ renderComplainBtn }
 
 			</View>
-			{ renderComplain }
+
 		</View>
 	);
 };
@@ -147,5 +174,9 @@ const styles = StyleSheet.create({
 	list: {
 		marginTop: 10,
 	},
-	buttonContainer: { flex: 1, alignSelf: 'center' }
+	buttonContainer: {
+		flex: 3,
+		alignSelf: 'center',
+		marginLeft: 5,
+	}
 });

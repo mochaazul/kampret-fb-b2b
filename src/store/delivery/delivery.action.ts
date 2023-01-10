@@ -859,6 +859,7 @@ export default {
 		formData.append('delivery_route_item_id', params.itemId);
 		formData.append('complaint_qty', params.qty);
 		formData.append('complaint_category', params.category);
+		formData.append('complaint_follow_up', params.followUp);
 
 		API.upload(
 			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
