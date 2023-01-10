@@ -14,6 +14,7 @@ interface ComplainProps {
 	deliveryRouteItemId: string | null;
 	deliveryId: string | undefined;
 	clientId: string | undefined;
+	itemName: string | undefined;
 }
 interface IComplain {
 	description: string | null;
@@ -33,7 +34,7 @@ const followupDropdown = [
 	{ key: '2', value: 'Disesuaikan' }
 ];
 
-const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: ComplainProps) => {
+const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName }: ComplainProps) => {
 	// states
 	const [qty, setQty] = useState<number>(2);
 	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
@@ -110,6 +111,38 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 		if (!photos || photos.length !== 3) setShowCamera(true);
 	};
 
+	const memoizedRenderOption = useCallback((textOption: string) => {
+		if (formik.values.followupSelected == textOption) {
+			return (
+				<TouchableOpacity style={ styles.option } disabled={ true }>
+					<Images.Selected />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		} else {
+			return (
+				<TouchableOpacity style={ styles.option }
+					onPress={ () => formik.setFieldValue('followupSelected', textOption) }
+				>
+					<Images.Unselect />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		}
+
+	}, [formik.values.followupSelected]);
+
+	const memoizedRenderComplainTitle = useMemo(() => {
+		console.log('item name', itemName);
+		if (!itemName) return <View />;
+		return (
+			<View>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } style={ styles.headerTitle }>{ itemName }</Text>
+				<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.headerTitle } color={ Colors.gray.default }>{ deliveryRouteItemId }</Text>
+			</View>
+		);
+	}, [itemName]);
+
 	const memoizedRenderImage = useMemo(() => {
 		// view photos when exist on local state
 		if (photos) {
@@ -170,8 +203,10 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 					<Images.IconClose />
 				</TouchableOpacity>
 			</View>
+
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
-				<View style={ styles.row }>
+				{ memoizedRenderComplainTitle }
+				<View style={ [styles.row, styles.card] }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
 					{ formik.errors.complainSelected &&
 						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.complainSelected }</Text>
@@ -201,22 +236,26 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 				/>
 				<View style={ styles.card }>
 					<View style={ styles.row }>
-						<View style={ styles.row }>
-							<Text format={ Fonts.textBody.l.bold as TextStyle }>Jumlah Barang</Text>
+						<View style={ [styles.row, { flex: 3 }] }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle }>Masukkan Qty Keluhan</Text>
 							{ formik.errors.qty &&
 								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
 							}
 						</View>
-						<TextInput
-							value={ formik.values.qty ? formik.values.qty : undefined }
-							onChangeText={ text => formik.setFieldValue('qty', text) }
-							style={ { ...Fonts.heading.h2 as TextStyle, padding: 20, borderBottomColor: Colors.gray.default, borderBottomWidth: 1 } }
-							keyboardType='numeric'
-							placeholder='0'
-							maxLength={ 4 }
-							placeholderTextColor={ Colors.gray.default }
+						<View style={ [styles.inputBorder, styles.rowInput] }>
+							<TextInput
+								value={ formik.values.qty ? formik.values.qty : undefined }
+								onChangeText={ text => formik.setFieldValue('qty', text) }
+								style={ Fonts.heading.h2 as TextStyle }
+								keyboardType='numeric'
+								placeholder='0'
+								maxLength={ 4 }
+								placeholderTextColor={ Colors.gray.default }
 
-						/>
+							/>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
+						</View>
+
 					</View>
 				</View>
 				<View style={ styles.row }>
@@ -231,23 +270,18 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 
 					<Image source={ Images.OnBoarding[2] } style={ styles.video } resizeMethod='resize' resizeMode='cover' />
 				</View> */}
-				<View style={ styles.row }>
-					<Text format={ Fonts.textBody.l.bold as TextStyle }>Tindak Lanjut</Text>
-					{ formik.errors.followupSelected &&
-						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.followupSelected }</Text>
-					}
+				<View style={ styles.card }>
+					<View style={ styles.row }>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>Tindak Lanjut</Text>
+						{ formik.errors.followupSelected &&
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.followupSelected }</Text>
+						}
+					</View>
+					<View style={ [styles.box, styles.card] }>
+						{ memoizedRenderOption('Disusulkan') }
+						{ memoizedRenderOption('Disesuaikan') }
+					</View>
 				</View>
-				<Dropdown
-					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? formik.setFieldValue('followupSelected', val) : '9' }
-					defaultOption={ { key: '9', value: 'Pilih Salah Satu' } }
-					data={ followupDropdown }
-					save="value"
-					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
-					dropdownItemStyles={ Fonts.textBody.m.regular as TextStyle }
-					inputStyles={ Fonts.textBody.m.regular as TextStyle }
-					search={ false }
-				/>
 				<Button
 
 					onPress={ () => handleButtonSubmit() }
@@ -278,7 +312,8 @@ const styles = StyleSheet.create({
 	},
 	row: {
 		flexDirection: 'row',
-		justifyContent: 'space-between'
+		justifyContent: 'space-between',
+		alignItems: 'center'
 	},
 	card: {
 		marginTop: 20
@@ -333,5 +368,22 @@ const styles = StyleSheet.create({
 	},
 	box: {
 		flexDirection: 'row'
+	},
+	inputBorder: {
+		padding: 10, flex: 1, borderColor: Colors.black.default, borderWidth: 1, borderRadius: 10
+	},
+	rowInput: {
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+		alignItems: 'center'
+	},
+	marginLeft: {
+		marginLeft: 10
+	},
+	option: {
+		flexDirection: 'row',
+		// justifyContent: 'space-between',
+		alignItems: 'center',
+		flex: 1
 	},
 });

@@ -246,6 +246,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					deliveryRouteItemId={ showComplain ? showComplain.deliveryRouteItemId : 'null' }
 					deliveryId={ showComplain ? showComplain.deliveryId : undefined }
 					clientId={ showComplain ? showComplain.clientId : undefined }
+					itemName={ showComplain ? showComplain.itemName : undefined }
 				/>
 			</BottomSheet>
 

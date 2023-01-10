@@ -171,4 +171,5 @@ export interface IComplainDialogProps {
 	deliveryRouteItemId: string | null;
 	deliveryId: string | undefined;
 	clientId: string | undefined;
+	itemName: string | undefined;
 }

@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo, useState } from "react";
 import { FlatList, StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
 
-import { Text } from "@components";
+import { Button, Text } from "@components";
 import { Colors, Fonts } from "@constant";
 import { DeliveryInterface } from "@interfaces";
 
@@ -37,23 +37,23 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					{
 						deliveryRouteItemId: item.id,
 						deliveryId: item.deliveryId,
-						clientId: item.clientId
+						clientId: item.clientId,
+						itemName: item.name
 					}
 				);
 			}
 		};
 		return (
-			<TouchableOpacity
-				activeOpacity={ .75 }
-				onPress={ () => handleClickComplain() }
-			>
-				<Text
-					format={ Fonts.paragraph.m.bold as TextStyle }
-					color={ prop.color }
-				>
-					{ prop.label }
-				</Text>
-			</TouchableOpacity>
+			<View style={ styles.buttonContainer }>
+				<Button
+					weight='700'
+					backgroundColor='transparent'
+					type='outline'
+					color={ Colors.company.red }
+					text='Buat Keluhan'
+					onPress={ () => handleClickComplain() }
+				/></View>
+
 		);
 	}, [item.isComplain]);
 
@@ -97,10 +97,12 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 		<View style={ styles.container }>
 
 			<View style={ styles.header }>
-				<View>
+				<View style={ { flex: 2 } }>
 					<Text
 						format={ Fonts.paragraph.xl.bold as TextStyle }
 						color={ Colors.black.default }
+						ellipsizeMode={ 'middle' }
+						numberOfLines={ 1 }
 					>
 						{ item.name }
 					</Text>
@@ -144,5 +146,6 @@ const styles = StyleSheet.create({
 
 	list: {
 		marginTop: 10,
-	}
+	},
+	buttonContainer: { flex: 1, alignSelf: 'center' }
 });
