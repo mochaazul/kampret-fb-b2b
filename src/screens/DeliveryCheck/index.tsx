@@ -1,13 +1,13 @@
 import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, TextStyle, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
-import { NavigationProps, DeliveryInterface } from '@interfaces';
+import { NavigationProps, DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
 
 import Complain from "../DeliveryRoute/Complain";
 import ConfirmItem from "./ConfirmItem";
@@ -23,7 +23,7 @@ interface CheckValues {
 	returnChecked: boolean;
 }
 
-const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
+const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
@@ -45,7 +45,9 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
 
 	useEffect(() => {
+
 		getArrivalData(route.params.deliveryId, route.params.clientId);
+
 		return function () {
 			setTmpImgUri('');
 			setMultiplePhotoCapture(null);
@@ -55,6 +57,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	//watcher to hide bottomSheet after receive api response
 	useEffect(() => {
 		if (apiComplainResult) {
+			getArrivalData(route.params.deliveryId, route.params.clientId);
 			setShowComplain(null);
 			setApiComplainResult(null);
 		}
@@ -103,26 +106,31 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		);
 	}, [miscState.tmpImageUri]);
 
+	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null) => {
 
-	const mappingToCheckItemType: CheckItemProp[] = arrivalData && arrivalData.items ? arrivalData.items.map((item) => {
-		return {
-			id: item.sales_no + '-' + item.delivery_route_item_id,
-			name: item.item_name,
-			isComplain: item.complaint_description !== '',
-			complainAmount: item.qty_reject + '',
-			complainLabel: item.complaint_description,
-			complainDesc: item.complaint_description,
-			existingComplain: item.complaint_description ? {
-				category: item.complaint_category,
-				description: item.complaint_description,
-				qty: item.qty_reject,
-				imageUrl: item.complaint_images,
-				followUp: item.complaint_follow_up
-			} : undefined
+		if (arrive && arrive.items) {
+			return arrive.items.map((item) => {
+				return {
+					id: item.sales_no + '-' + item.delivery_route_item_id,
+					name: item.item_name,
+					isComplain: item.complaint_description !== '',
+					complainAmount: item.qty_reject + '',
+					complainLabel: item.complaint_description,
+					complainDesc: item.complaint_description,
+					existingComplain: item.complaint_description ? {
+						category: item.complaint_category,
+						description: item.complaint_description,
+						qty: item.qty_reject,
+						imageUrl: item.complaint_images,
+						followUp: item.complaint_follow_up
+					} : undefined
 
-		};
-	})
-		: [];
+				};
+			});
+		} else {
+			return [];
+		}
+	};
 
 	return (
 		<Container
@@ -135,107 +143,122 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			contentContainerStyle={ styles.container }
 		>
 
-			<ScrollView>
-				{ arrivalData &&
-					<View style={ styles.customerInfo }>
-						<Images.IconLocation />
+			<FlatList
+				nestedScrollEnabled={ false }
+				data={ mappingItem(arrivalData) as CheckItemProp[] }
+				keyExtractor={ (item, index) => 'item_' + index }
+				extraData={ arrivalLoading }
+				showsVerticalScrollIndicator={ false }
+				ListHeaderComponent={ () => {
+					return (
+						<View>
+							{ arrivalData &&
+								<View style={ styles.customerInfo }>
+									<Images.IconLocation />
 
-						<View style={ { marginStart: 16 } }>
+									<View style={ { marginStart: 16 } }>
 
-							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
-							<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ arrivalData.client_address }</Text>
+										<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
+										<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ arrivalData.client_address }</Text>
+									</View>
+								</View>
+							}
+							<Text
+								color={ Colors.gray.default }
+								format={ Fonts.paragraph.xl.bold as TextStyle }
+								style={ styles.label }
+							>
+								Pesanan
+							</Text>
 						</View>
-					</View>
+					);
 				}
-				<Text
-					color={ Colors.gray.default }
-					format={ Fonts.paragraph.xl.bold as TextStyle }
-					style={ styles.label }
-				>
-					Pesanan
-				</Text>
+				}
+				ListFooterComponent={ () => {
+					return (
+						<View>
+							<Text
+								color={ Colors.gray.default }
+								format={ Fonts.paragraph.xl.bold as TextStyle }
+								style={ styles.label }
+							>
+								Bukti Pesanan Diterima
+							</Text>
 
-				{
-					mappingToCheckItemType.map((value: CheckItemProp, index: number) => {
-						return (
-							<View key={ 'item_' + index }>
-								{ index > 0 && <View style={ { height: 10 } } /> }
-								<CheckItem { ...value }
-									onClickComplain={ (data) => setShowComplain(data) }
-									deliveryId={ route.params.deliveryId }
-									clientId={ route.params.clientId }
-									onClickConfirm={ (data) => setShowConfirmItem(data) }
+							<View style={ styles.section }>
+								<Input
+									formik={ formik }
+									name="receiverName"
+									label="Nama Penerima"
+								/>
+
+								<TouchableOpacity
+									activeOpacity={ .75 }
+									onPress={ navigateToCapturePhoto }
+								>
+									{ renderImage }
+
+								</TouchableOpacity>
+							</View>
+
+							<Text
+								color={ Colors.gray.default }
+								format={ Fonts.paragraph.xl.bold as TextStyle }
+								style={ styles.label }
+							>
+								Barang Yang Harus Dibawa Kembali
+							</Text>
+
+							<View style={ styles.section }>
+								<View style={ { flexDirection: 'row', justifyContent: 'space-between' } }>
+									<Text
+										format={ Fonts.paragraph.xl.bold as TextStyle }
+										color={ Colors.black.default }
+									>
+										2 Keranjang Merah
+									</Text>
+
+									<TouchableOpacity
+										onPress={ () => formik.setFieldValue('returnChecked', !formik.values['returnChecked']) }
+									>
+										{
+											formik.values['returnChecked'] ?
+												<Images.ButtonCheck2 /> :
+												<Images.ButtonCheck />
+										}
+									</TouchableOpacity>
+								</View>
+
+								<Button
+									text='Pengiriman Selesai'
+									textSize={ 14 }
+									weight='700'
+									mt={ 30 }
+									useShadow={ true }
+									onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
+									loading={ arrivalLoading }
+								//disabled={ !formik.isValid }
 								/>
 							</View>
-						);
-					})
+						</View>
+					);
+				} }
+				renderItem={ ({ item, index }) => {
+					return (
+						<View key={ 'item_' + index }>
+							{ index > 0 && <View style={ { height: 10 } } /> }
+							<CheckItem { ...item }
+								onClickComplain={ (data) => setShowComplain(data) }
+								deliveryId={ route.params.deliveryId }
+								clientId={ route.params.clientId }
+								onClickConfirm={ (data) => setShowConfirmItem(data) }
+								itemIndex={ index }
+							/>
+						</View>
+					);
 				}
-
-				<Text
-					color={ Colors.gray.default }
-					format={ Fonts.paragraph.xl.bold as TextStyle }
-					style={ styles.label }
-				>
-					Bukti Pesanan Diterima
-				</Text>
-
-				<View style={ styles.section }>
-					<Input
-						formik={ formik }
-						name="receiverName"
-						label="Nama Penerima"
-					/>
-
-					<TouchableOpacity
-						activeOpacity={ .75 }
-						onPress={ navigateToCapturePhoto }
-					>
-						{ renderImage }
-
-					</TouchableOpacity>
-				</View>
-
-				<Text
-					color={ Colors.gray.default }
-					format={ Fonts.paragraph.xl.bold as TextStyle }
-					style={ styles.label }
-				>
-					Barang Yang Harus Dibawa Kembali
-				</Text>
-
-				<View style={ styles.section }>
-					<View style={ { flexDirection: 'row', justifyContent: 'space-between' } }>
-						<Text
-							format={ Fonts.paragraph.xl.bold as TextStyle }
-							color={ Colors.black.default }
-						>
-							2 Keranjang Merah
-						</Text>
-
-						<TouchableOpacity
-							onPress={ () => formik.setFieldValue('returnChecked', !formik.values['returnChecked']) }
-						>
-							{
-								formik.values['returnChecked'] ?
-									<Images.ButtonCheck2 /> :
-									<Images.ButtonCheck />
-							}
-						</TouchableOpacity>
-					</View>
-
-					<Button
-						text='Pengiriman Selesai'
-						textSize={ 14 }
-						weight='700'
-						mt={ 30 }
-						useShadow={ true }
-						onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
-						loading={ arrivalLoading }
-					//disabled={ !formik.isValid }
-					/>
-				</View>
-			</ScrollView>
-
+				}
+			/>
 			<ModalDialog visible={ successArrival !== null }
 				onRequestClose={ () => closeArrivalSuccessDialog() }>
 				<SuccessDeliveryDialog
@@ -273,7 +296,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ showConfirmItem ? showConfirmItem.clientId : undefined }
 					itemName={ showConfirmItem ? showConfirmItem.itemName : undefined }
 					onOpenComplain={ (item) => {
-						console.log('open kom', item);
 						setShowConfirmItem(null);
 						setShowComplain(item);
 					} }

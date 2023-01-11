@@ -58,16 +58,6 @@ const ConfirmItem = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemN
 			if (deliveryRouteItemId) {
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
-			console.log('prepare', pureItemId, {
-				deliveryId,
-				clientId,
-				complaintDescription: formik.values.description,
-				complainImageUrl: photos,
-				itemId: pureItemId,
-				qty: formik.values.qty,
-				category: formik.values.complainSelected
-			});
-
 		},
 	});
 
@@ -89,7 +79,6 @@ const ConfirmItem = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemN
 	};
 
 	const memoizedRenderComplainTitle = useMemo(() => {
-		console.log('item name', itemName);
 		if (!itemName) return <View />;
 		return (
 			<View style={ styles.box }>
@@ -105,7 +94,6 @@ const ConfirmItem = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemN
 						color={ Colors.company.red }
 						text='Buat Keluhan'
 						onPress={ () => {
-							console.log('keluhan', onOpenComplain, { deliveryRouteItemId, deliveryId, clientId, itemName });
 							if (onOpenComplain) {
 								onOpenComplain(
 									{ deliveryRouteItemId, deliveryId, clientId, itemName }

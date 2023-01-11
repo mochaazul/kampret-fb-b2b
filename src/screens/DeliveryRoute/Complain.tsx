@@ -39,6 +39,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
+	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
+	const editComplain = useAppDispatch(Actions.complainAction.updateComplain);
 
 	//global state
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
@@ -61,27 +63,31 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 			if (deliveryRouteItemId) {
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
-			console.log('prepare', pureItemId, {
-				deliveryId,
-				clientId,
-				complaintDescription: formik.values.description,
-				complainImageUrl: photos,
-				itemId: pureItemId,
-				qty: formik.values.qty,
-				category: formik.values.complainSelected,
-				followUp: formik.values.followupSelected
-			});
 			if (pureItemId) {
-				sendComplain({
-					deliveryId,
-					clientId,
-					complaintDescription: formik.values.description,
-					complainImageUrl: photos,
-					itemId: pureItemId,
-					qty: formik.values.qty,
-					category: formik.values.complainSelected,
-					followUp: formik.values.followupSelected
-				});
+				if (existing) {
+					editComplain({
+						deliveryId,
+						clientId,
+						complaintDescription: formik.values.description,
+						complainImageUrl: photos,
+						itemId: pureItemId,
+						qty: formik.values.qty,
+						category: formik.values.complainSelected,
+						followUp: formik.values.followupSelected
+					});
+				} else {
+					sendComplain({
+						deliveryId,
+						clientId,
+						complaintDescription: formik.values.description,
+						complainImageUrl: photos,
+						itemId: pureItemId,
+						qty: formik.values.qty,
+						category: formik.values.complainSelected,
+						followUp: formik.values.followupSelected
+					});
+				}
+
 			}
 
 		},
@@ -120,6 +126,26 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 		}
 	};
 
+	const handleEditComplain = () => {
+		editComplain({
+			deliveryId: deliveryId,
+			clientId: clientId,
+			complaintDescription: formik.values.description,
+			complainImageUrl: existing?.imageUrl,
+			itemId: deliveryRouteItemId,
+			qty: formik.values.qty,
+			category: formik.values.complainSelected,
+			followUp: formik.values.followupSelected
+		});
+	};
+
+	const handleDeleteComplain = () => {
+		if (deliveryRouteItemId) {
+			const itemId = deliveryRouteItemId.split('-');
+			deleteComplain({ deliveryId, clientId, itemId: itemId[1] });
+		}
+	};
+
 	const handleCaptureImage = (sequence: number) => {
 		//just push new array for every capture (max 3 photos)
 		if (!photos || photos.length !== 3) setShowCamera(true);
@@ -155,7 +181,6 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	}, [formik.values.followupSelected]);
 
 	const memoizedRenderComplainTitle = useMemo(() => {
-		console.log('item name', existing);
 		if (!itemName) return <View />;
 		return (
 			<View>
@@ -316,7 +341,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				/>
 				{ existing &&
 					<Button
-						onPress={ () => handleButtonSubmit() }
+						onPress={ () => handleDeleteComplain() }
 						text='Hapus'
 						textSize={ 14 }
 						weight='700'
@@ -337,7 +362,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	);
 };
 
-export default Complain;
+export default React.memo(Complain);
 
 const styles = StyleSheet.create({
 	container: {

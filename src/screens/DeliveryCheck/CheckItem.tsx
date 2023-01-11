@@ -18,6 +18,7 @@ export interface CheckItemProp {
 	deliveryId?: string,
 	clientId?: string;
 	existingComplain?: DeliveryInterface.IExistingComplain;
+	itemIndex: number;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
@@ -61,52 +62,10 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					/></View>);
 		}
 
-	}, [item.isComplain]);
-
-	const renderComplain = useMemo(() => {
-		if (item.isComplain)
-			return (
-				<>
-					<View style={ styles.line } />
-
-					<View style={ styles.header }>
-						<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>
-							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.company.red }>
-								{ item.complainAmount + ' ' }
-							</Text>
-							{ item.complainLabel }
-						</Text>
-					</View>
-
-					<Text
-						format={ Fonts.paragraph.m.regular as TextStyle }
-						color={ Colors.black.default }
-						mt={ 10 }
-					>
-						{ item.complainDesc }
-					</Text>
-
-					<FlatList
-						bounces={ false }
-						horizontal={ true }
-						keyExtractor={ (item: any, index: number) => 'item_' + index }
-						data={ item.complainFiles }
-						renderItem={ ({ item }) => <>{ item }</> }
-						ItemSeparatorComponent={ () => <View style={ { width: 10 } } /> }
-						style={ styles.list }
-					/>
-				</>
-			);
-	}, [item.isComplain]);
+	}, [item]);
 
 	const handleOnClickConfirm = () => {
 		if (item.onClickConfirm) {
-			console.log('klik konfirm', {
-				deliveryRouteItemId: item.id,
-				deliveryId: item.deliveryId,
-				clientId: item.clientId,
-				itemName: item.name
-			});
 			item.onClickConfirm(
 				{
 					deliveryRouteItemId: item.id,
@@ -117,9 +76,8 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 			);
 		}
 	};
-
 	return (
-		<View style={ styles.container }>
+		<View style={ styles.container } key={ item.id + '_' + item.itemIndex }>
 
 			<View style={ styles.header }>
 				<TouchableOpacity style={ { flex: 5, marginRight: 10 } }

@@ -43,7 +43,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 		},
 		onSubmit: () => {
 			const clientId = formik.values.clientID;
-			console.log('preseed');
 			if (clientId)
 				validateClient({
 					deliveryId: deliveryId,

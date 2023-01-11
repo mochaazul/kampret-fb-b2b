@@ -24,5 +24,5 @@ export default {
 	ARRIVAL_CONFIRMATION: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }/confirmation`),
 	CLIENT_ARRIVAL: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
 	ADD_COMPLAINT: (deliveryId: string, clientId: string) => (`v1/delivery-complaint/${ deliveryId }/client/${ clientId }`),
-
+	DELIVERY_COMPLAIN: (deliveryId: string, clientId: string, itemId: string) => (`v1/delivery-complaint/${ deliveryId }/client/${ clientId }/item/${ itemId }`)
 };
