@@ -95,6 +95,12 @@ export interface DeliveryItemResp {
 	client_name?: string;
 	total_item: number;
 	items: Array<DeliveryItemData>;
+	carts: Array<DeliveryClientCartData>;
+}
+
+export interface DeliveryClientCartData {
+	cart_code?: string;
+	cart_qty?: number;
 }
 
 export interface DeliveryItemData {

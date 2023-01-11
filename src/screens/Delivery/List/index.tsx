@@ -18,7 +18,7 @@ const DeliveryList = () => {
 	useEffect(() => { fetchList(); }, []);
 
 	// show empty state when not loading and delivery list is empty
-	if (!loading && deliveryList.length == 0)
+	if (!loading && deliveryList.filter((item) => item.deliveryTextStatus != 'FINISH').length == 0)
 		return (
 			<View style={ styles.emptyContainer }>
 				<Images.EmptyBox
@@ -45,20 +45,9 @@ const DeliveryList = () => {
 			showsVerticalScrollIndicator={ false }
 			onRefresh={ fetchList }
 			refreshing={ loading }
-			data={ deliveryList }
+			data={ deliveryList.filter((item) => item.deliveryTextStatus != 'FINISH') }
 			renderItem={
-				({ item, index }) => {
-
-					// hide delivery task when delivery is finished
-					if (item.deliveryTextStatus != 'FINISH') {
-						return (
-							<DeliveryItem key={ 'item_' + index } { ...item } />
-						);
-					} else {
-						return (<View />);
-					}
-
-				}
+				({ item, index }) => (<DeliveryItem key={ 'item_' + index } { ...item } />)
 			}
 			ItemSeparatorComponent={
 				() => (<View style={ styles.heightSpace } />)

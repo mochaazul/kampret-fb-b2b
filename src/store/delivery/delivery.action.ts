@@ -193,7 +193,7 @@ export default {
 			(Endpoints.DELIVERY_CLIENT_ITEMS(params.deliveryId, params.clientId))
 			.then((response) => {
 
-				// map resopnse items to state item
+				// map response items to state item
 				const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
 					return {
 						id: item.sales_detail_id,
@@ -210,6 +210,21 @@ export default {
 				dispatch({
 					type: Dispatches.SET_CLIENT_ITEMS,
 					payload: items2
+				});
+
+				// map response carts to state carts
+				const carts: DeliveryInterface.IDeliveryCart[] = response.data?.carts?.map((cart) => {
+					return {
+						id: cart.cart_code ?? '',
+						qty: cart.cart_qty ?? 0,
+						deliveryId: params.deliveryId,
+						clientId: params.clientId
+					};
+				}) ?? [];
+
+				dispatch({
+					type: Dispatches.SET_CLIENT_CARTS,
+					payload: carts
 				});
 			})
 			.catch(() => { })

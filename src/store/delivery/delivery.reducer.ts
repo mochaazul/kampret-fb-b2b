@@ -10,6 +10,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingValidateClient: false,
 	resultValidateClient: undefined,
 	clientItems: [],
+	clientCarts: [],
 	loadingClientItem: undefined,
 	loadingValidateItem: undefined,
 	statusValidateItem: undefined,
@@ -95,6 +96,11 @@ const deliveryReducers = (
 			return {
 				...state,
 				clientItems: [...payload],
+			};
+		case Dispatches.SET_CLIENT_CARTS:
+			return {
+				...state,
+				clientCarts: [...payload],
 			};
 
 		case Dispatches.LOADING_INPUT_KM:
