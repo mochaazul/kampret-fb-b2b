@@ -226,6 +226,21 @@ export default {
 					type: Dispatches.SET_CLIENT_CARTS,
 					payload: carts
 				});
+
+				// map response carts to state carts
+				const so: DeliveryInterface.IDeliverySO[] = response.data?.sales_numbers?.map((s) => {
+					return {
+						id: s ?? '',
+						name: s ?? 0,
+						deliveryId: params.deliveryId,
+						clientId: params.clientId
+					};
+				}) ?? [];
+
+				dispatch({
+					type: Dispatches.SET_CLIENT_SO,
+					payload: so
+				});
 			})
 			.catch(() => { })
 			.finally(() => {

@@ -12,6 +12,7 @@ export interface DeliveryState {
 
 	clientItems: Array<IDeliveryItem>;
 	clientCarts: Array<IDeliveryCart>;
+	clientSos: Array<IDeliverySO>;
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;

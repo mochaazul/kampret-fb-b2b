@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, TextStyle, FlatList, ListRenderItem } from 'react-native';
+import { StyleSheet, View, TextStyle, FlatList } from 'react-native';
 
 import { Container, Text, Button } from '@components';
 import { Fonts, Colors, Images } from '@constant';
@@ -8,35 +8,15 @@ import { DeliveryInterface, NavigationProps } from '@interfaces';
 import { Actions } from '@store';
 
 import ItemChecklist from './ItemChecklist';
-import { Item } from 'src/interfaces/deliveryResponses';
 
 interface ItemTitle {
 	label: string, qty: string;
 };
 
-type ItemType =
-	{ type: 'TITLE', data: ItemTitle; } |
-	{ type: 'ITEM', data: DeliveryInterface.IDeliveryItem; } |
-	{ type: 'CART', data: DeliveryInterface.IDeliveryCart; } |
-	{ type: 'SO', data: DeliveryInterface.IDeliverySO; }
-	;
-
-type ExtractItem<T extends ItemType['type']> = Extract<ItemType, { type: T; }>['data'];
-
-;
-
-type ATypeItem = {
-	TITLE: ItemTitle;
-	ITEM: DeliveryInterface.IDeliveryItem;
-	CART: DeliveryInterface.IDeliveryCart;
-	SO: DeliveryInterface.IDeliverySO;
-};
-
-
 const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const [saved, setSaved] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
-	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
+	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateItem);
 	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
 
 	const listItems = useAppSelector(state => state.deliveryReducers.clientItems);
@@ -56,21 +36,7 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation.find((client) => client.id == route.params?.clientId));
 	const carts = useAppSelector(state => state.deliveryReducers.clientCarts.filter((cart) => cart.deliveryId == route.params?.deliveryId && cart.clientId == client?.id));
-
-	const listSo = [
-		{
-			id: '889123122',
-			deliveryId: route.params?.deliveryId,
-			clientId: client?.id,
-			name: 'Sales Order 1',
-		},
-		{
-			id: '889123123',
-			deliveryId: route.params?.deliveryId,
-			clientId: client?.id,
-			name: 'Sales Order 2',
-		},
-	];
+	const listSo = useAppSelector(state => state.deliveryReducers.clientSos.filter((s) => s.deliveryId == route.params?.deliveryId && s.clientId == client?.id));
 
 	// generate list datas
 	const listData = useMemo(() => {
@@ -102,11 +68,14 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 				type: 'TITLE',
 				data: { label: 'Data SO', qty: `${ listSo.length } Total SO` }
 			},
-			...listSo.map((SO, index) => ({
-				id: index + items.length + carts.length + 3,
-				type: 'SO',
-				data: SO
-			})),
+			...listSo.map((SO, index) => {
+				SO.name = `Sales Order ${ index + 1 }`;
+				return {
+					id: index + items.length + carts.length + 3,
+					type: 'SO',
+					data: SO
+				};
+			}),
 		];
 	}, [items, carts, listSo]);
 

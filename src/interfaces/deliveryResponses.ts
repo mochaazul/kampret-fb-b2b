@@ -96,6 +96,7 @@ export interface DeliveryItemResp {
 	total_item: number;
 	items: Array<DeliveryItemData>;
 	carts: Array<DeliveryClientCartData>;
+	sales_numbers: Array<string>;
 }
 
 export interface DeliveryClientCartData {
