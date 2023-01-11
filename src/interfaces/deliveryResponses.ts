@@ -158,7 +158,8 @@ export interface Item {
 	complain_date: Date;
 	complaint_category: string;
 	complaint_description: string;
-	complaint_images: null;
+	complaint_follow_up: string;
+	complaint_images: string[] | null;
 }
 
 export interface Receipt {

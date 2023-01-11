@@ -1,24 +1,29 @@
 import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { PhotoFile } from 'react-native-vision-camera';
+import Toast from 'react-native-toast-message';
 
 import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
 import { useAppDispatch, useAppSelector } from '@helpers';
 import { Colors, Fonts, Images } from '@constant';
 import { Actions } from '@store';
+import { DeliveryInterface } from '@interfaces';
 interface ComplainProps {
 	onClose: () => void;
 	deliveryRouteItemId: string | null;
 	deliveryId: string | undefined;
 	clientId: string | undefined;
+	itemName: string | undefined;
+	existing?: DeliveryInterface.IExistingComplain;
 }
 interface IComplain {
 	description: string | null;
 	qty: string | null;
 	complainSelected: string | null;
 	followupSelected: string | null;
+	photoTaken: boolean;
 }
 const complainDropdown = [
 	{ key: '1', value: 'Kuantitas Tidak Sesuai' },
@@ -26,32 +31,31 @@ const complainDropdown = [
 	{ key: '3', value: 'Barang Tidak Sesuai Spek' },
 ];
 
-const followupDropdown = [
-	{ key: '1', value: 'Disusulkan' },
-	{ key: '2', value: 'Disesuaikan' }
-];
-
-const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: ComplainProps) => {
+const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName, existing }: ComplainProps) => {
 	// states
-	const [qty, setQty] = useState<number>(2);
-	const [complainSelected, setComplainSelected] = useState('');
+	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
 
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
+	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
+	const editComplain = useAppDispatch(Actions.complainAction.updateComplain);
 
 	//global state
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
 
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
-		validateOnMount: false,
+
 		validationSchema: Auth.ComplainValidationSchema,
+		validateOnChange: enableFormikValidation,
+		validateOnBlur: enableFormikValidation,
 		initialValues: {
 			description: null,
 			qty: null,
-			followupSelected: null,
-			complainSelected: null
+			followupSelected: '9',
+			complainSelected: '9',
+			photoTaken: false
 		},
 		onSubmit: () => {
 			//split itemID by '-'
@@ -59,21 +63,56 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 			if (deliveryRouteItemId) {
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
-
 			if (pureItemId) {
-				sendComplain({
-					deliveryId,
-					clientId,
-					complaintDescription: formik.values.description,
-					complainImageUrl: photos,
-					itemId: pureItemId,
-					qty: formik.values.qty,
-					category: formik.values.complainSelected
-				});
+				if (existing) {
+					editComplain({
+						deliveryId,
+						clientId,
+						complaintDescription: formik.values.description,
+						complainImageUrl: photos,
+						itemId: pureItemId,
+						qty: formik.values.qty,
+						category: formik.values.complainSelected,
+						followUp: formik.values.followupSelected
+					});
+				} else {
+					sendComplain({
+						deliveryId,
+						clientId,
+						complaintDescription: formik.values.description,
+						complainImageUrl: photos,
+						itemId: pureItemId,
+						qty: formik.values.qty,
+						category: formik.values.complainSelected,
+						followUp: formik.values.followupSelected
+					});
+				}
+
 			}
 
 		},
 	});
+
+	useEffect(() => {
+		if (existing) {
+			formik.setValues({
+				description: existing.description,
+				qty: existing.qty + '',
+				followupSelected: existing.followUp,
+				complainSelected: existing.category,
+				photoTaken: existing.imageUrl && existing.imageUrl.length !== 0 ? true : false
+			});
+			if (existing.imageUrl && existing.imageUrl.length !== 0) {
+				setPhotos(existing.imageUrl);
+			}
+		}
+	}, []);
+
+
+	const handleButtonSubmit = () => {
+		setEnableFormikValidation(true);
+		formik.handleSubmit();
+	};
 
 	const onCapture = (photo: PhotoFile) => {
 		const imageURI = `file://` + photo.path;
@@ -82,12 +121,74 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 		} else {
 			setPhotos([...photos, imageURI]);
 		}
+		if (!formik.values.photoTaken) {
+			formik.setFieldValue('photoTaken', true);
+		}
+	};
+
+	const handleEditComplain = () => {
+		editComplain({
+			deliveryId: deliveryId,
+			clientId: clientId,
+			complaintDescription: formik.values.description,
+			complainImageUrl: existing?.imageUrl,
+			itemId: deliveryRouteItemId,
+			qty: formik.values.qty,
+			category: formik.values.complainSelected,
+			followUp: formik.values.followupSelected
+		});
+	};
+
+	const handleDeleteComplain = () => {
+		if (deliveryRouteItemId) {
+			const itemId = deliveryRouteItemId.split('-');
+			deleteComplain({ deliveryId, clientId, itemId: itemId[1] });
+		}
 	};
 
 	const handleCaptureImage = (sequence: number) => {
 		//just push new array for every capture (max 3 photos)
 		if (!photos || photos.length !== 3) setShowCamera(true);
 	};
+
+	const memoizedRenderOption = useCallback((textOption: string) => {
+
+		if (formik.values.followupSelected == textOption) {
+			return (
+				<TouchableOpacity style={ styles.option } disabled={ true }>
+					<Images.Selected />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		} else if (existing && existing.followUp == textOption) {
+			return (
+				<TouchableOpacity style={ styles.option } disabled={ true }>
+					<Images.Selected />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		} else {
+			return (
+				<TouchableOpacity style={ styles.option }
+					onPress={ () => formik.setFieldValue('followupSelected', textOption) }
+				>
+					<Images.Unselect />
+					<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.marginLeft }>{ textOption }</Text>
+				</TouchableOpacity>
+			);
+		}
+
+	}, [formik.values.followupSelected]);
+
+	const memoizedRenderComplainTitle = useMemo(() => {
+		if (!itemName) return <View />;
+		return (
+			<View>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } style={ styles.headerTitle }>{ itemName }</Text>
+				<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.headerTitle } color={ Colors.gray.default }>{ deliveryRouteItemId }</Text>
+			</View>
+		);
+	}, [itemName]);
 
 	const memoizedRenderImage = useMemo(() => {
 		// view photos when exist on local state
@@ -149,12 +250,20 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 					<Images.IconClose />
 				</TouchableOpacity>
 			</View>
+
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
-				<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
+				{ memoizedRenderComplainTitle }
+				<View style={ [styles.row, styles.card] }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
+					{ formik.errors.complainSelected &&
+						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.complainSelected }</Text>
+					}
+				</View>
+
 				<Dropdown
 					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? formik.setFieldValue('complainSelected', val) : null }
-					defaultOption={ { key: '1', value: 'Kuantitas Tidak Sesuai' } }
+					setSelected={ val => val ? formik.setFieldValue('complainSelected', val) : '9' }
+					defaultOption={ { key: '9', value: existing ? existing.category : 'Pilih Salah Satu' } }
 					data={ complainDropdown }
 					save="value"
 					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
@@ -174,47 +283,75 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 				/>
 				<View style={ styles.card }>
 					<View style={ styles.row }>
-						<Text format={ Fonts.textBody.l.bold as TextStyle }>Jumlah Barang</Text>
-						<TextInput
-							value={ formik.values.qty ? formik.values.qty : undefined }
-							onChangeText={ text => formik.setFieldValue('qty', text) }
-							style={ { ...Fonts.heading.h2 as TextStyle, padding: 20, borderBottomColor: Colors.gray.default, borderBottomWidth: 1 } }
-							keyboardType='numeric'
-							placeholder='0'
-							maxLength={ 4 }
-							placeholderTextColor={ Colors.gray.default }
+						<View style={ [styles.row, { flex: 3 }] }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle }>Masukkan Qty Keluhan</Text>
+							{ formik.errors.qty &&
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
+							}
+						</View>
+						<View style={ [styles.inputBorder, styles.rowInput] }>
+							<TextInput
+								value={ formik.values.qty ? formik.values.qty : undefined }
+								onChangeText={ text => formik.setFieldValue('qty', text) }
+								style={ Fonts.heading.h2 as TextStyle }
+								keyboardType='numeric'
+								placeholder='0'
+								maxLength={ 4 }
+								placeholderTextColor={ Colors.gray.default }
 
-						/>
+							/>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
+						</View>
+
 					</View>
 				</View>
-				<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+				<View style={ styles.row }>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+					{ formik.errors.photoTaken &&
+						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
+					}
+				</View>
 				{ memoizedRenderImage }
 				{/* TAKE_OUT <View style={ styles.card }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Video</Text>
 
 					<Image source={ Images.OnBoarding[2] } style={ styles.video } resizeMethod='resize' resizeMode='cover' />
 				</View> */}
-				<Dropdown
-					boxStyles={ { marginTop: 5 } }
-					setSelected={ val => val ? formik.setFieldValue('followupSelected', val) : null }
-					defaultOption={ { key: '1', value: 'Disusulkan' } }
-					data={ followupDropdown }
-					save="value"
-					dropdownTextStyles={ Fonts.textBody.m.regular as TextStyle }
-					dropdownItemStyles={ Fonts.textBody.m.regular as TextStyle }
-					inputStyles={ Fonts.textBody.m.regular as TextStyle }
-					search={ false }
-				/>
+				<View style={ styles.card }>
+					<View style={ styles.row }>
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>Tindak Lanjut</Text>
+						{ formik.errors.followupSelected &&
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ formik.errors.followupSelected }</Text>
+						}
+					</View>
+					<View style={ [styles.box, styles.card] }>
+						{ memoizedRenderOption('Disusulkan') }
+						{ memoizedRenderOption('Disesuaikan') }
+					</View>
+				</View>
 				<Button
-					onPress={ () => { formik.handleSubmit(); } }
+
+					onPress={ () => handleButtonSubmit() }
 					text='Simpan'
 					textSize={ 14 }
 					weight='700'
 					mt={ 30 }
 					useShadow={ true }
-					disabled={ !formik.isValid }
 					loading={ complainLoading }
 				/>
+				{ existing &&
+					<Button
+						onPress={ () => handleDeleteComplain() }
+						text='Hapus'
+						textSize={ 14 }
+						weight='700'
+						backgroundColor='transparent'
+						type='outline'
+						color={ Colors.company.red }
+						loading={ complainLoading }
+						mt={ 20 }
+					/>
+				}
 			</ScrollView>
 			<CameraWidget
 				isActive={ showCamera }
@@ -225,7 +362,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId }: Compla
 	);
 };
 
-export default Complain;
+export default React.memo(Complain);
 
 const styles = StyleSheet.create({
 	container: {
@@ -235,7 +372,8 @@ const styles = StyleSheet.create({
 	},
 	row: {
 		flexDirection: 'row',
-		justifyContent: 'space-between'
+		justifyContent: 'space-between',
+		alignItems: 'center'
 	},
 	card: {
 		marginTop: 20
@@ -290,5 +428,22 @@ const styles = StyleSheet.create({
 	},
 	box: {
 		flexDirection: 'row'
+	},
+	inputBorder: {
+		padding: 10, flex: 1, borderColor: Colors.black.default, borderWidth: 1, borderRadius: 10
+	},
+	rowInput: {
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+		alignItems: 'center'
+	},
+	marginLeft: {
+		marginLeft: 10
+	},
+	option: {
+		flexDirection: 'row',
+		// justifyContent: 'space-between',
+		alignItems: 'center',
+		flex: 1
 	},
 });

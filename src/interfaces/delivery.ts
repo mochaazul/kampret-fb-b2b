@@ -177,6 +177,7 @@ export interface IAddComplainDelivery {
 	itemId: string,
 	qty: string,
 	category: string;
+	followUp: string;
 }
 
 export interface IComplain {
@@ -189,4 +190,14 @@ export interface IComplainDialogProps {
 	deliveryRouteItemId: string | null;
 	deliveryId: string | undefined;
 	clientId: string | undefined;
+	itemName: string | undefined;
+	existing?: IExistingComplain;
+}
+
+export interface IExistingComplain {
+	category: string;
+	description: string;
+	qty: number;
+	imageUrl: string[] | null;
+	followUp: string;
 }

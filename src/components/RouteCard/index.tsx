@@ -18,6 +18,7 @@ export interface RouteCardParam {
 	onStart?: () => void;
 	onArrived?: () => void;
 	onFinish?: () => void;
+	onRedirect?: () => void;
 	historyMode?: boolean;
 }
 
@@ -30,6 +31,7 @@ const RouteCard = ({
 	onStart,
 	onArrived,
 	onFinish,
+	onRedirect,
 	historyMode
 }: RouteCardParam) => {
 
@@ -169,6 +171,23 @@ const RouteCard = ({
 					</View>
 				);
 			case Variables.DELIVERY_STATUS.ARRIVED:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
+						<View style={ styles.totalItem }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+						</View>
+						{ !historyMode &&
+							<Button
+								disabled={ disabled }
+								weight='700'
+								color={ Colors.white.pure }
+								text='Sudah Sampai'
+								onPress={ onRedirect }
+							/>
+						}
+					</View>
+				);
 			case Variables.DELIVERY_STATUS.SENT:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>

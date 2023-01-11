@@ -37,6 +37,8 @@ import Complain1 from '../assets/images/complain_1.svg';
 import Complain2 from '../assets/images/complain_2.svg';
 import IconLogout from '../assets/images/logout.svg';
 import EmptyBox from '../assets/images/empty_box.svg';
+import Selected from '../assets/images/selected.svg';
+import Unselect from '../assets/images/unselect.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -80,4 +82,6 @@ export default {
 	Complain2,
 	IconLogout,
 	EmptyBox,
+	Selected,
+	Unselect
 };

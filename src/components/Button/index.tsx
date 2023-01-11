@@ -98,7 +98,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		return (
 
 			<TouchableOpacity
-				disabled={ memoizedProps.disabled }
+				disabled={ loading ? true : memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<LinearGradient
@@ -126,7 +126,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 	} else {
 		return (
 			<TouchableOpacity style={ StyleSheet.flatten([memoizedStyled.defaultStyle, buttonStyle]) }
-				disabled={ memoizedProps.disabled }
+				disabled={ loading ? true : memoizedProps.disabled }
 				{ ...restOfProps }
 				activeOpacity={ 0.75 }>
 				<View style={ { flexDirection: 'row', alignItems: 'center' } }>
