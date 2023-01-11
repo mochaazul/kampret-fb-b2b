@@ -22,8 +22,8 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClient);
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
-
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation);
+
 	const clientList = useMemo(() =>
 		(client.filter((value) => value.deliveryId == route.params?.deliveryId)),
 		[client]

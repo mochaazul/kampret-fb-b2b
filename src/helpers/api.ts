@@ -123,7 +123,7 @@ const queryString = (params: any) => {
 const get = <T>(url: string, params?: object, headers?: Record<string, string>): Promise<T> => apiRequest('get', params ? url + '?' + queryString(params) : url, headers, headers);
 
 // function to execute the http delete request
-const deleteRequest = (url: string, headers?: object) => apiRequest('delete', url, headers);
+const deleteRequest = <T>(url: string, headers?: object) => apiRequest('delete', url, headers);
 
 // function to execute the http post request
 const post = <T>(url: string, request: object | Array<any>, headers?: Record<string, string>) => apiRequest('post', url, request, headers);

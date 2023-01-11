@@ -30,6 +30,7 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
 	const result = useAppSelector(state => state.deliveryReducers.resultValidateClient);
+	const loadingValidateClient = useAppSelector(state => state.deliveryReducers.loadingClient);
 
 	const validateClient = useAppDispatch(Actions.deliveryAction.validateClient);
 
@@ -42,7 +43,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 		},
 		onSubmit: () => {
 			const clientId = formik.values.clientID;
-
 			if (clientId)
 				validateClient({
 					deliveryId: deliveryId,
@@ -57,6 +57,7 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	}, [result]);
 
 	const renderButton = useMemo(() => (
+
 		<Button
 			onPress={ () => { formik.handleSubmit(); } }
 			text='Validasi'
@@ -64,10 +65,10 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 			weight='700'
 			mt={ 30 }
 			useShadow={ true }
-			loading={ loading }
-			disabled={ loading }
+			loading={ loadingValidateClient }
+
 		/>
-	), [loading]);
+	), [loadingValidateClient]);
 
 	const renderLoading = useMemo(() => {
 		if (loading) {

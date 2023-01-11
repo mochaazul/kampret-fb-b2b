@@ -162,6 +162,13 @@ export default {
 						type: Dispatches.VALIDATE_CLIENT_RESULT,
 						payload: true,
 					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: 'checking client ID ' + params.clientId,
+						text2: 'data tidak ditemukan',
+						position: 'top'
+					});
 				}
 			})
 			.catch((err) => {
@@ -852,6 +859,7 @@ export default {
 		formData.append('delivery_route_item_id', params.itemId);
 		formData.append('complaint_qty', params.qty);
 		formData.append('complaint_category', params.category);
+		formData.append('complaint_follow_up', params.followUp);
 
 		API.upload(
 			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),

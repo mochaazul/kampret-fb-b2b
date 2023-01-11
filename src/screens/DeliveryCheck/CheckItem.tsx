@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo, useState } from "react";
 import { FlatList, StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
 
-import { Text } from "@components";
+import { Button, Text } from "@components";
 import { Colors, Fonts } from "@constant";
 import { DeliveryInterface } from "@interfaces";
 
@@ -14,93 +14,80 @@ export interface CheckItemProp {
 	complainDesc?: string;
 	complainFiles?: Array<ReactNode>;
 	onClickComplain?: (payload: DeliveryInterface.IComplainDialogProps) => void;
+	onClickConfirm?: (payload: DeliveryInterface.IComplainDialogProps) => void;
 	deliveryId?: string,
 	clientId?: string;
+	existingComplain?: DeliveryInterface.IExistingComplain;
+	itemIndex: number;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
 
 	const renderComplainBtn = useMemo(() => {
-		const prop = {
-			label: 'Hapus Keluhan',
-			color: Colors.gray.default
-		};
-
-		if (!item.isComplain) {
-			prop.label = 'Keluhan';
-			prop.color = Colors.company.red;
-		}
 
 		const handleClickComplain = () => {
-			if (!item.isComplain && item.onClickComplain) {
+			if (item.onClickComplain) {
 				item.onClickComplain(
 					{
 						deliveryRouteItemId: item.id,
 						deliveryId: item.deliveryId,
-						clientId: item.clientId
+						clientId: item.clientId,
+						itemName: item.name,
+						existing: item.existingComplain
 					}
 				);
 			}
 		};
-		return (
-			<TouchableOpacity
-				activeOpacity={ .75 }
-				onPress={ () => handleClickComplain() }
-			>
-				<Text
-					format={ Fonts.paragraph.m.bold as TextStyle }
-					color={ prop.color }
-				>
-					{ prop.label }
-				</Text>
-			</TouchableOpacity>
-		);
-	}, [item.isComplain]);
-
-	const renderComplain = useMemo(() => {
-		if (item.isComplain)
+		if (!item.isComplain) {
 			return (
-				<>
-					<View style={ styles.line } />
-
-					<View style={ styles.header }>
-						<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>
-							<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.company.red }>
-								{ item.complainAmount + ' ' }
-							</Text>
-							{ item.complainLabel }
-						</Text>
-					</View>
-
-					<Text
-						format={ Fonts.paragraph.m.regular as TextStyle }
-						color={ Colors.black.default }
-						mt={ 10 }
-					>
-						{ item.complainDesc }
-					</Text>
-
-					<FlatList
-						bounces={ false }
-						horizontal={ true }
-						keyExtractor={ (item: any, index: number) => 'item_' + index }
-						data={ item.complainFiles }
-						renderItem={ ({ item }) => <>{ item }</> }
-						ItemSeparatorComponent={ () => <View style={ { width: 10 } } /> }
-						style={ styles.list }
-					/>
-				</>
+				<View style={ styles.buttonContainer }>
+					<Button
+						weight='700'
+						backgroundColor='transparent'
+						type='outline'
+						color={ Colors.company.red }
+						text='Buat Keluhan'
+						onPress={ () => handleClickComplain() }
+					/></View>
 			);
-	}, [item.isComplain]);
+		} else {
+			return (
+				<View style={ styles.buttonContainer }>
+					<Button
+						weight='700'
+						backgroundColor='transparent'
+						color={ Colors.gray.default }
+						text='Ubah Keluhan'
+						onPress={ () => handleClickComplain() }
+					/></View>);
+		}
 
+	}, [item]);
+
+	const handleOnClickConfirm = () => {
+		if (item.onClickConfirm) {
+			item.onClickConfirm(
+				{
+					deliveryRouteItemId: item.id,
+					deliveryId: item.deliveryId,
+					clientId: item.clientId,
+					itemName: item.name
+				}
+			);
+		}
+	};
 	return (
-		<View style={ styles.container }>
+		<View style={ styles.container } key={ item.id + '_' + item.itemIndex }>
 
 			<View style={ styles.header }>
-				<View>
+				<TouchableOpacity style={ { flex: 5, marginRight: 10 } }
+					onPress={ () => handleOnClickConfirm() }
+				>
 					<Text
 						format={ Fonts.paragraph.xl.bold as TextStyle }
 						color={ Colors.black.default }
+						ellipsizeMode={ 'middle' }
+						numberOfLines={ 2 }
 					>
 						{ item.name }
 					</Text>
@@ -112,12 +99,12 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					>
 						{ item.id }
 					</Text>
-				</View>
+				</TouchableOpacity>
 
-				{ item.isComplain !== undefined && renderComplainBtn }
+				{ renderComplainBtn }
 
 			</View>
-			{ renderComplain }
+
 		</View>
 	);
 };
@@ -144,5 +131,10 @@ const styles = StyleSheet.create({
 
 	list: {
 		marginTop: 10,
+	},
+	buttonContainer: {
+		flex: 3,
+		alignSelf: 'center',
+		marginLeft: 5,
 	}
 });
