@@ -78,13 +78,15 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 	} else {
 		return (
 			<View style={ [styles.regularHeader, headerStyle] }>
-				<View style={ styles.actionButton }>
-					{
-						showLeftButton !== false && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
-							<Images.IconBack />
-						</TouchableOpacity>
-					}
-				</View>
+				{
+					showLeftButton !== false &&
+					<TouchableOpacity
+						style={ styles.actionButton }
+						onPress={ () => NavigationHelper.pop(1) }
+					>
+						<Images.IconBack />
+					</TouchableOpacity>
+				}
 
 				<View style={ styles.title }>
 					{ title &&
@@ -98,13 +100,14 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 					}
 				</View>
 
-				<View style={ styles.actionButton }>
-					{ rightButton && onPressRightButton &&
-						<TouchableOpacity onPress={ () => onPressRightButton() }>
-							{ rightButton }
-						</TouchableOpacity>
-					}
-				</View>
+				{ rightButton && onPressRightButton &&
+					<TouchableOpacity
+						style={ [styles.actionButton, { alignItems: 'flex-end' }] }
+						onPress={ () => onPressRightButton() }
+					>
+						{ rightButton }
+					</TouchableOpacity>
+				}
 			</View>
 		);
 

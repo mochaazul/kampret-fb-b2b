@@ -14,6 +14,12 @@ export default StyleSheet.create({
 	label: {
 		paddingVertical: 10,
 		paddingHorizontal: 20,
+		backgroundColor: Colors.white.pure,
+	},
+
+	separator: {
+		height: 10,
+		backgroundColor: Colors.gray.line
 	},
 
 	section: {

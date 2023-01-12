@@ -116,6 +116,7 @@ export interface IArrivalConfirmation {
 	deliveryId: string;
 	clientId: string;
 	clientName: string;
+	carts?: Array<string>;
 }
 
 export interface IDelivery {

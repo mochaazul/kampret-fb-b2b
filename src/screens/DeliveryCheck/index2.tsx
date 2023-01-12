@@ -1,7 +1,7 @@
 import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
+import { Image, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
@@ -23,7 +23,7 @@ interface CheckValues {
 	// returnChecked: Array<string>;
 }
 
-const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) => {
+const DeliveryCheck2 = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
@@ -33,10 +33,15 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
 
 	const miscState = useAppSelector(state => state.miscReducers);
-	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
 	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
 	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
 	const apiComplainResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
+	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
+
+	const listCart: DeliveryResponseInterface.Cart[] = useMemo(
+		() => arrivalData?.carts ?? [],
+		[arrivalData]
+	);
 
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
@@ -363,4 +368,4 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 	);
 };
 
-export default DeliveryCheck;
+export default DeliveryCheck2;

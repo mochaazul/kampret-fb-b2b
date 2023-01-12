@@ -68,11 +68,6 @@ interface ClientDeliveryHistoryDetailItem {
 	sales_no: string;
 }
 
-export interface Cart {
-	cart_type: string;
-	qty: number;
-}
-
 export interface Receipt {
 	received_name: string;
 	received_date: string;
@@ -144,8 +139,8 @@ export interface ClientArrivalResponse {
 }
 
 export interface Cart {
-	cart_type: string;
-	qty: number;
+	cart_qty: number;
+	cart_code: string;
 }
 
 export interface Item {

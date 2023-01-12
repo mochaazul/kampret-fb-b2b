@@ -754,6 +754,7 @@ export default {
 			type: 'image/jpeg',
 		} as any);
 		formData.append('recipient_name', params.recipientName);
+		formData.append('carts', params.carts?.join(';') ?? '');
 
 		API.upload(
 			Endpoints.ARRIVAL_CONFIRMATION(params.deliveryId, params.clientId),
