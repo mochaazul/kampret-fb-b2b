@@ -68,7 +68,7 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 	useEffect(() => {
 		// generate formik returnChecked values with array of empty strings
 		setListCartReturned(
-			Array.from({ length: arrivalData?.carts.length ?? 0 }, () => '')
+			Array.from({ length: arrivalData?.carts?.length ?? 0 }, () => '')
 		);
 	}, [arrivalData]);
 
