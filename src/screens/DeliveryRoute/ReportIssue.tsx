@@ -85,7 +85,6 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 	}, [previewImgURI]);
 
 	const renderButton = useMemo(() => {
-		console.log('button ', btnDisable, loading, formik);
 		return (
 			<Button
 				onPress={ () => formik.handleSubmit() }
@@ -94,7 +93,7 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 				weight='700'
 				mt={ 30 }
 				useShadow={ true }
-				disabled={ btnDisable }
+				// disabled={ btnDisable }
 				loading={ loading }
 			/>
 		);
