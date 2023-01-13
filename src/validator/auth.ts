@@ -52,3 +52,9 @@ export const ComplainValidationSchema = yup.object().shape({
 	photoTaken: yup.bool().isTrue('wajib lampirkan photo'),
 	qty: yup.string().required('Qty wajib diisi').nullable()
 });
+
+export const ReportIssueValidation = yup.object().shape({
+	description: yup.string().required('wajib diisi').nullable(),
+	title: yup.string().required('Title wajib diisi').nullable(),
+	image: yup.string().required('Foto wajib diisi').nullable(),
+});
