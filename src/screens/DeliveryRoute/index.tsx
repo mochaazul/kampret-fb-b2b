@@ -75,7 +75,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 							onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
 						/>
 					}
-					refreshing={ loading }
+					refreshing={ loading ? true : false }
 					onRefresh={ () => getClient(route.params?.deliveryId) }
 				/>
 			}
