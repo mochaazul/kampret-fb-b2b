@@ -20,16 +20,17 @@ import styles from "./styles";
 interface CheckValues {
 	receiverName: string,
 	photoUri: string,
-	returnChecked: boolean;
+	// returnChecked: Array<string>;
 }
 
-const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) => {
+const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [complainSetter, setComplainSetter] = useState<string | null>(null);
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
+	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -63,15 +64,14 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 		}
 	}, [apiComplainResult]);
 
-
 	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
 		validateOnBlur: true,
-		validateOnChange: enableValidation,
+		// validateOnChange: enableValidation,
 		validationSchema: Delivery.DeliveryCheckValidationSchema,
 		initialValues: {
 			receiverName: '',
 			photoUri: '',
-			returnChecked: false,
+			// returnChecked: [],
 		},
 		onSubmit: () => { setShowConfirm(true); },
 	});
@@ -132,12 +132,61 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 		}
 	};
 
+	const renderCart = (checked: boolean, name: string, qty: number) => (
+		<View style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } }>
+			<TouchableOpacity
+				onPress={ () => {
+					const newValue = [...listCartReturned];
+					const indexItem = newValue.indexOf(name);
+
+					// check if uncheck and cart_code not in array --> push cart code to array
+					if (!checked && indexItem == -1)
+						newValue.push(name);
+
+					// check if check and cart_code in array --> remove cart code to array
+					if (checked && indexItem > -1)
+						newValue.splice(indexItem, 1);
+
+					setListCartReturned(newValue);
+				} }
+			>
+				{
+					checked ?
+						<Images.ButtonCheck2 width={ 28 } height={ 28 } /> :
+						<Images.ButtonCheck width={ 28 } height={ 28 } />
+				}
+			</TouchableOpacity>
+
+			<Text
+				format={ Fonts.textBody.l.regular as TextStyle }
+				color={ Colors.black.default }
+				style={ { marginStart: 12 } }
+			>
+				{ `${ name } - ${ qty } Keranjang` }
+			</Text>
+		</View>
+	);
+
+	const renderListCart = useMemo(() => (
+		<FlatList
+			data={ arrivalData?.carts }
+			keyExtractor={ (_item, index) => 'item_' + index }
+			renderItem={
+				({ item }) => renderCart(
+					listCartReturned.indexOf(item.cart_code) > -1, item.cart_code, item.cart_qty
+				)
+			}
+			ItemSeparatorComponent={ () => (<View style={ { height: 15 } } />) }
+			scrollEnabled={ false }
+		/>
+	), [arrivalData?.carts, listCartReturned]);
+
 	return (
 		<Container
 			noPadding
 			noScroll
 			header={ {
-				title: 'Cek Pengiriman',
+				title: 'Cek Serah Terima',
 				type: 'regular'
 			} }
 			contentContainerStyle={ styles.container }
@@ -146,7 +195,7 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 			<FlatList
 				nestedScrollEnabled={ false }
 				data={ mappingItem(arrivalData) as CheckItemProp[] }
-				keyExtractor={ (item, index) => 'item_' + index }
+				keyExtractor={ (_item, index) => 'item_' + index }
 				extraData={ arrivalLoading }
 				showsVerticalScrollIndicator={ false }
 				ListHeaderComponent={ () => {
@@ -154,18 +203,19 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 						<View>
 							{ arrivalData &&
 								<View style={ styles.customerInfo }>
-									<Images.IconLocation />
+									<Images.IconLocation style={ { marginTop: 4 } } />
 
 									<View style={ { marginStart: 16 } }>
 
-										<Text format={ Fonts.paragraph.m.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
-										<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default }>{ arrivalData.client_address }</Text>
+										<Text format={ Fonts.paragraph.l.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
+										<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default } style={ { marginTop: 10 } }>{ arrivalData.client_address }</Text>
 									</View>
 								</View>
 							}
+							<View style={ styles.separator } />
 							<Text
-								color={ Colors.gray.default }
-								format={ Fonts.paragraph.xl.bold as TextStyle }
+								color={ Colors.black.default }
+								format={ Fonts.paragraph.l.bold as TextStyle }
 								style={ styles.label }
 							>
 								Pesanan
@@ -177,9 +227,10 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 				ListFooterComponent={ () => {
 					return (
 						<View>
+							<View style={ styles.separator } />
 							<Text
-								color={ Colors.gray.default }
-								format={ Fonts.paragraph.xl.bold as TextStyle }
+								color={ Colors.black.default }
+								format={ Fonts.paragraph.l.bold as TextStyle }
 								style={ styles.label }
 							>
 								Bukti Pesanan Diterima
@@ -201,33 +252,18 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 								</TouchableOpacity>
 							</View>
 
+							<View style={ styles.separator } />
 							<Text
-								color={ Colors.gray.default }
-								format={ Fonts.paragraph.xl.bold as TextStyle }
+								color={ Colors.black.default }
+								format={ Fonts.paragraph.l.bold as TextStyle }
 								style={ styles.label }
 							>
 								Barang Yang Harus Dibawa Kembali
 							</Text>
 
 							<View style={ styles.section }>
-								<View style={ { flexDirection: 'row', justifyContent: 'space-between' } }>
-									<Text
-										format={ Fonts.paragraph.xl.bold as TextStyle }
-										color={ Colors.black.default }
-									>
-										2 Keranjang Merah
-									</Text>
 
-									<TouchableOpacity
-										onPress={ () => formik.setFieldValue('returnChecked', !formik.values['returnChecked']) }
-									>
-										{
-											formik.values['returnChecked'] ?
-												<Images.ButtonCheck2 /> :
-												<Images.ButtonCheck />
-										}
-									</TouchableOpacity>
-								</View>
+								{ renderListCart }
 
 								<Button
 									text='Pengiriman Selesai'
@@ -246,7 +282,7 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 				renderItem={ ({ item, index }) => {
 					return (
 						<View key={ 'item_' + index }>
-							{ index > 0 && <View style={ { height: 10 } } /> }
+							{ index > 0 && <View style={ { height: 5 } } /> }
 							<CheckItem { ...item }
 								onClickComplain={ (data) => setShowComplain(data) }
 								deliveryId={ route.params.deliveryId }
@@ -313,6 +349,7 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 						arrivalConfirmation({
 							recipientName: formik.values.receiverName,
 							imageUrl: formik.values.photoUri,
+							carts: listCartReturned.filter((cart) => cart != ''),
 							deliveryId: route.params.deliveryId,
 							clientId: route.params.clientId,
 							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : ''

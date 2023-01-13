@@ -68,11 +68,6 @@ interface ClientDeliveryHistoryDetailItem {
 	sales_no: string;
 }
 
-export interface Cart {
-	cart_type: string;
-	qty: number;
-}
-
 export interface Receipt {
 	received_name: string;
 	received_date: string;
@@ -95,6 +90,13 @@ export interface DeliveryItemResp {
 	client_name?: string;
 	total_item: number;
 	items: Array<DeliveryItemData>;
+	carts: Array<DeliveryClientCartData>;
+	sales_numbers: Array<string>;
+}
+
+export interface DeliveryClientCartData {
+	cart_code?: string;
+	cart_qty?: number;
 }
 
 export interface DeliveryItemData {
@@ -137,8 +139,8 @@ export interface ClientArrivalResponse {
 }
 
 export interface Cart {
-	cart_type: string;
-	qty: number;
+	cart_qty: number;
+	cart_code: string;
 }
 
 export interface Item {

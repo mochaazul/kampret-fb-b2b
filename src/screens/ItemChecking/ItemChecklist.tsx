@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingVertical: 15,
-		borderBottomColor: Colors.gray.line,
-		borderBottomWidth: 1
+		paddingHorizontal: 20,
 	}
 });

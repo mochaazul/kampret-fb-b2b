@@ -10,7 +10,7 @@ interface IStyle {
 	version: TextStyle;
 	rightIcon: ViewStyle;
 	icon: ViewStyle;
-	badge:ViewStyle
+	badge: ViewStyle;
 }
 
 export const styles = StyleSheet.create<IStyle>({
@@ -40,7 +40,7 @@ export const styles = StyleSheet.create<IStyle>({
 	},
 
 	actionButton: {
-		width: 24
+		width: 48
 	},
 
 	title: {
@@ -67,7 +67,7 @@ export const styles = StyleSheet.create<IStyle>({
 		borderRadius: 50,
 		position: 'absolute',
 		backgroundColor: Colors.red.gradient1,
-		top:-5,
-		right:0
+		top: -5,
+		right: 0
 	}
 });

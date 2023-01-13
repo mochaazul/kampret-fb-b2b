@@ -80,7 +80,8 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 			<View style={ [styles.regularHeader, headerStyle] }>
 				<View style={ styles.actionButton }>
 					{
-						showLeftButton !== false && <TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
+						showLeftButton !== false &&
+						<TouchableOpacity onPress={ () => NavigationHelper.pop(1) }>
 							<Images.IconBack />
 						</TouchableOpacity>
 					}
@@ -100,11 +101,12 @@ const Header: React.FC<ComponentInterface.IHeader> = props => {
 
 				<View style={ styles.actionButton }>
 					{ rightButton && onPressRightButton &&
-						<TouchableOpacity onPress={ () => onPressRightButton() }>
+						<TouchableOpacity onPress={ () => onPressRightButton() } style={ [styles.actionButton, { alignItems: 'flex-end' }] }>
 							{ rightButton }
 						</TouchableOpacity>
 					}
 				</View>
+
 			</View>
 		);
 

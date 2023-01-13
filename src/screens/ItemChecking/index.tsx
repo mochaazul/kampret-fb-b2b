@@ -9,11 +9,14 @@ import { Actions } from '@store';
 
 import ItemChecklist from './ItemChecklist';
 
+interface ItemTitle {
+	label: string, qty: string;
+};
+
 const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	const [saved, setSaved] = useState<boolean>(false);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClientItem);
-	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
-	const loadingValidateItem = useAppSelector(state => state.deliveryReducers.loadingValidateItem);
+	const loadingValidate = useAppSelector(state => state.deliveryReducers.loadingValidateItem);
 	const resultValidate = useAppSelector(state => state.deliveryReducers.statusValidateItem);
 
 	const listItems = useAppSelector(state => state.deliveryReducers.clientItems);
@@ -32,6 +35,49 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 	}, [listItems]);
 
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation.find((client) => client.id == route.params?.clientId));
+	const carts = useAppSelector(state => state.deliveryReducers.clientCarts.filter((cart) => cart.deliveryId == route.params?.deliveryId && cart.clientId == client?.id));
+	const listSo = useAppSelector(state => state.deliveryReducers.clientSos.filter((s) => s.deliveryId == route.params?.deliveryId && s.clientId == client?.id));
+
+	// generate list datas
+	const listData = useMemo(() => {
+		return [
+			{
+				id: 0,
+				type: 'TITLE',
+				data: { label: 'Item List', qty: `${ items.length } Barang` }
+			},
+			...items.map((item, index) => ({
+				id: index + 1,
+				type: 'ITEM',
+				data: item
+			})),
+
+			{
+				id: items.length + 1,
+				type: 'TITLE',
+				data: { label: 'Data Keranjang', qty: `${ carts.length } Keranjang` }
+			},
+			...carts.map((cart, index) => ({
+				id: items.length + 2 + index,
+				type: 'CART',
+				data: cart
+			})),
+
+			{
+				id: items.length + carts.length + 2,
+				type: 'TITLE',
+				data: { label: 'Data SO', qty: `${ listSo.length } Total SO` }
+			},
+			...listSo.map((SO, index) => {
+				SO.name = `Sales Order ${ index + 1 }`;
+				return {
+					id: index + items.length + carts.length + 3,
+					type: 'SO',
+					data: SO
+				};
+			}),
+		];
+	}, [items, carts, listSo]);
 
 	const getItem = useAppDispatch(Actions.deliveryAction.getClientItems);
 	const setItem = useAppDispatch(Actions.deliveryAction.setItem);
@@ -60,24 +106,38 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		}
 	}, [resultValidate]);
 
-
-	useEffect(() => {
-
-	}, [loadingValidateItem]);
-
-	const renderListItem = useMemo(() => {
+	const renderListDataItem = useMemo(() => {
 		return (
 			<FlatList
-				data={ items }
+				data={ listData }
 				keyExtractor={ (_item, index) => 'listItem_' + index }
 				showsVerticalScrollIndicator={ false }
-				renderItem={ ({ item, index }) =>
-				(
-					<ItemChecklist
-						item={ item }
-						onCheckClicked={ (id) => validateItem(id) }
-					/>)
-				}
+				renderItem={ ({ item }) => {
+					switch (item.type) {
+						case 'ITEM':
+							return (
+								<ItemChecklist
+									item={ item.data as DeliveryInterface.IDeliveryItem }
+									onCheckClicked={ (id) => validateItem(id) }
+								/>
+							);
+						case 'CART':
+							return (
+								<DeliveryCart cart={ item.data as DeliveryInterface.IDeliveryCart } />
+							);
+						case 'SO':
+							return (
+								<DeliverySO so={ item.data as DeliveryInterface.IDeliverySO } />
+							);
+						case 'TITLE':
+							const title = item.data as ItemTitle;
+							return (
+								<DeliveryItemTitle label={ title.label } qty={ title.qty } />
+							);
+						default:
+							return null;
+					}
+				} }
 				refreshing={ loading == true }
 				onRefresh={ () => {
 					setCurrItemState([]);
@@ -88,7 +148,7 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 				} }
 			/>
 		);
-	}, [items, loading]);
+	}, [listData]);
 
 	const renderButton = useMemo(() => {
 		if (currentItems.some(item => !item.validated)) {
@@ -123,24 +183,23 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 			contentBackgroudColor={ Colors.white.pure }
 			noPadding
 			noScroll
+			contentContainerStyle={ { paddingHorizontal: 0 } }
 		>
 
 			<View style={ [styles.row, styles.header] }>
 				<View>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>{ client?.id }</Text>
-					<View style={ styles.row }>
-						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ client?.custName } </Text>
-						{/* <Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>| 2 Keranjang</Text> */ }
-					</View>
-
+					<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ client?.custName } </Text>
 				</View>
-				<View style={ styles.row }>
+
+				<View style={ styles.validateInfo }>
 					<Text format={ Fonts.textBody.m.bold as TextStyle } color={ Colors.green.default }>Tervalidasi </Text>
 					<Images.IconCheck />
 				</View>
+
 			</View>
 
-			{ renderListItem }
+			{ renderListDataItem }
 
 			{ renderButton }
 		</Container>
@@ -152,7 +211,14 @@ export default ItemChecking;
 const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
-		alignItems: 'center'
+		alignItems: 'center',
+		paddingHorizontal: 20,
+		paddingVertical: 20,
+		justifyContent: 'space-between'
+	},
+	validateInfo: {
+		flexDirection: 'row',
+		alignItems: 'center',
 	},
 	header: {
 		justifyContent: 'space-between',
@@ -161,7 +227,59 @@ const styles = StyleSheet.create({
 		borderTopColor: Colors.gray.line,
 		borderTopWidth: 1,
 	},
+	title: {
+		borderBottomColor: Colors.gray.line,
+		borderBottomWidth: 1
+	},
+	item: {
+		paddingHorizontal: 20,
+		paddingVertical: 15,
+	},
 	footer: {
-		bottom: 20
+		bottom: 20,
+		paddingHorizontal: 20,
+	},
+	separator: {
+		height: 10,
+		backgroundColor: Colors.white.background,
 	}
 });
+
+interface DeliveryCartParams {
+	cart: DeliveryInterface.IDeliveryCart;
+}
+const DeliveryCart = ({ cart }: DeliveryCartParams) => {
+	return (
+		<View style={ styles.item }>
+			<Text format={ Fonts.textBody.l.bold as TextStyle } >Kode Keranjang: { cart.id }</Text>
+			<Text format={ Fonts.textBody.m.regular as TextStyle } >Jumlah: { cart.qty }</Text>
+		</View>
+	);
+};
+
+interface DeliverySOParams {
+	so: DeliveryInterface.IDeliverySO;
+}
+const DeliverySO = ({ so }: DeliverySOParams) => {
+	return (
+		<View style={ styles.item }>
+			<Text format={ Fonts.textBody.l.bold as TextStyle } >{ so.name }</Text>
+			<Text format={ Fonts.textBody.m.bold as TextStyle } >{ so.id }</Text>
+		</View>
+	);
+};
+
+interface DeliveryItemTitleParams {
+	label: string, qty: string;
+}
+const DeliveryItemTitle = ({ label, qty }: DeliveryItemTitleParams) => {
+	return (
+		<>
+			<View style={ styles.separator } />
+			<View style={ [styles.row, styles.title] }>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } >{ label }</Text>
+				<Text format={ Fonts.textBody.m.regular as TextStyle } >{ qty }</Text>
+			</View>
+		</>
+	);
+};

@@ -11,6 +11,8 @@ export interface DeliveryState {
 	resultValidateClient: boolean | undefined;
 
 	clientItems: Array<IDeliveryItem>;
+	clientCarts: Array<IDeliveryCart>;
+	clientSos: Array<IDeliverySO>;
 	loadingClientItem: boolean | undefined;
 	loadingValidateItem: boolean | undefined;
 	statusValidateItem: boolean | undefined;
@@ -72,6 +74,22 @@ export interface IDeliveryCustomer {
 	longitude?: number | undefined;
 }
 
+export interface IDeliveryCart {
+	id: string;
+	deliveryId: string;
+	clientId: string;
+	name?: string;
+	type?: string;
+	qty: number;
+}
+
+export interface IDeliverySO {
+	id: string;
+	deliveryId: string;
+	clientId: string;
+	name: string;
+}
+
 export interface IClientValidation {
 	deliveryId: string;
 	clientId: string;
@@ -98,6 +116,7 @@ export interface IArrivalConfirmation {
 	deliveryId: string;
 	clientId: string;
 	clientName: string;
+	carts?: Array<string>;
 }
 
 export interface IDelivery {

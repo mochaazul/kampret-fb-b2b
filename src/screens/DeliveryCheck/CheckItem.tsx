@@ -84,7 +84,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					onPress={ () => handleOnClickConfirm() }
 				>
 					<Text
-						format={ Fonts.paragraph.xl.bold as TextStyle }
+						format={ Fonts.textBody.l.bold as TextStyle }
 						color={ Colors.black.default }
 						ellipsizeMode={ 'middle' }
 						numberOfLines={ 2 }
