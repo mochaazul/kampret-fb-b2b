@@ -23,7 +23,7 @@ interface CheckValues {
 	// returnChecked: Array<string>;
 }
 
-const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) => {
+const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
@@ -63,14 +63,6 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 			setApiComplainResult(null);
 		}
 	}, [apiComplainResult]);
-
-	// listen to arrivalData state
-	useEffect(() => {
-		// generate formik returnChecked values with array of empty strings
-		setListCartReturned(
-			Array.from({ length: arrivalData?.carts?.length ?? 0 }, () => '')
-		);
-	}, [arrivalData]);
 
 	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
 		validateOnBlur: true,
@@ -140,12 +132,21 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 		}
 	};
 
-	const renderCart = (checked: boolean, name: string, qty: number, idx: number) => (
+	const renderCart = (checked: boolean, name: string, qty: number) => (
 		<View style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } }>
 			<TouchableOpacity
 				onPress={ () => {
 					const newValue = [...listCartReturned];
-					newValue[idx] = checked ? '' : name;
+					const indexItem = newValue.indexOf(name);
+
+					// check if uncheck and cart_code not in array --> push cart code to array
+					if (!checked && indexItem == -1)
+						newValue.push(name);
+
+					// check if check and cart_code in array --> remove cart code to array
+					if (checked && indexItem > -1)
+						newValue.splice(indexItem, 1);
+
 					setListCartReturned(newValue);
 				} }
 			>
@@ -171,8 +172,8 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 			data={ arrivalData?.carts }
 			keyExtractor={ (_item, index) => 'item_' + index }
 			renderItem={
-				({ item, index }) => renderCart(
-					listCartReturned[index] != '', item.cart_code, item.cart_qty, index
+				({ item }) => renderCart(
+					listCartReturned.indexOf(item.cart_code) > -1, item.cart_code, item.cart_qty
 				)
 			}
 			ItemSeparatorComponent={ () => (<View style={ { height: 15 } } />) }
@@ -348,7 +349,7 @@ const DeliveryCheck = ({ route, navigation }: NavigationProps<'DeliveryCheck'>) 
 						arrivalConfirmation({
 							recipientName: formik.values.receiverName,
 							imageUrl: formik.values.photoUri,
-							carts: listCartReturned.filter((c) => c != ''),
+							carts: listCartReturned.filter((cart) => cart != ''),
 							deliveryId: route.params.deliveryId,
 							clientId: route.params.clientId,
 							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : ''
