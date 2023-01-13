@@ -4,10 +4,11 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
 
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppDispatch, useAppSelector } from "@helpers";
+import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
 import { NavigationProps, DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
+import { Shimmer } from "@components";
 
 import Complain from "../DeliveryRoute/Complain";
 import ConfirmItem from "./ConfirmItem";
@@ -166,20 +167,44 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			</Text>
 		</View>
 	);
-
-	const renderListCart = useMemo(() => (
-		<FlatList
-			data={ arrivalData?.carts }
-			keyExtractor={ (_item, index) => 'item_' + index }
-			renderItem={
-				({ item }) => renderCart(
+	const renderListCart = useMemo(() => {
+		if (arrivalData && arrivalData.carts) {
+			return arrivalData.carts.map((item, index) =>
+				renderCart(
 					listCartReturned.indexOf(item.cart_code) > -1, item.cart_code, item.cart_qty
 				)
-			}
-			ItemSeparatorComponent={ () => (<View style={ { height: 15 } } />) }
-			scrollEnabled={ false }
-		/>
-	), [arrivalData?.carts, listCartReturned]);
+			);
+		} else {
+			return (<View />);
+		}
+
+	}, [arrivalData?.carts, listCartReturned]);
+
+	const renderListItem = useMemo(() => {
+		return mappingItem(arrivalData).map((item, index) =>
+			<View key={ 'item_' + index }>
+				{ index > 0 && <View style={ { height: 5 } } /> }
+				<CheckItem { ...item }
+					onClickComplain={ (data) => setShowComplain(data) }
+					deliveryId={ route.params.deliveryId }
+					clientId={ route.params.clientId }
+					onClickConfirm={ (data) => setShowConfirmItem(data) }
+					itemIndex={ index }
+				/>
+			</View>
+		);
+	}, [arrivalLoading]);
+
+	const renderShimmerLoading = () => {
+		return Array(6).fill(0).map((item, index) =>
+			<View key={ index } style={ {
+				alignSelf: 'center',
+				marginVertical: 12
+			} }>
+				<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 120 } />
+			</View>
+		);
+	};
 
 	return (
 		<Container
@@ -191,110 +216,95 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			} }
 			contentContainerStyle={ styles.container }
 		>
+			<ScrollView>
+				<View>
+					{ arrivalData &&
+						<View style={ styles.customerInfo }>
+							<Images.IconLocation style={ { marginTop: 4 } } />
 
-			<FlatList
-				nestedScrollEnabled={ false }
-				data={ mappingItem(arrivalData) as CheckItemProp[] }
-				keyExtractor={ (_item, index) => 'item_' + index }
-				extraData={ arrivalLoading }
-				showsVerticalScrollIndicator={ false }
-				ListHeaderComponent={ () => {
-					return (
-						<View>
-							{ arrivalData &&
-								<View style={ styles.customerInfo }>
-									<Images.IconLocation style={ { marginTop: 4 } } />
+							<View style={ { marginStart: 16 } }>
 
-									<View style={ { marginStart: 16 } }>
-
-										<Text format={ Fonts.paragraph.l.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
-										<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default } style={ { marginTop: 10 } }>{ arrivalData.client_address }</Text>
-									</View>
-								</View>
-							}
-							<View style={ styles.separator } />
-							<Text
-								color={ Colors.black.default }
-								format={ Fonts.paragraph.l.bold as TextStyle }
-								style={ styles.label }
-							>
-								Pesanan
-							</Text>
-						</View>
-					);
-				}
-				}
-				ListFooterComponent={ () => {
-					return (
-						<View>
-							<View style={ styles.separator } />
-							<Text
-								color={ Colors.black.default }
-								format={ Fonts.paragraph.l.bold as TextStyle }
-								style={ styles.label }
-							>
-								Bukti Pesanan Diterima
-							</Text>
-
-							<View style={ styles.section }>
-								<Input
-									formik={ formik }
-									name="receiverName"
-									label="Nama Penerima"
-								/>
-
-								<TouchableOpacity
-									activeOpacity={ .75 }
-									onPress={ navigateToCapturePhoto }
-								>
-									{ renderImage }
-
-								</TouchableOpacity>
-							</View>
-
-							<View style={ styles.separator } />
-							<Text
-								color={ Colors.black.default }
-								format={ Fonts.paragraph.l.bold as TextStyle }
-								style={ styles.label }
-							>
-								Barang Yang Harus Dibawa Kembali
-							</Text>
-
-							<View style={ styles.section }>
-
-								{ renderListCart }
-
-								<Button
-									text='Pengiriman Selesai'
-									textSize={ 14 }
-									weight='700'
-									mt={ 30 }
-									useShadow={ true }
-									onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
-									loading={ arrivalLoading }
-								//disabled={ !formik.isValid }
-								/>
+								<Text format={ Fonts.paragraph.l.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
+								<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default } style={ { marginTop: 10 } }>{ arrivalData.client_address }</Text>
 							</View>
 						</View>
-					);
-				} }
-				renderItem={ ({ item, index }) => {
-					return (
-						<View key={ 'item_' + index }>
-							{ index > 0 && <View style={ { height: 5 } } /> }
-							<CheckItem { ...item }
-								onClickComplain={ (data) => setShowComplain(data) }
-								deliveryId={ route.params.deliveryId }
-								clientId={ route.params.clientId }
-								onClickConfirm={ (data) => setShowConfirmItem(data) }
-								itemIndex={ index }
-							/>
-						</View>
-					);
-				}
-				}
-			/>
+					}
+					<View style={ styles.separator } />
+					<Text
+						color={ Colors.black.default }
+						format={ Fonts.paragraph.l.bold as TextStyle }
+						style={ styles.label }
+					>
+						Pesanan
+					</Text>
+				</View>
+				{ !arrivalLoading && renderListItem }
+				{ arrivalLoading && renderShimmerLoading() }
+				<View>
+					<View style={ styles.separator } />
+					<Text
+						color={ Colors.black.default }
+						format={ Fonts.paragraph.l.bold as TextStyle }
+						style={ styles.label }
+					>
+						Bukti Pesanan Diterima
+					</Text>
+
+					<View style={ styles.section }>
+						<Input
+							formik={ formik }
+							name="receiverName"
+							label="Nama Penerima"
+						/>
+
+						<TouchableOpacity
+							activeOpacity={ .75 }
+							onPress={ navigateToCapturePhoto }
+						>
+							{ renderImage }
+
+						</TouchableOpacity>
+					</View>
+
+					<View style={ styles.separator } />
+					<Text
+						color={ Colors.black.default }
+						format={ Fonts.paragraph.l.bold as TextStyle }
+						style={ styles.label }
+					>
+						Barang Yang Harus Dibawa Kembali
+					</Text>
+
+					<View style={ styles.section }>
+
+						{ renderListCart }
+
+						<Button
+							text='Pengiriman Selesai'
+							textSize={ 14 }
+							weight='700'
+							mt={ 30 }
+							useShadow={ true }
+							onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
+							loading={ arrivalLoading }
+						//disabled={ !formik.isValid }
+						/>
+						<Button
+							type="outline"
+							backgroundColor="transparent"
+							color={ Colors.company.red }
+							text='Pengiriman Selesai & Butuh Konfirmasi'
+							textSize={ 14 }
+							weight='700'
+							mt={ 20 }
+							useShadow={ true }
+							onPress={ () => console.log('pressed') }
+
+						/>
+					</View>
+				</View>
+
+			</ScrollView>
 			<ModalDialog visible={ successArrival !== null }
 				onRequestClose={ () => closeArrivalSuccessDialog() }>
 				<SuccessDeliveryDialog
