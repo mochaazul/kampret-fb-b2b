@@ -37,7 +37,7 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 
 	const formik: FormikProps<DeliveryInterface.IComplain> = useFormik<DeliveryInterface.IComplain>({
 		validateOnBlur: true,
-		validationSchema: Auth.ComplainValidationSchema,
+		validationSchema: Auth.ReportIssueValidation,
 		initialValues: {
 			title: issueOptions[0].value,
 			description: '',
@@ -84,18 +84,20 @@ const ReportIssue = ({ deliveryId, onClose }: ComplainProps) => {
 		);
 	}, [previewImgURI]);
 
-	const renderButton = useMemo(() => (
-		<Button
-			onPress={ () => formik.handleSubmit() }
-			text={ translate('deliveryReport.sendReport') }
-			textSize={ 14 }
-			weight='700'
-			mt={ 30 }
-			useShadow={ true }
-			disabled={ btnDisable }
-			loading={ loading }
-		/>
-	), [loading, btnDisable]);
+	const renderButton = useMemo(() => {
+		return (
+			<Button
+				onPress={ () => formik.handleSubmit() }
+				text={ translate('deliveryReport.sendReport') }
+				textSize={ 14 }
+				weight='700'
+				mt={ 30 }
+				useShadow={ true }
+				// disabled={ btnDisable }
+				loading={ loading }
+			/>
+		);
+	}, [loading, btnDisable]);
 
 
 	return (

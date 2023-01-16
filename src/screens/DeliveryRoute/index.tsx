@@ -1,11 +1,11 @@
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Container, RouteCard, BottomSheet } from '@components';
+import { Container, RouteCard, BottomSheet, Shimmer } from '@components';
 import { Variables, Images } from '@constant';
 import { NavigationProps, DeliveryInterface } from '@interfaces';
 import ReportIssue from './ReportIssue';
-import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from '@helpers';
 import { Actions } from '@store';
 
 const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) => {
@@ -57,27 +57,43 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 				onPressRightButton: () => setShowReportIssue(true)
 			} }
 		>
-			<FlatList
-				keyExtractor={ (_item, index) => 'route_' + index }
-				extraData={ [loadingStartClient, listClient] }
-				data={ addWareHouseOnLastData }
-				renderItem={ ({ item, index }) =>
-					<RouteCard
-						client={ item }
-						isLastRoute={ index == addWareHouseOnLastData.length - 1 }
-						onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
-						disabled={ index == addWareHouseOnLastData.length - 1 ? clients.some(route => route.status !== 1) : false }
-						loading={ loadingStartClient }
-						onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
-						onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
-						onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
-						onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
-					/>
-				}
-				refreshing={ loading == true }
-				onRefresh={ () => getClient(route.params?.deliveryId) }
-			/>
-
+			{ !loading &&
+				<FlatList
+					keyExtractor={ (_item, index) => 'route_' + index }
+					extraData={ [loadingStartClient, listClient] }
+					data={ addWareHouseOnLastData }
+					renderItem={ ({ item, index }) =>
+						<RouteCard
+							client={ item }
+							isLastRoute={ index == addWareHouseOnLastData.length - 1 }
+							onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+							disabled={ index == addWareHouseOnLastData.length - 1 ? clients.some(route => route.status !== 1) : false }
+							loading={ loadingStartClient }
+							onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
+							onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
+							onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+							onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
+						/>
+					}
+					refreshing={ loading ? true : false }
+					onRefresh={ () => getClient(route.params?.deliveryId) }
+				/>
+			}
+			{ loading && //showing shimmer loading skeleton, animated when get data from API
+				<FlatList
+					keyExtractor={ (item, index) => index + '' }
+					data={ Array(6).fill(0) }
+					showsVerticalScrollIndicator={ false }
+					renderItem={ ({ index }) => (
+						<View key={ index } style={ {
+							alignSelf: 'center',
+							marginVertical: 12
+						} }>
+							<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 120 } />
+						</View>
+					) }
+				/>
+			}
 			<BottomSheet
 				visible={ showReportIssue }
 				onRequestClose={ () => setShowReportIssue(false) }
