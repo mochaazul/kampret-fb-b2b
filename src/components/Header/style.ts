@@ -50,7 +50,7 @@ export const styles = StyleSheet.create<IStyle>({
 
 	version: {
 		position: 'absolute',
-		right: 70,
+		right: 100,
 		color: Colors.gray.default
 	},
 	rightIcon: {
