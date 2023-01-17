@@ -12,6 +12,7 @@ import RouteCard from './RouteCard';
 import Dropdown from './Dropdown';
 import Camera from './Camera';
 import CameraWidget from './Camera/CameraWidget';
+import Shimmer from './Shimmer';
 
 export {
 	Text,
@@ -27,5 +28,6 @@ export {
 	RouteCard,
 	Dropdown,
 	Camera,
-	CameraWidget
+	CameraWidget,
+	Shimmer
 };
