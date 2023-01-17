@@ -19,6 +19,8 @@ export interface RouteCardParam {
 	onArrived?: () => void;
 	onFinish?: () => void;
 	onRedirect?: () => void;
+	onClickCart: () => void;
+	onClickSo: () => void;
 	historyMode?: boolean;
 }
 
@@ -32,7 +34,9 @@ const RouteCard = ({
 	onArrived,
 	onFinish,
 	onRedirect,
-	historyMode
+	historyMode,
+	onClickCart,
+	onClickSo
 }: RouteCardParam) => {
 
 	const {
@@ -99,6 +103,13 @@ const RouteCard = ({
 
 	}, [status, sequence]);
 
+	const renderTotalBarang = useMemo(() => (
+		<View style={ styles.totalItem }>
+			<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
+			<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
+		</View>
+	), [numItem]);
+
 	const renderAction = useMemo(() => {
 		//make condition by delivery status
 		switch (status) {
@@ -119,46 +130,24 @@ const RouteCard = ({
 				);
 			case Variables.DELIVERY_STATUS.FINISH:
 				return (
-					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.deliveredColumn }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Orderan</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-						</View>
-						<View style={ styles.deliveredColumn }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Diterima</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.green.default }>{ numItem } Barang</Text>
-						</View>
-						<View>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Keluhan</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 } color={ Colors.company.red }>{ 0 } Barang</Text>
-						</View>
+					<View style={ [styles.row, { justifyContent: 'space-between', alignItems: 'center' }] }>
+						{ renderTotalBarang }
+
+						<Text
+							color={ Colors.green.default }
+							format={ Fonts.textBody.s.bold as TextStyle }
+							style={ styles.labelComplete }
+						>
+							Completed
+						</Text>
 					</View>
 				);
 			case Variables.DELIVERY_STATUS.VALIDATE_CLIENT:
-				return (
-					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.totalItem }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-						</View>
-						{ !historyMode &&
-							<Button
-								disabled={ disabled }
-								weight='700'
-								color={ Colors.white.pure }
-								text='Mulai Kirim'
-								onPress={ () => onStart ? onStart() : null }
-							/>
-						}
-					</View>
-				);
 			case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.totalItem }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-						</View>
+						{ renderTotalBarang }
+
 						{ !historyMode &&
 							<Button
 								disabled={ disabled }
@@ -173,10 +162,8 @@ const RouteCard = ({
 			case Variables.DELIVERY_STATUS.ARRIVED:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.totalItem }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-						</View>
+						{ renderTotalBarang }
+
 						{ !historyMode &&
 							<Button
 								disabled={ disabled }
@@ -191,10 +178,8 @@ const RouteCard = ({
 			case Variables.DELIVERY_STATUS.SENT:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-						<View style={ styles.totalItem }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Total Barang</Text>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } mt={ 5 }>{ numItem } Barang</Text>
-						</View>
+						{ renderTotalBarang }
+
 						{ !historyMode &&
 							<Button
 								disabled={ disabled }
@@ -245,10 +230,32 @@ const RouteCard = ({
 					<View style={ styles.row }>
 						<View style={ styles.leftIcon }></View>
 
-						<TouchableOpacity activeOpacity={ .75 } onPress={ () => Linking.openURL(`https://maps.google.com?q=${ (latitude && longitude) ? `${ latitude },${ longitude }` : address }`) }>
-							<Text style={ [styles.text, { textDecorationLine: 'underline' }] } size={ 14 } lineHeight={ 20 } color={ Colors.blue.default } weight='400' >{ address }</Text>
+						<Text
+							style={ styles.text }
+							size={ 14 }
+							lineHeight={ 20 }
+							color={ Colors.gray.default }
+							weight='400'
+						>
+							{ address }
+						</Text>
+
+						<TouchableOpacity
+							activeOpacity={ .75 }
+							onPress={ () => Linking.openURL(`https://maps.google.com?q=${ (latitude && longitude) ? `${ latitude },${ longitude }` : address }`) }
+						>
 						</TouchableOpacity>
 					</View>
+
+					<Text
+						style={ [styles.text, { textDecorationLine: 'underline', marginLeft: 32, marginTop: 6 }] }
+						size={ 14 }
+						lineHeight={ 20 }
+						color={ Colors.blue.default }
+						weight='400'
+					>
+						Buka Google Maps
+					</Text>
 
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
@@ -259,15 +266,64 @@ const RouteCard = ({
 							</View> }
 					</View>
 
-					{/* <View style={ styles.timeSection }>
-						<View style={ styles.leftIcon } ><Images.IconTime /></View>
-						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah SO: 2 </Text>
-						<Text size={ 14 } lineHeight={ 20 } weight='600'>(SO12345, SO67890)</Text>
-					</View>
-					<View style={ styles.timeSection }>
-						<View style={ styles.leftIcon } ><Images.IconTime /></View>
-						<Text size={ 14 } lineHeight={ 20 } weight='400'>Jumlah Keranjang: 2M, 1L, 3XL</Text>
-					</View> */}
+					{
+						status != undefined &&
+						<View
+							style={ {
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+								backgroundColor: Colors.gray.info,
+								paddingHorizontal: 20,
+								paddingVertical: 10,
+								marginVertical: 16
+							} }
+						>
+							<TouchableOpacity onPress={ onClickSo }>
+								<View style={ { flex: 1, flexDirection: 'row', alignItems: 'center' } }>
+									<Text
+										format={ Fonts.textBody.m.regular as TextStyle }
+										color={ Colors.gray.default }
+									>
+										Total SO
+									</Text>
+
+									<Images.IconChevronRight width={ 10 } height={ 8 } style={ { marginStart: 12 } } />
+								</View>
+
+								<Text
+									format={ Fonts.textBody.m.bold as TextStyle }
+									color={ Colors.black.default }
+									style={ { marginTop: 6 } }
+								>
+									1
+								</Text>
+							</TouchableOpacity>
+
+							<View style={ { width: 1, height: '100%', backgroundColor: Colors.gray.separator } } />
+
+							<TouchableOpacity onPress={ onClickCart }>
+								<View style={ { flex: 1, flexDirection: 'row', alignItems: 'center' } }>
+									<Text
+										format={ Fonts.textBody.m.regular as TextStyle }
+										color={ Colors.gray.default }
+									>
+										Keranjang
+									</Text>
+
+									<Images.IconChevronRight width={ 10 } height={ 8 } style={ { marginStart: 12 } } />
+								</View>
+
+								<Text
+									format={ Fonts.textBody.m.bold as TextStyle }
+									color={ Colors.green.default }
+									style={ { marginTop: 6 } }
+								>
+									1
+								</Text>
+							</TouchableOpacity>
+						</View>
+					}
 
 					{ renderAction }
 				</View>
@@ -278,7 +334,11 @@ const RouteCard = ({
 	);
 };
 
-export default RouteCard;
+export default React.memo(
+	RouteCard,
+	(prev, next) => prev.client.id == next.client.id
+		&& prev.client.status == next.client.status
+);
 
 const styles = StyleSheet.create({
 	container: {
@@ -343,6 +403,12 @@ const styles = StyleSheet.create({
 	},
 	totalItem: {
 		justifyContent: 'center',
+	},
+	labelComplete: {
+		borderRadius: 48,
+		backgroundColor: Colors.green.light,
+		paddingHorizontal: 10,
+		paddingVertical: 6
 	},
 	textBoundaries: {
 		backgroundColor: Colors.orange.default,

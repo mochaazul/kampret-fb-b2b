@@ -1,8 +1,8 @@
-import { FlatList, View } from 'react-native';
+import { FlatList, View, TextStyle } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Container, RouteCard, BottomSheet, Shimmer } from '@components';
-import { Variables, Images } from '@constant';
+import { Container, RouteCard, BottomSheet, Shimmer, Text } from '@components';
+import { Variables, Images, Fonts, Colors } from '@constant';
 import { NavigationProps, DeliveryInterface } from '@interfaces';
 import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from '@helpers';
@@ -12,6 +12,8 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 
 	//const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
+	const [showCart, setShowCart] = useState<boolean>(false);
+	const [showListSo, setShowListSo] = useState<boolean>(false);
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
 	const loadingStartClient = useAppSelector(state => state.deliveryReducers.loadingStartDeliveryClient);
@@ -21,6 +23,35 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
+
+	const [listCart, setListCart] = useState<DeliveryInterface.IDeliveryCart[]>(
+		[{
+			id: 'XL-Biru',
+			deliveryId: route.params?.deliveryId ?? '',
+			clientId: '',
+			qty: 1
+		},
+		{
+			id: 'L-Merah',
+			deliveryId: route.params?.deliveryId ?? '',
+			clientId: '',
+			qty: 2
+		}]
+	);
+	const [listSo, setListSo] = useState<DeliveryInterface.IDeliverySO[]>([
+		{
+			id: '889123122',
+			name: 'Sales Order 1',
+			deliveryId: route.params?.deliveryId ?? '',
+			clientId: ''
+		},
+		{
+			id: '889123123',
+			name: 'Sales Order 2',
+			deliveryId: route.params?.deliveryId ?? '',
+			clientId: ''
+		}
+	]);
 
 	useEffect(() => {
 		//auto reload using focus listener as trigger
@@ -59,7 +90,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 		>
 			{ !loading &&
 				<FlatList
-					keyExtractor={ (_item, index) => 'route_' + index }
+					keyExtractor={ (item) => item.id }
 					extraData={ [loadingStartClient, listClient] }
 					data={ addWareHouseOnLastData }
 					renderItem={ ({ item, index }) =>
@@ -73,6 +104,8 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 							onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
 							onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
 							onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
+							onClickCart={ () => setShowCart(true) }
+							onClickSo={ () => setShowListSo(true) }
 						/>
 					}
 					refreshing={ loading ? true : false }
@@ -106,6 +139,49 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 				/>
 			</BottomSheet>
 
+			<BottomSheet
+				visible={ showCart }
+				onRequestClose={ () => setShowCart(false) }
+				noScroll
+			>
+				<FlatList
+					data={ listCart }
+					keyExtractor={ item => item.id }
+					renderItem={ ({ item: cart }) => (
+						<View style={ {
+							paddingHorizontal: 20,
+							paddingVertical: 15,
+						} }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } >Kode Keranjang: { cart.id }</Text>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } >Jumlah: { cart.qty }</Text>
+							<View style={ { height: 1, backgroundColor: Colors.gray.line, marginTop: 6 } } />
+						</View>
+					) }
+					style={ { marginTop: 16 } }
+				/>
+			</BottomSheet>
+
+			<BottomSheet
+				visible={ showListSo }
+				onRequestClose={ () => setShowListSo(false) }
+				noScroll
+			>
+				<FlatList
+					data={ listSo }
+					keyExtractor={ item => item.id }
+					renderItem={ ({ item: so }) => (
+						<View style={ {
+							paddingHorizontal: 20,
+							paddingVertical: 15,
+						} }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } >{ so.name }</Text>
+							<Text format={ Fonts.textBody.m.bold as TextStyle } >{ so.id }</Text>
+							<View style={ { height: 1, backgroundColor: Colors.gray.line, marginTop: 6 } } />
+						</View>
+					) }
+					style={ { marginTop: 16 } }
+				/>
+			</BottomSheet>
 
 		</Container>
 	);

@@ -191,7 +191,7 @@ const DeliveryHistoryItem: React.FC<DeliveryInterface.IDeliveryHistory> = props 
 	);
 };
 
-export default React.memo(DeliveryHistoryItem);
+export default React.memo(DeliveryHistoryItem, (prev, next) => prev.status == next.status);
 
 const styles = StyleSheet.create({
 	row: {

@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 
 import styles from './style';
 import DeliveryItem from './DeliveryItem';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { Ratio, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
 import { Colors, Fonts, Images } from '@constant';
-import { Text } from '@components';
+import { Shimmer, Text } from '@components';
 
 const DeliveryList = () => {
 
@@ -16,6 +16,22 @@ const DeliveryList = () => {
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryList);
 
 	useEffect(() => { fetchList(); }, []);
+
+	// show loading state
+	if (loading)
+		return (
+			<FlatList
+				keyExtractor={ (_item, index) => index + '' }
+				data={ Array(4).fill(0) }
+				showsVerticalScrollIndicator={ false }
+				renderItem={ ({ index }) => (
+					<View key={ index } style={ { alignSelf: 'center' } }>
+						<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 180 } />
+					</View>
+				) }
+				ItemSeparatorComponent={ () => (<View style={ styles.heightSpace } />) }
+			/>
+		);
 
 	// show empty state when not loading and delivery list is empty
 	if (!loading && deliveryList.filter((item) => item.deliveryTextStatus != 'FINISH').length == 0)
@@ -39,7 +55,7 @@ const DeliveryList = () => {
 	return (
 		<FlatList
 			bounces={ false }
-			keyExtractor={ (_item, index) => 'tabBar_' + index }
+			keyExtractor={ (item) => item.id }
 			style={ styles.container }
 			contentContainerStyle={ styles.content }
 			showsVerticalScrollIndicator={ false }
