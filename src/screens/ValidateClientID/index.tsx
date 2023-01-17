@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { Container, BottomSheet, ModalDialog, Button } from '@components';
+import { Container, BottomSheet, ModalDialog, Button, Shimmer } from '@components';
 import { Colors, Images } from '@constant';
-import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { NavigationHelper, Ratio, useAppDispatch, useAppSelector } from '@helpers';
 import { DeliveryInterface, NavigationProps } from '@interfaces';
 import { Actions } from '@store';
 
@@ -57,6 +57,22 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	};
 
 	const renderCustomers = useMemo(() => {
+		// show loading state
+		if (loading)
+			return (
+				<FlatList
+					keyExtractor={ (_item, index) => index + '' }
+					data={ Array(4).fill(0) }
+					showsVerticalScrollIndicator={ false }
+					renderItem={ ({ index }) => (
+						<View key={ index } style={ { alignSelf: 'center' } }>
+							<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 180 } />
+						</View>
+					) }
+					ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
+				/>
+			);
+
 		if (clientList)
 			return (
 				<FlatList

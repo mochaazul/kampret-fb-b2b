@@ -36,7 +36,7 @@ const ItemChecklist = ({ item, onCheckClicked }: ItemChecklistProps) => {
 	);
 };
 
-export default ItemChecklist;
+export default React.memo(ItemChecklist, (prev, next) => prev.item.validated == next.item.validated);
 
 const styles = StyleSheet.create({
 	row: {

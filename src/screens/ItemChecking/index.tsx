@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, TextStyle, FlatList } from 'react-native';
 
-import { Container, Text, Button } from '@components';
+import { Container, Text, Button, Shimmer } from '@components';
 import { Fonts, Colors, Images } from '@constant';
-import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
+import { NavigationHelper, Ratio, useAppDispatch, useAppSelector } from '@helpers';
 import { DeliveryInterface, NavigationProps } from '@interfaces';
 import { Actions } from '@store';
 
@@ -106,39 +106,70 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 		}
 	}, [resultValidate]);
 
+	interface IListItem { id: number, type: string, data: any; }
+	const RenderItem = React.memo<IListItem>(
+		item => {
+			switch (item.type) {
+				case 'ITEM':
+					return (
+						<ItemChecklist
+							item={ item.data as DeliveryInterface.IDeliveryItem }
+							onCheckClicked={ (id) => validateItem(id) }
+						/>
+					);
+				case 'CART':
+					return (
+						<DeliveryCart cart={ item.data as DeliveryInterface.IDeliveryCart } />
+					);
+				case 'SO':
+					return (
+						<DeliverySO so={ item.data as DeliveryInterface.IDeliverySO } />
+					);
+				case 'TITLE':
+					const title = item.data as ItemTitle;
+					return (
+						<DeliveryItemTitle label={ title.label } qty={ title.qty } />
+					);
+				default:
+					return null;
+			}
+		},
+		(prev, next) => {
+			let sameValidate = true;
+			if (prev.type == 'ITEM' && next.type == 'ITEM') {
+				const { validated: oldValidate } = (prev.data as DeliveryInterface.IDeliveryItem);
+				const { validated: newValidate } = (next.data as DeliveryInterface.IDeliveryItem);
+				sameValidate = oldValidate == newValidate;
+			}
+
+			return prev.id == next.id && prev.type == next.type && sameValidate;
+		}
+	);
+
 	const renderListDataItem = useMemo(() => {
+		// show loading state
+		if (loading)
+			return (
+				<FlatList
+					keyExtractor={ (_item, index) => index + '' }
+					data={ Array(8).fill(0) }
+					showsVerticalScrollIndicator={ false }
+					renderItem={ ({ index }) => (
+						<View key={ index } style={ { alignSelf: 'center' } }>
+							<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 84 } />
+						</View>
+					) }
+					ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
+				/>
+			);
+
 		return (
 			<FlatList
 				data={ listData }
-				keyExtractor={ (_item, index) => 'listItem_' + index }
+				keyExtractor={ (item) => `${ item.type }-${ item.id }` }
 				showsVerticalScrollIndicator={ false }
-				renderItem={ ({ item }) => {
-					switch (item.type) {
-						case 'ITEM':
-							return (
-								<ItemChecklist
-									item={ item.data as DeliveryInterface.IDeliveryItem }
-									onCheckClicked={ (id) => validateItem(id) }
-								/>
-							);
-						case 'CART':
-							return (
-								<DeliveryCart cart={ item.data as DeliveryInterface.IDeliveryCart } />
-							);
-						case 'SO':
-							return (
-								<DeliverySO so={ item.data as DeliveryInterface.IDeliverySO } />
-							);
-						case 'TITLE':
-							const title = item.data as ItemTitle;
-							return (
-								<DeliveryItemTitle label={ title.label } qty={ title.qty } />
-							);
-						default:
-							return null;
-					}
-				} }
-				refreshing={ loading == true }
+				renderItem={ ({ item }) => <RenderItem { ...item } /> }
+				refreshing={ false }
 				onRefresh={ () => {
 					setCurrItemState([]);
 					getItem({
@@ -148,7 +179,7 @@ const ItemChecking = ({ route }: NavigationProps<'ItemChecking'>) => {
 				} }
 			/>
 		);
-	}, [listData]);
+	}, [listData, loading]);
 
 	const renderButton = useMemo(() => {
 		if (currentItems.some(item => !item.validated)) {

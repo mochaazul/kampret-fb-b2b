@@ -39,6 +39,7 @@ import IconLogout from '../assets/images/logout.svg';
 import EmptyBox from '../assets/images/empty_box.svg';
 import Selected from '../assets/images/selected.svg';
 import Unselect from '../assets/images/unselect.svg';
+import IconChevronRight from '../assets/images/ic_chevron_right.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -83,5 +84,6 @@ export default {
 	IconLogout,
 	EmptyBox,
 	Selected,
-	Unselect
+	Unselect,
+	IconChevronRight
 };
