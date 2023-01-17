@@ -415,7 +415,8 @@ export default {
 
 		API.upload(
 			Endpoints.INPUT_KM(params.deliveryId),
-			formData
+			formData,
+			{ 'Content-Type': 'multipart/form-data' }
 		)
 			.then((response) => {
 

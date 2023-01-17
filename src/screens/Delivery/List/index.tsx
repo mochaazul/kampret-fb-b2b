@@ -30,6 +30,7 @@ const DeliveryList = () => {
 					</View>
 				) }
 				ItemSeparatorComponent={ () => (<View style={ styles.heightSpace } />) }
+				ListHeaderComponent={ () => <View style={ styles.heightSpace } /> }
 			/>
 		);
 

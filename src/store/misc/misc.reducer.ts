@@ -13,7 +13,8 @@ const initialState: MiscInterface.MiscState = {
 	tmpMultiplePhotoCaptures: null,
 	deliveryIssueTitle: '',
 	deliveryIssueDesc: '',
-	tmpDeliveryComplainResult: null
+	tmpDeliveryComplainResult: null,
+	uploadProgress: undefined
 };
 
 type Actions = { type: string; payload: any; };
@@ -83,6 +84,11 @@ const miscReducers = (
 			return {
 				...state,
 				deliveryIssueDesc: payload,
+			};
+		case Dispatches.API_UPLOAD_PROGRESS:
+			return {
+				...state,
+				uploadProgress: payload,
 			};
 		default:
 			return state;

@@ -10,6 +10,12 @@ export type MiscState = {
 	deliveryIssueTitle: string;
 	deliveryIssueDesc: string;
 	tmpDeliveryComplainResult: string | null;
+	uploadProgress: UploadProgress | undefined;
+};
+
+export type UploadProgress = {
+	loaded: number,
+	total: number;
 };
 
 export type BE<T> = {

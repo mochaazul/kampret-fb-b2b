@@ -42,6 +42,15 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 		method,
 		url,
 		data: request ?? undefined,
+		onUploadProgress: progressEvent => {
+			store.dispatch({
+				type: Dispatches.API_UPLOAD_PROGRESS,
+				payload: {
+					loaded: progressEvent.loaded,
+					total: progressEvent.total
+				}
+			});
+		}
 	})
 		.then(res => {
 			return Promise.resolve(res.data);
@@ -84,6 +93,7 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 							type: 'error',
 							text1: 'Error',
 							text2: data?.stat_msg,
+							position: 'top'
 						});
 						return Promise.reject(err);
 						break;
@@ -99,9 +109,13 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 				return Promise.reject(err);
 		})
 		.finally(() => {
+			// store.dispatch({
+			// 	type: Dispatches.API_LOADING_END,
+			// 	payload: '',
+			// });
 			store.dispatch({
-				type: Dispatches.API_LOADING_END,
-				payload: '',
+				type: Dispatches.API_UPLOAD_PROGRESS,
+				payload: undefined,
 			});
 		});
 };
