@@ -8,7 +8,9 @@ const Colors = {
 	gray: {
 		default: '#A5A5A5',
 		light: '#FAFAFB',
-		line: '#F4F4F4'
+		line: '#F4F4F4',
+		separator: '#EAECF0',
+		info: '#F9FAFB',
 	},
 	black: {
 		default: '#414141',
@@ -36,6 +38,7 @@ const Colors = {
 		default: 'rgba(0, 0, 0, 0)'
 	},
 	green: {
+		light: '#EAFFF6',
 		default: '#27AE60'
 	},
 	orange: {

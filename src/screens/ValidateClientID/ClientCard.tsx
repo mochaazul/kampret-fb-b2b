@@ -172,7 +172,11 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 	}
 };
 
-export default React.memo(ClientCard);
+export default React.memo(
+	ClientCard,
+	(prev, next) => prev.customer.validated == next.customer.validated
+		&& prev.customer.numValidated == next.customer.numValidated
+);
 
 const styles = StyleSheet.create({
 	row: {

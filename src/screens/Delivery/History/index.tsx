@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 
 import styles from './style';
 import DeliveryHistoryItem from './DeliveryHistoryItem';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { Ratio, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
-import { Text } from '@components';
+import { Shimmer, Text } from '@components';
 import { Colors, Fonts, Images } from '@constant';
 
 const DeliveryHistory = () => {
@@ -16,6 +16,22 @@ const DeliveryHistory = () => {
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistory);
 
 	useEffect(() => { fetchList(); }, []);
+
+	// show loading state
+	if (loading)
+		return (
+			<FlatList
+				keyExtractor={ (_item, index) => index + '' }
+				data={ Array(4).fill(0) }
+				showsVerticalScrollIndicator={ false }
+				renderItem={ ({ index }) => (
+					<View key={ index } style={ { alignSelf: 'center' } }>
+						<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 180 } />
+					</View>
+				) }
+				ItemSeparatorComponent={ () => (<View style={ { height: 16 } } />) }
+			/>
+		);
 
 	// show empty state when not loading and delivery list is empty
 	if (!loading && deliveryHistory?.length == 0)
@@ -39,7 +55,7 @@ const DeliveryHistory = () => {
 	return (
 		<FlatList
 			bounces={ false }
-			keyExtractor={ (_item, index) => 'tabBar_' + index }
+			keyExtractor={ (item) => item.id.toString() }
 			style={ styles.container }
 			contentContainerStyle={ styles.content }
 			showsVerticalScrollIndicator={ false }

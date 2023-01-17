@@ -115,7 +115,7 @@ const DeliveryItem: React.FC<DeliveryInterface.IDelivery> = props => {
 	);
 };
 
-export default React.memo(DeliveryItem);
+export default React.memo(DeliveryItem, (prev, next) => prev.status == next.status);
 
 const styles = StyleSheet.create({
 	row: {
