@@ -72,6 +72,9 @@ export interface IDeliveryCustomer {
 	statusLabel?: string | undefined;
 	latitude?: number | undefined;
 	longitude?: number | undefined;
+	numSo?: number | undefined;
+	listSo?: string[] | undefined;
+	carts?: IDeliveryCart[];
 }
 
 export interface IDeliveryCart {
