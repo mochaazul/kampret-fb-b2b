@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import { TextStyle, TouchableOpacity, View, Image } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Geolocation from '@react-native-community/geolocation';
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Button, CameraWidget, Container, Input, Text } from "@components";
 import styles from "./style";
@@ -28,6 +29,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
 	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingInputKm);
+	const uploadProgress = useAppSelector(state => state.miscReducers.uploadProgress);
 
 	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
 	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
@@ -38,6 +40,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const onCapture = (photo: PhotoFile) => {
 		const imageURI = `file://` + photo.path;
 		setPreviewImgURI(imageURI);
+		formik.setFieldValue('photoUri', imageURI);
 	};
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
@@ -91,26 +94,40 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		};
 	}, []);
 
-	const renderImage = useMemo(() => {
+	const renderImage = () => {
 		if ((route && route.params?.photo) || previewImgURI !== '') {
-			formik.setFieldValue('photoUri', previewImgURI);
 			return (
 				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
 			);
 		}
 
-		return (
-			<View style={ styles.addImage }>
-				<Images.IconCamera />
-				<Text
-					format={ Fonts.textBody.l.bold as TextStyle }
-					color={ Colors.gray.default }
-					mt={ 20 }>
-					+ { translate('inputKM.addPhoto') }
-				</Text>
-			</View>
-		);
-	}, [route, previewImgURI]);
+		if (uploadProgress) {
+			return (
+				<View style={ styles.addImage }>
+					<ProgressBar
+						styleAttr='Horizontal'
+						indeterminate={ false }
+						progress={ uploadProgress.loaded / uploadProgress.total }
+						color={ Colors.company.red }
+						style={ styles.progressBar }
+					/>
+				</View>
+			);
+		} else {
+			return (
+				<View style={ styles.addImage }>
+					<Images.IconCamera />
+					<Text
+						format={ Fonts.textBody.l.bold as TextStyle }
+						color={ Colors.gray.default }
+						mt={ 20 }>
+						+ { translate('inputKM.addPhoto') }
+					</Text>
+				</View>
+			);
+		}
+
+	};
 
 	const renderButton = useMemo(() => (
 		<Button
@@ -160,7 +177,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				activeOpacity={ .75 }
 				onPress={ () => setShowCamera(true) }
 			>
-				{ renderImage }
+				{ renderImage() }
 
 			</TouchableOpacity>
 
