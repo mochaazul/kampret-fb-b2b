@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { Linking, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import moment from 'moment';
 
 import { Colors, Fonts, Images } from '@constant';
 import { DeliveryInterface } from '@interfaces';
@@ -61,6 +62,12 @@ const RouteCard = ({
 			onArrived();
 		}
 	}, [onArrived, onFinish]);
+
+	const timeLeft = (time: string | undefined): string | null => {
+		const maxTime = time ? time.split('-')[1] : null;
+		const deliveryTime = maxTime ? moment(maxTime, 'HH:mm').fromNow() : null;
+		return deliveryTime;
+	};
 
 	const onPresssAction = useCallback(() => {
 		if (onClick) {
@@ -262,9 +269,9 @@ const RouteCard = ({
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
 						<Text size={ 14 } lineHeight={ 20 } weight='400'>{ deliveryTime } WIB</Text>
-						{ !disabled && (status ?? 0) < 6 &&
+						{ !disabled && (status ?? 0) < 6 && deliveryTime &&
 							<View style={ styles.textBoundaries } >
-								<Text color={ Colors.white.pure } format={ Fonts.textBody.s.bold as TextStyle }>30 menit lagi</Text>
+								<Text color={ Colors.white.pure } format={ Fonts.textBody.s.bold as TextStyle }>{ timeLeft(deliveryTime) }</Text>
 							</View> }
 					</View>
 

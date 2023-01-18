@@ -109,7 +109,10 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 	);
 };
 
-export default React.memo(CheckItem);
+export default React.memo(CheckItem,
+	(prev, next) =>
+		JSON.stringify(prev.existingComplain) == JSON.stringify(next.existingComplain)
+);
 
 const styles = StyleSheet.create({
 	container: {
