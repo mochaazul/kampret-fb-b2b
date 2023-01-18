@@ -86,6 +86,7 @@ const miscReducers = (
 				deliveryIssueDesc: payload,
 			};
 		case Dispatches.API_UPLOAD_PROGRESS:
+
 			return {
 				...state,
 				uploadProgress: payload,

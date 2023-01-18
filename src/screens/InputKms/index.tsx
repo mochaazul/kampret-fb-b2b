@@ -40,6 +40,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	const onCapture = (photo: PhotoFile) => {
 		const imageURI = `file://` + photo.path;
 		setPreviewImgURI(imageURI);
+		formik.setFieldValue('photoUri', imageURI);
 	};
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
@@ -93,9 +94,8 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		};
 	}, []);
 
-	const renderImage = useMemo(() => {
+	const renderImage = () => {
 		if ((route && route.params?.photo) || previewImgURI !== '') {
-			formik.setFieldValue('photoUri', previewImgURI);
 			return (
 				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
 			);
@@ -127,7 +127,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			);
 		}
 
-	}, [route, previewImgURI, uploadProgress]);
+	};
 
 	const renderButton = useMemo(() => (
 		<Button
@@ -177,7 +177,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				activeOpacity={ .75 }
 				onPress={ () => setShowCamera(true) }
 			>
-				{ renderImage }
+				{ renderImage() }
 
 			</TouchableOpacity>
 

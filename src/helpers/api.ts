@@ -33,10 +33,10 @@ const getHeaders = (headers?: Record<string, string>) => {
 };
 
 const apiRequest = (method: any, url: string, request?: object, headers?: Record<string, string>) => {
-	store.dispatch({
-		type: Dispatches.API_LOADING_START,
-		payload: '',
-	});
+	// store.dispatch({
+	// 	type: Dispatches.API_LOADING_START,
+	// 	payload: '',
+	// });
 	return axiosAPI({
 		headers: getHeaders(headers),
 		method,
@@ -113,6 +113,7 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 			// 	type: Dispatches.API_LOADING_END,
 			// 	payload: '',
 			// });
+
 			store.dispatch({
 				type: Dispatches.API_UPLOAD_PROGRESS,
 				payload: undefined,
