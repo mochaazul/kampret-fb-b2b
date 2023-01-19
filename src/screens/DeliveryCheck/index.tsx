@@ -32,6 +32,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
+	const [notes, setNotes] = useState<string | null>(null);
+	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -55,6 +57,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		return function () {
 			setTmpImgUri('');
 			setMultiplePhotoCapture(null);
+			setNotes(null);
+			setNeedConfirmMode(false);
 		};
 	}, []);
 
@@ -209,7 +213,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						setItemChecks(newItems);
 
 						// TODO: add handler show complain dialog
-						// setShowComplain(data); 
+						setShowComplain(data);
 					} }
 					deliveryId={ route.params.deliveryId }
 					clientId={ route.params.clientId }
@@ -318,7 +322,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							weight='700'
 							mt={ 30 }
 							useShadow={ true }
-							onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
+							onPress={ () => {
+								if (needConfirmMode) {
+									setNeedConfirmMode(false);
+								}
+								setEnableValidation(true);
+								formik.handleSubmit();
+							} }
 							loading={ arrivalLoading }
 							disabled={ itemChecks.some((item) => !item.isComplain && !item.isConfirm) }
 						/>
@@ -331,7 +341,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							weight='700'
 							mt={ 20 }
 							useShadow={ true }
-							onPress={ () => console.log('pressed') }
+							onPress={ () => {
+								if (!needConfirmMode) {
+									setNeedConfirmMode(true);
+								}
+								setEnableValidation(true);
+								formik.handleSubmit();
+							} }
 
 						/>
 					</View>
@@ -396,7 +412,9 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							carts: listCartReturned.filter((cart) => cart != ''),
 							deliveryId: route.params.deliveryId,
 							clientId: route.params.clientId,
-							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : ''
+							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : '',
+							needConfirm: needConfirmMode,
+							needConfirmNote: notes
 						});
 						setShowConfirm(false);
 						setShowSuccessDialog(true);

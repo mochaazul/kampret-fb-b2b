@@ -755,6 +755,8 @@ export default {
 		} as any);
 		formData.append('recipient_name', params.recipientName);
 		formData.append('carts', params.carts?.join(';') ?? '');
+		formData.append('need_confirm', params.needConfirm ? 'true' : 'false');
+		formData.append('need_confirm_notes', params.needConfirmNote ? params.needConfirmNote : '');
 
 		API.upload(
 			Endpoints.ARRIVAL_CONFIRMATION(params.deliveryId, params.clientId),
@@ -891,6 +893,7 @@ export default {
 		formData.append('complaint_qty', params.qty);
 		formData.append('complaint_category', params.category);
 		formData.append('complaint_follow_up', params.followUp);
+		formData.append('received_qty', params.receivedQty);
 
 		API.upload(
 			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
