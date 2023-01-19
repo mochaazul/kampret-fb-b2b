@@ -16,7 +16,7 @@ export default {
 	VALIDATE_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-validate/${ deliveryId }/client/${ clientId }`),
 	DELIVERY_CLIENT_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery/${ deliveryId }/client/${ clientId }`),
 	DELIVERY_VALIDATE_ITEMS: (deliveryId: string, clientId: string) => (`v1/delivery-validate-item/${ deliveryId }/client/${ clientId }`),
-	INPUT_KM: (deliveryId: string) => (`v1/delivery/${ deliveryId }/start123`),
+	INPUT_KM: (deliveryId: string) => (`v1/delivery/${ deliveryId }/start`),
 	INPUT_KM_FINISH: (deliveryId: string) => (`v1/delivery/${ deliveryId }/finish`),
 	DELIVERY_PROCESS: (deliveryId: string) => (`v1/delivery-process/${ deliveryId }`),
 	START_DELIVERY_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/client/${ clientId }`),

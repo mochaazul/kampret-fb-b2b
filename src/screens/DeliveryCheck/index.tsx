@@ -39,6 +39,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
 	const apiComplainResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
 
+	const [itemChecks, setItemChecks] = useState<any[]>([]);
+
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
 	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
@@ -55,6 +57,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			setMultiplePhotoCapture(null);
 		};
 	}, []);
+
+	// watcher to update list item
+	useEffect(() => {
+		if (arrivalData) setItemChecks(mappingItem(arrivalData));
+	}, [arrivalData]);
 
 	//watcher to hide bottomSheet after receive api response
 	useEffect(() => {
@@ -124,7 +131,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						qty: item.qty_reject,
 						imageUrl: item.complaint_images,
 						followUp: item.complaint_follow_up
-					} : undefined
+					} : undefined,
+					isConfirm: item.confirmed
 
 				};
 			});
@@ -134,7 +142,10 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	};
 
 	const renderCart = (checked: boolean, name: string, qty: number) => (
-		<View style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } }>
+		<View
+			style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } }
+			key={ name }
+		>
 			<TouchableOpacity
 				onPress={ () => {
 					const newValue = [...listCartReturned];
@@ -181,7 +192,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	}, [arrivalData?.carts, listCartReturned]);
 
 	const renderListItem = useMemo(() => {
-		return mappingItem(arrivalData).map((item, index) =>
+		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
 				<CheckItem { ...item }
@@ -190,10 +201,15 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ route.params.clientId }
 					onClickConfirm={ (data) => setShowConfirmItem(data) }
 					itemIndex={ index }
+					onCheckConfirm={ () => {
+						const newItems = [...itemChecks];
+						newItems[index].isConfirm = newItems[index].isConfirm ? false : true;
+						setItemChecks(newItems);
+					} }
 				/>
 			</View>
 		);
-	}, [arrivalLoading]);
+	}, [itemChecks]);
 
 	const renderShimmerLoading = () => {
 		return Array(6).fill(0).map((item, index) =>

@@ -158,6 +158,7 @@ export interface Item {
 	complaint_description: string;
 	complaint_follow_up: string;
 	complaint_images: string[] | null;
+	confirmed?: boolean;
 }
 
 export interface Receipt {
