@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
-import { TextStyle, TouchableOpacity, View, Image } from "react-native";
+import { TextStyle, TouchableOpacity, View, Image, StyleSheet } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Geolocation from '@react-native-community/geolocation';
 import { ProgressBar } from "@react-native-community/progress-bar-android";
@@ -7,7 +7,7 @@ import { ProgressBar } from "@react-native-community/progress-bar-android";
 import { Button, CameraWidget, Container, Input, Text } from "@components";
 import styles from "./style";
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppSelector, useAppDispatch } from "@helpers";
+import { NavigationHelper, useAppSelector, useAppDispatch, useInterval } from "@helpers";
 import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
 import { FormikProps, useFormik } from 'formik';
@@ -22,6 +22,7 @@ type InputKM = {
 const InputKms = ({ route }: InputKmsScreenProps) => {
 	const [showCamera, setShowCamera] = useState<boolean>(false);
 	const [previewImgURI, setPreviewImgURI] = useState<string>("");
+	const [progress, setProgress] = useState(0);
 
 	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
 	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
@@ -53,7 +54,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		},
 		onSubmit: () => {
 			if (route.params?.deliveryLocation) {
-
 				inputKmOnFinish({
 					finishLocation: route.params.deliveryLocation,
 					finishOdometer_image: previewImgURI,
@@ -63,6 +63,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 					odometer: formik.values.kmSpeedometer
 				});
 			} else {
+				interval.start();
 				doInputKm(
 					{
 						lat: latitude,
@@ -77,6 +78,11 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		},
 	});
 
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
 	useEffect(() => {
 		clearLocation();
 
@@ -87,46 +93,63 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			},
 
 			error => console.log('geo err', error),
-			{ timeout: 60000, enableHighAccuracy: true });
+			{ timeout: 60000, enableHighAccuracy: true }
+		);
 
 		return function () {
 			clearLocation();
+			interval.stop();
 		};
 	}, []);
 
-	const renderImage = () => {
-		if ((route && route.params?.photo) || previewImgURI !== '') {
-			return (
-				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
-			);
+	useEffect(() => {
+		if (!loading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
+	}, [loading]);
+
+	const renderProgress = useMemo(() => {
+
+		if (progress > 80) {
+			interval.stop();
 		}
 
-		if (uploadProgress) {
+		if (progress)
 			return (
-				<View style={ styles.addImage }>
+				<View style={ [styles.addImage, StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }] }>
 					<ProgressBar
 						styleAttr='Horizontal'
 						indeterminate={ false }
-						progress={ uploadProgress.loaded / uploadProgress.total }
+						progress={ progress * .01 }
 						color={ Colors.company.red }
 						style={ styles.progressBar }
 					/>
 				</View>
 			);
-		} else {
+	}, [progress]);
+
+	const renderImage = () => {
+		if ((route && route.params?.photo) || previewImgURI !== '') {
 			return (
-				<View style={ styles.addImage }>
-					<Images.IconCamera />
-					<Text
-						format={ Fonts.textBody.l.bold as TextStyle }
-						color={ Colors.gray.default }
-						mt={ 20 }>
-						+ { translate('inputKM.addPhoto') }
-					</Text>
+				<View style={ { position: 'relative' } }>
+					<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
+					{ renderProgress }
 				</View>
 			);
 		}
 
+		return (
+			<View style={ styles.addImage }>
+				<Images.IconCamera />
+				<Text
+					format={ Fonts.textBody.l.bold as TextStyle }
+					color={ Colors.gray.default }
+					mt={ 20 }>
+					+ { translate('inputKM.addPhoto') }
+				</Text>
+			</View>
+		);
 	};
 
 	const renderButton = useMemo(() => (
@@ -175,7 +198,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={ () => setShowCamera(true) }
+				onPress={ () => { if (!progress) setShowCamera(true); } }
 			>
 				{ renderImage() }
 

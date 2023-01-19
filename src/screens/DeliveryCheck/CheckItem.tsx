@@ -1,14 +1,14 @@
-import React, { ReactNode, useMemo, useState } from "react";
-import { FlatList, StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
+import React, { ReactNode, useMemo } from "react";
+import { StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
 
 import { Button, Text } from "@components";
-import { Colors, Fonts } from "@constant";
+import { Images, Colors, Fonts } from "@constant";
 import { DeliveryInterface } from "@interfaces";
 
 export interface CheckItemProp {
 	id: string;
 	name: string;
-	isComplain?: boolean | undefined;
+	isComplain?: boolean;
 	complainAmount?: string;
 	complainLabel?: string;
 	complainDesc?: string;
@@ -19,25 +19,38 @@ export interface CheckItemProp {
 	clientId?: string;
 	existingComplain?: DeliveryInterface.IExistingComplain;
 	itemIndex: number;
+	isConfirm?: boolean;
+	onCheckConfirm?: () => void;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
 
+	const renderAction = useMemo(() => {
+		const btnProp = { width: 32, height: 32 };
+		return (
+			<View style={ [styles.buttonContainer, { flex: 2, flexDirection: 'row' }] }>
+				<TouchableOpacity onPress={ () => handleClickComplain() }>
+					{
+						item.isComplain ?
+							<Images.IconWarnRed { ...btnProp } /> :
+							<Images.IconWarn { ...btnProp } />
+					}
+				</TouchableOpacity>
+
+				<TouchableOpacity onPress={ item.onCheckConfirm } style={ { marginStart: 16 } }>
+					{
+						item.isConfirm ?
+							<Images.ButtonCheck2 { ...btnProp } /> :
+							<Images.ButtonCheck { ...btnProp } />
+					}
+				</TouchableOpacity>
+
+			</View>
+		);
+	}, [item.isComplain, item.isConfirm]);
+
 	const renderComplainBtn = useMemo(() => {
 
-		const handleClickComplain = () => {
-			if (item.onClickComplain) {
-				item.onClickComplain(
-					{
-						deliveryRouteItemId: item.id,
-						deliveryId: item.deliveryId,
-						clientId: item.clientId,
-						itemName: item.name,
-						existing: item.existingComplain
-					}
-				);
-			}
-		};
 		if (!item.isComplain) {
 			return (
 				<View style={ styles.buttonContainer }>
@@ -64,6 +77,20 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 	}, [item]);
 
+	const handleClickComplain = () => {
+		if (item.onClickComplain) {
+			item.onClickComplain(
+				{
+					deliveryRouteItemId: item.id,
+					deliveryId: item.deliveryId,
+					clientId: item.clientId,
+					itemName: item.name,
+					existing: item.existingComplain
+				}
+			);
+		}
+	};
+
 	const handleOnClickConfirm = () => {
 		if (item.onClickConfirm) {
 			item.onClickConfirm(
@@ -86,7 +113,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					<Text
 						format={ Fonts.textBody.l.bold as TextStyle }
 						color={ Colors.black.default }
-						ellipsizeMode={ 'middle' }
+						ellipsizeMode='middle'
 						numberOfLines={ 2 }
 					>
 						{ item.name }
@@ -101,7 +128,9 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					</Text>
 				</TouchableOpacity>
 
-				{ renderComplainBtn }
+				{/* { renderComplainBtn } */ }
+
+				{ renderAction }
 
 			</View>
 
@@ -111,7 +140,8 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 export default React.memo(CheckItem,
 	(prev, next) =>
-		JSON.stringify(prev.existingComplain) == JSON.stringify(next.existingComplain)
+		JSON.stringify(prev.existingComplain) == JSON.stringify(next.existingComplain) &&
+		prev.isConfirm == next.isConfirm
 );
 
 const styles = StyleSheet.create({
