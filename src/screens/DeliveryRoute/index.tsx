@@ -18,7 +18,8 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
 	const loadingStartClient = useAppSelector(state => state.deliveryReducers.loadingStartDeliveryClient);
 	const listClient = useAppSelector(state => state.deliveryReducers.clientValidation);
-	const clients = useMemo(() => listClient.filter((c) => c.deliveryId == route.params?.deliveryId), [listClient]);
+
+	const clients = useMemo(() => listClient.filter((c) => c.deliveryId == route.params?.deliveryId), [listClient, loadingStartClient]);
 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
