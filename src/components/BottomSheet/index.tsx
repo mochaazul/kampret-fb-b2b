@@ -33,7 +33,7 @@ const BottomSheet = ({
 					contentContainerStyle={ {
 						flex: 1,
 						justifyContent: 'flex-end',
-						backgroundColor: Colors.transparent.default
+						backgroundColor: Colors.transparent.default,
 					} }
 					bounces={ false }
 					showsVerticalScrollIndicator={ false }
@@ -129,7 +129,8 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		paddingBottom: 20,
-		backgroundColor: Colors.white.pure,
+		//backgroundColor: Colors.white.pure,
+		backgroundColor: 'green',
 		borderTopLeftRadius: 16,
 		borderTopRightRadius: 16,
 	}

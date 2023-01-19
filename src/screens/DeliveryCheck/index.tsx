@@ -124,8 +124,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						qty: item.qty_reject,
 						imageUrl: item.complaint_images,
 						followUp: item.complaint_follow_up
-					} : undefined
-
+					} : undefined,
+					qtyOrder: {
+						order: item.qty_order,
+						kgFactor: 3
+					}
 				};
 			});
 		} else {
@@ -327,6 +330,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ showComplain ? showComplain.clientId : undefined }
 					itemName={ showComplain ? showComplain.itemName : undefined }
 					existing={ showComplain ? showComplain.existing : undefined }
+					qtyOrder={ showComplain ? showComplain.qtyOrder : undefined }
 				/>
 			</BottomSheet>
 
