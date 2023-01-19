@@ -7,6 +7,24 @@ import { API } from '@helpers';
 import { Variables } from '@constant';
 
 export default {
+	registerPushNotif: (xplayer: string) => (dispatch: Dispatch) => {
+		API.post<MiscInterface.BE<any>>(`${ Endpoints.PUSH_NOTIF }`,
+			{
+				player_id: xplayer,
+				device_type: 1,
+				device_model: ''
+			})
+			.then(response => {
+				console.log('reposn push', response);
+			})
+			.catch(error => {
+				// todo handle error
+				console.log('errrorr', error);
+			})
+			.finally(() => {
+
+			});
+	},
 	login: (payload: AuthInterface.loginPayload) => (dispatch: Dispatch) => {
 		dispatch({
 			type: Dispatches.LOADING_AUTH,

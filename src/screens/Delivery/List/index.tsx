@@ -1,5 +1,6 @@
 import { FlatList, TextStyle, View } from 'react-native';
 import React, { useEffect } from 'react';
+import OneSignal from 'react-native-onesignal';
 
 import styles from './style';
 import DeliveryItem from './DeliveryItem';
@@ -14,8 +15,24 @@ const DeliveryList = () => {
 	const loading = useAppSelector(state => state.deliveryReducers.loadingList);
 
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryList);
+	const pushXplayer = useAppDispatch(Actions.authAction.registerPushNotif);
 
-	useEffect(() => { fetchList(); }, []);
+	useEffect(() => {
+		fetchList();
+		innitiatePushNotif();
+	}, []);
+
+	const innitiatePushNotif = async () => {
+		OneSignal.addSubscriptionObserver(async event => {
+			if (event.to.isSubscribed) {
+				const deviceState = await OneSignal.getDeviceState();
+				// dispatch(authAction.setDeviceID(deviceState.userId));
+				if (deviceState) pushXplayer(deviceState.userId);
+			}
+		});
+		const existingDeviceState = await OneSignal.getDeviceState();
+		if (existingDeviceState) pushXplayer(existingDeviceState.userId);
+	};
 
 	// show loading state
 	if (loading)
