@@ -120,6 +120,8 @@ export interface IArrivalConfirmation {
 	clientId: string;
 	clientName: string;
 	carts?: Array<string>;
+	needConfirm: boolean;
+	needConfirmNote?: string;
 }
 
 export interface IDelivery {
@@ -182,6 +184,7 @@ export interface IAddComplainDelivery {
 	qty: string,
 	category: string;
 	followUp: string;
+	receivedQty: string;
 }
 
 export interface IComplain {

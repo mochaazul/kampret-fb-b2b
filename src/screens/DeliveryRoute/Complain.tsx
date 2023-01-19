@@ -41,7 +41,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
-
+	const [showError, setShowError] = useState<string | null>(null);
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
 	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
@@ -51,7 +51,6 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
 
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
-
 		validationSchema: Auth.ComplainValidationSchema,
 		validateOnChange: enableFormikValidation,
 		validateOnBlur: enableFormikValidation,
@@ -70,28 +69,39 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
 			if (pureItemId) {
-				if (existing) {
-					editComplain({
-						deliveryId,
-						clientId,
-						complaintDescription: formik.values.description,
-						complainImageUrl: photos,
-						itemId: pureItemId,
-						qty: formik.values.qty,
-						category: formik.values.complainSelected,
-						followUp: formik.values.followupSelected
-					});
-				} else {
-					sendComplain({
-						deliveryId,
-						clientId,
-						complaintDescription: formik.values.description,
-						complainImageUrl: photos,
-						itemId: pureItemId,
-						qty: formik.values.qty,
-						category: formik.values.complainSelected,
-						followUp: formik.values.followupSelected
-					});
+				const complainQty = calculateComplainQty();
+				switch (complainQty) {
+					case '0':
+						setShowError('> QTY order : ' + qtyOrder?.order + ' kg  ');
+						break;
+					default:
+						if (showError) setShowError(null);
+						if (existing) {
+							editComplain({
+								deliveryId,
+								clientId,
+								complaintDescription: formik.values.description,
+								complainImageUrl: photos,
+								itemId: pureItemId,
+								qty: complainQty,
+								category: formik.values.complainSelected,
+								followUp: formik.values.followupSelected,
+								receivedQty: formik.values.qty
+							});
+						} else {
+							sendComplain({
+								deliveryId,
+								clientId,
+								complaintDescription: formik.values.description,
+								complainImageUrl: photos,
+								itemId: pureItemId,
+								qty: complainQty,
+								category: formik.values.complainSelected,
+								followUp: formik.values.followupSelected,
+								receivedQty: formik.values.qty
+							});
+						}
+
 				}
 
 			}
@@ -306,8 +316,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					<View style={ styles.row }>
 						<View style={ [styles.row, { flex: 3 }] }>
 							<Text format={ Fonts.textBody.l.bold as TextStyle }>Keluhan Barang</Text>
-							{ formik.errors.qty &&
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
+							{ showError &&
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ showError }</Text>
 							}
 						</View>
 						{/* <View style={ [styles.inputBorder, styles.rowInput] }>
