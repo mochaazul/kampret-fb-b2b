@@ -60,7 +60,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	// watcher to update list item
 	useEffect(() => {
-		if (arrivalData) setItemChecks(mappingItem(arrivalData).slice(0, 4));
+		if (arrivalData) setItemChecks(mappingItem(arrivalData));
 	}, [arrivalData]);
 
 	//watcher to hide bottomSheet after receive api response
