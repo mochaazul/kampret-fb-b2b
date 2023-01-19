@@ -134,7 +134,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	};
 
 	const renderCart = (checked: boolean, name: string, qty: number) => (
-		<View style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } }>
+		<View style={ { flexDirection: 'row', alignContent: 'center', alignItems: 'center' } } key={ name + '_' + qty }>
 			<TouchableOpacity
 				onPress={ () => {
 					const newValue = [...listCartReturned];
