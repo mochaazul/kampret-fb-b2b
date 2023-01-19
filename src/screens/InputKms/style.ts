@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
 		borderRadius: 10,
-		width: '80%'
+		width: '100%'
 	},
 });
 
