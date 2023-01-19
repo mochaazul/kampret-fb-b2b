@@ -24,34 +24,8 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
 
-	const [listCart, setListCart] = useState<DeliveryInterface.IDeliveryCart[]>(
-		[{
-			id: 'XL-Biru',
-			deliveryId: route.params?.deliveryId ?? '',
-			clientId: '',
-			qty: 1
-		},
-		{
-			id: 'L-Merah',
-			deliveryId: route.params?.deliveryId ?? '',
-			clientId: '',
-			qty: 2
-		}]
-	);
-	const [listSo, setListSo] = useState<DeliveryInterface.IDeliverySO[]>([
-		{
-			id: '889123122',
-			name: 'Sales Order 1',
-			deliveryId: route.params?.deliveryId ?? '',
-			clientId: ''
-		},
-		{
-			id: '889123123',
-			name: 'Sales Order 2',
-			deliveryId: route.params?.deliveryId ?? '',
-			clientId: ''
-		}
-	]);
+	const [listCart, setListCart] = useState<DeliveryInterface.IDeliveryCart[]>([]);
+	const [listSo, setListSo] = useState<string[]>([]);
 
 	useEffect(() => {
 		//auto reload using focus listener as trigger
@@ -104,8 +78,14 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 							onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
 							onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
 							onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
-							onClickCart={ () => setShowCart(true) }
-							onClickSo={ () => setShowListSo(true) }
+							onClickCart={ () => {
+								setListCart(item.carts ?? []);
+								setShowCart(true);
+							} }
+							onClickSo={ () => {
+								setListSo(item.listSo ?? []);
+								setShowListSo(true);
+							} }
 						/>
 					}
 					refreshing={ loading ? true : false }
@@ -153,7 +133,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 							paddingVertical: 15,
 						} }>
 							<Text format={ Fonts.textBody.l.bold as TextStyle } >Kode Keranjang: { cart.id }</Text>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } >Jumlah: { cart.qty }</Text>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } style={ { marginTop: 5 } } >Jumlah: { cart.qty }</Text>
 							<View style={ { height: 1, backgroundColor: Colors.gray.line, marginTop: 6 } } />
 						</View>
 					) }
@@ -168,14 +148,14 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 			>
 				<FlatList
 					data={ listSo }
-					keyExtractor={ item => item.id }
-					renderItem={ ({ item: so }) => (
+					keyExtractor={ (_item, index) => index.toString() }
+					renderItem={ ({ item: so, index }) => (
 						<View style={ {
 							paddingHorizontal: 20,
 							paddingVertical: 15,
 						} }>
-							<Text format={ Fonts.textBody.l.bold as TextStyle } >{ so.name }</Text>
-							<Text format={ Fonts.textBody.m.bold as TextStyle } >{ so.id }</Text>
+							<Text format={ Fonts.textBody.l.bold as TextStyle } >Sales Order { index + 1 }</Text>
+							<Text format={ Fonts.textBody.m.bold as TextStyle } style={ { marginTop: 5 } } >{ so }</Text>
 							<View style={ { height: 1, backgroundColor: Colors.gray.line, marginTop: 6 } } />
 						</View>
 					) }

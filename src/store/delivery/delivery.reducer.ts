@@ -168,6 +168,16 @@ const deliveryReducers = (
 						numItem: resp.item_order,
 						latitude: resp.client_lat,
 						longitude: resp.client_long,
+						numSo: resp.total_so,
+						listSo: resp.sales_no,
+						carts: resp.carts.map((cart) => ({
+							id: cart.cart_code,
+							deliveryId: deliveryId,
+							clientId: resp.client_no,
+							name: cart.cart_code,
+							type: '',
+							qty: cart.cart_qty
+						}))
 					};
 				});
 			return {

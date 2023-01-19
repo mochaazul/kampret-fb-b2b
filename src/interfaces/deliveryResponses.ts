@@ -123,6 +123,9 @@ export interface DeliveryProcessData {
 	item_order: number;
 	client_lat: number;
 	client_long: number;
+	total_so: number;
+	sales_no: string[];
+	carts: Cart[];
 }
 
 export interface ClientArrivalResponse {

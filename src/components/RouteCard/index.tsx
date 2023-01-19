@@ -51,6 +51,8 @@ const RouteCard = ({
 		numItem,
 		latitude,
 		longitude,
+		numSo,
+		carts,
 	} = client;
 
 	const onArrivedPressed = useCallback(() => {
@@ -303,7 +305,7 @@ const RouteCard = ({
 									color={ Colors.black.default }
 									style={ { marginTop: 6 } }
 								>
-									1
+									{ numSo }
 								</Text>
 							</TouchableOpacity>
 
@@ -326,7 +328,7 @@ const RouteCard = ({
 									color={ Colors.green.default }
 									style={ { marginTop: 6 } }
 								>
-									1
+									{ carts?.length }
 								</Text>
 							</TouchableOpacity>
 						</View>
