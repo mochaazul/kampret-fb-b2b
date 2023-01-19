@@ -15,11 +15,11 @@ export default {
 				device_model: ''
 			})
 			.then(response => {
-				console.log('reposn push', response);
+
 			})
 			.catch(error => {
 				// todo handle error
-				console.log('errrorr', error);
+
 			})
 			.finally(() => {
 
