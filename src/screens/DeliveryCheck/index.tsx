@@ -15,6 +15,7 @@ import ConfirmItem from "./ConfirmItem";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
 import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
+import Notes from "./Notes";
 
 import styles from "./styles";
 
@@ -34,6 +35,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
 	const [notes, setNotes] = useState<string | null>(null);
 	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
+	const [showNotes, setShowNotes] = useState<boolean>(false);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -85,7 +87,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			photoUri: '',
 			// returnChecked: [],
 		},
-		onSubmit: () => { setShowConfirm(true); },
+		onSubmit: () => { needConfirmMode ? setShowNotes(true) : setShowConfirm(true); },
 	});
 
 	const navigateToCapturePhoto = useCallback(
@@ -102,21 +104,21 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
 			);
 		}
-
+		const onError: boolean = formik.errors && formik.errors.photoUri ? true : false;
 		return (
-			<View style={ styles.addImage }>
+			<View style={ onError ? [styles.addImage, { borderColor: Colors.alert.red }] : styles.addImage }>
 				<Images.IconCamera />
 
 				<Text
 					format={ Fonts.textBody.l.bold as TextStyle }
-					color={ Colors.gray.default }
+					color={ onError ? Colors.alert.red : Colors.gray.default }
 					mt={ 20 }
 				>
 					+ Tambah Foto
 				</Text>
 			</View>
 		);
-	}, [miscState.tmpImageUri]);
+	}, [miscState.tmpImageUri, formik.errors]);
 
 	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null) => {
 
@@ -423,6 +425,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						setShowSuccessDialog(true);
 					} }
 				/>
+			</BottomSheet>
+			<BottomSheet
+				visible={ showNotes }
+				onRequestClose={ () => setShowNotes(false) }
+				noScroll>
+				<Notes onCreateNotes={ (notes) => { setNotes(notes); setShowNotes(false); setShowConfirm(true); } } />
 			</BottomSheet>
 
 		</Container >

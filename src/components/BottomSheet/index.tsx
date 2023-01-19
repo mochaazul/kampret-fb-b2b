@@ -129,8 +129,7 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		paddingBottom: 20,
-		//backgroundColor: Colors.white.pure,
-		backgroundColor: 'green',
+		backgroundColor: Colors.white.pure,
 		borderTopLeftRadius: 16,
 		borderTopRightRadius: 16,
 	}
