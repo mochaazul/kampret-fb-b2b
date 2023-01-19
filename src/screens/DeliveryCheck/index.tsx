@@ -60,7 +60,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	// watcher to update list item
 	useEffect(() => {
-		if (arrivalData) setItemChecks(mappingItem(arrivalData));
+		if (arrivalData) setItemChecks(mappingItem(arrivalData).slice(0, 4));
 	}, [arrivalData]);
 
 	//watcher to hide bottomSheet after receive api response
@@ -196,7 +196,17 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
 				<CheckItem { ...item }
-					onClickComplain={ (data) => setShowComplain(data) }
+					onClickComplain={ (data) => {
+						const newItems = [...itemChecks];
+						newItems[index].isComplain = newItems[index].isComplain ? false : true;
+
+						if (newItems[index].isComplain) newItems[index].isConfirm = false;
+
+						setItemChecks(newItems);
+
+						// TODO: add handler show complain dialog
+						// setShowComplain(data); 
+					} }
 					deliveryId={ route.params.deliveryId }
 					clientId={ route.params.clientId }
 					onClickConfirm={ (data) => setShowConfirmItem(data) }
@@ -204,6 +214,9 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					onCheckConfirm={ () => {
 						const newItems = [...itemChecks];
 						newItems[index].isConfirm = newItems[index].isConfirm ? false : true;
+
+						if (newItems[index].isConfirm) newItems[index].isComplain = false;
+
 						setItemChecks(newItems);
 					} }
 				/>
@@ -303,7 +316,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							useShadow={ true }
 							onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
 							loading={ arrivalLoading }
-						//disabled={ !formik.isValid }
+							disabled={ itemChecks.some((item) => !item.isComplain && !item.isConfirm) }
 						/>
 						<Button
 							type="outline"
