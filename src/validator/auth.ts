@@ -58,3 +58,7 @@ export const ReportIssueValidation = yup.object().shape({
 	title: yup.string().required('Title wajib diisi').nullable(),
 	image: yup.string().required('Foto wajib diisi').nullable(),
 });
+
+export const NotesValidation = yup.object().shape({
+	notes: yup.string().nullable()
+});
