@@ -1,4 +1,4 @@
-import { MutableRefObject, useRef } from "react";
+import { useRef } from "react";
 
 type AppInterval = {
 	start: () => void;
@@ -13,17 +13,12 @@ const useInterval = (
 
 	return {
 		start: () => {
-			console.log('start interval');
 			id.current = setInterval(
-				() => {
-					console.log('interval', new Date().getTime());
-					action();
-				},
+				() => action(),
 				timeout,
 			);
 		},
 		stop: () => {
-			console.log('stopping interval');
 			clearInterval(id.current);
 		},
 	};
