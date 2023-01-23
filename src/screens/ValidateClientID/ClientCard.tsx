@@ -56,7 +56,7 @@ const ClientCard = ({ customer, onOpenScanChoice, deliveryId }: ClientCardProps)
 		const numValidated = customer.numValidated ?? 0;
 		if (numValidated) {
 			item.color = Colors.green.default;
-			item.progress = numValidated / (customer.numItem ?? 0);
+			item.progress = customer.numItem ? numValidated / customer.numItem : 0;
 		}
 
 		return (

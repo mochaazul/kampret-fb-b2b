@@ -351,10 +351,12 @@ export default {
 				dispatch({
 					type: Dispatches.SET_DELIVERY_CLIENT,
 					payload: state.deliveryReducers.clientValidation.map((client) => {
-						if (client.id == params.clientId)
-							client.numValidated = items.filter((item) => item.validated && item.clientId == client.id).length;
+						const res = { ...client };
+						if (client.id == params.clientId) {
+							res.numValidated = items.filter((item) => item.validated && item.clientId == client.id).length;
+						}
 
-						return client;
+						return res;
 					})
 				});
 
