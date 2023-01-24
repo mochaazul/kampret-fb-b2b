@@ -316,8 +316,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					<View style={ styles.row }>
 						<View style={ [styles.row, { flex: 3 }] }>
 							<Text format={ Fonts.textBody.l.bold as TextStyle }>Keluhan Barang</Text>
-							{ showError &&
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ showError }</Text>
+							{ formik.errors.qty &&
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
 							}
 						</View>
 						{/* <View style={ [styles.inputBorder, styles.rowInput] }>

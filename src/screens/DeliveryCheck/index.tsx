@@ -138,15 +138,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						imageUrl: item.complaint_images,
 						followUp: item.complaint_follow_up
 					} : undefined,
-<<<<<<< HEAD
-					isConfirm: item.confirmed
-
-=======
+					isConfirm: item.confirmed,
 					qtyOrder: {
 						order: item.qty_order,
 						kgFactor: 3
 					}
->>>>>>> 2a0fc61 ([refactor] complain screen)
 				};
 			});
 		} else {
