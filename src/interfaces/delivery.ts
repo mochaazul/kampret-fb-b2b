@@ -196,6 +196,11 @@ export interface IComplainDialogProps {
 	clientId: string | undefined;
 	itemName: string | undefined;
 	existing?: IExistingComplain;
+	qtyOrder: {
+		order: number,
+		kgFactor: number;
+	};
+
 }
 
 export interface IExistingComplain {

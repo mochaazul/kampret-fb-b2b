@@ -21,6 +21,10 @@ export interface CheckItemProp {
 	itemIndex: number;
 	isConfirm?: boolean;
 	onCheckConfirm?: () => void;
+	qtyOrder: {
+		order: number,
+		kgFactor: number;
+	};
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
@@ -51,6 +55,20 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 	const renderComplainBtn = useMemo(() => {
 
+		const handleClickComplain = () => {
+			if (item.onClickComplain) {
+				item.onClickComplain(
+					{
+						deliveryRouteItemId: item.id,
+						deliveryId: item.deliveryId,
+						clientId: item.clientId,
+						itemName: item.name,
+						existing: item.existingComplain,
+						qtyOrder: item.qtyOrder
+					}
+				);
+			}
+		};
 		if (!item.isComplain) {
 			return (
 				<View style={ styles.buttonContainer }>
@@ -85,7 +103,8 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					deliveryId: item.deliveryId,
 					clientId: item.clientId,
 					itemName: item.name,
-					existing: item.existingComplain
+					existing: item.existingComplain,
+					qtyOrder: item.qtyOrder
 				}
 			);
 		}
@@ -98,7 +117,8 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					deliveryRouteItemId: item.id,
 					deliveryId: item.deliveryId,
 					clientId: item.clientId,
-					itemName: item.name
+					itemName: item.name,
+					qtyOrder: item.qtyOrder
 				}
 			);
 		}
