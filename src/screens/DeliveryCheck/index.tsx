@@ -187,10 +187,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							kgFactor: 3
 						}
 					}
-<<<<<<< HEAD
-
-=======
->>>>>>> 9ea6468 ([fixbug] failed run)
 				};
 			});
 		} else {
