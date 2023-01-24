@@ -25,10 +25,7 @@ export interface CheckItemProp {
 	};
 	isConfirm?: boolean;
 	onCheckConfirm?: () => void;
-	qtyOrder: {
-		order: number,
-		kgFactor: number;
-	};
+
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
