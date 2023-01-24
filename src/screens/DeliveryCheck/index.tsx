@@ -182,7 +182,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						order: item.qty_order,
 						kgFactor: 3
 					}
-
 				};
 			});
 		} else {
