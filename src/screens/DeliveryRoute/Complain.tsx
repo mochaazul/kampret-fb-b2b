@@ -2,11 +2,11 @@ import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView, TextI
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { PhotoFile } from 'react-native-vision-camera';
-import Toast from 'react-native-toast-message';
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { useAppDispatch, useAppSelector, useInterval } from '@helpers';
 import { Colors, Fonts, Images } from '@constant';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
@@ -42,6 +42,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
 	const [showError, setShowError] = useState<string | null>(null);
+	const [progress, setProgress] = useState(0);
+
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
 	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
@@ -49,6 +51,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 
 	//global state
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
+	const tmpApiResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
 
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
 		validationSchema: Auth.ComplainValidationSchema,
@@ -76,6 +79,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 						break;
 					default:
 						if (showError) setShowError(null);
+						interval.start();
 						if (existing) {
 							editComplain({
 								deliveryId,
@@ -110,6 +114,37 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	});
 
 	useEffect(() => {
+		if (!complainLoading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
+	}, [complainLoading]);
+
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
+	const renderProgress = useMemo(() => {
+		console.log('prog', progress);
+		if (progress > 80) {
+			interval.stop();
+		}
+
+		if (progress)
+			return (
+				<ProgressBar
+					styleAttr='Horizontal'
+					indeterminate={ false }
+					progress={ progress * .01 }
+					color={ Colors.company.red }
+					style={ styles.progressBar }
+				/>
+
+			);
+	}, [progress]);
+
+	useEffect(() => {
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
@@ -123,6 +158,9 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				setPhotos(existing.imageUrl);
 			}
 		}
+		return function () {
+			interval.stop();
+		};
 	}, []);
 
 
@@ -150,7 +188,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				if (result < 0) {
 					return '0';
 				}
-				return result + '';
+				return result.toFixed(1) + '';
 			} else {
 				return '' + qtyOrder.order;
 			}
@@ -239,7 +277,6 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 							placeholder='0'
 							maxLength={ 4 }
 							placeholderTextColor={ Colors.gray.default }
-
 						/>
 						<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
 					</View>
@@ -308,7 +345,12 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					<Images.IconClose />
 				</TouchableOpacity>
 			</View>
-
+			{ tmpApiResult &&
+				<View style={ [styles.card, { marginBottom: 20, flexDirection: 'row', alignItems: 'center' }] }>
+					<Images.IconWarnRed style={ { marginRight: 20 } } />
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ tmpApiResult }</Text>
+				</View>
+			}
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
 				{ memoizedRenderComplainTitle }
 				{ renderItemReceived() }
@@ -369,11 +411,12 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					mt={ 20 }
 				/>
 				<View style={ styles.card }>
-					<View style={ styles.row }>
+					<View style={ [styles.row, { alignContent: 'center' }] }>
 						<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
 						{ formik.errors.photoTaken &&
 							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
 						}
+						{ !formik.errors.photoTaken && renderProgress }
 					</View>
 					{ memoizedRenderImage }
 				</View>
@@ -516,5 +559,11 @@ const styles = StyleSheet.create({
 		// justifyContent: 'space-between',
 		alignItems: 'center',
 		flex: 1
+	},
+	progressBar: {
+		marginHorizontal: 10,
+		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
+		borderRadius: 10,
+		width: '100%'
 	},
 });

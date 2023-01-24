@@ -201,6 +201,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	}, [arrivalData?.carts, listCartReturned]);
 
 	const renderListItem = useMemo(() => {
+		console.log('item', itemChecks);
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
@@ -218,7 +219,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					} }
 					deliveryId={ route.params.deliveryId }
 					clientId={ route.params.clientId }
-					onClickConfirm={ (data) => setShowConfirmItem(data) }
+					onClickConfirm={ (data) => null }
 					itemIndex={ index }
 					onCheckConfirm={ () => {
 						const newItems = [...itemChecks];
@@ -331,7 +332,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 								formik.handleSubmit();
 							} }
 							loading={ arrivalLoading }
-							disabled={ itemChecks.some((item) => !item.isComplain && !item.isConfirm) }
+							disabled={ itemChecks.some((item) => !item.isComplain ? !item.isConfirm : false) }
 						/>
 						<Button
 							type="outline"

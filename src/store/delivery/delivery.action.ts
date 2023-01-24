@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import Toast from 'react-native-toast-message';
+import { AxiosError } from 'axios';
 
 import { Dispatches, Endpoints } from '@constant';
 import { API, NavigationHelper } from '@helpers';
@@ -697,8 +698,11 @@ export default {
 		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
 			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`, [])
 			.then(response => {
+				console.log('arrived', response);
 				NavigationHelper.push('DeliveryCheck', { deliveryId, clientId });
-			})
+			}).catch(e =>
+				console.log('error arrived', e)
+			)
 			.finally(() => {
 				// turn off loading arrival process
 				dispatch({
@@ -876,7 +880,7 @@ export default {
 			type: Dispatches.LOADING_COMPLAIN,
 			payload: true
 		});
-
+		console.log('api add complain', params);
 		const formData = new FormData();
 		// convert string array to string obj like Blob model
 		const imageObj = params.complainImageUrl.map((img, index) => ({
@@ -902,7 +906,7 @@ export default {
 			formData
 		)
 			.then((response) => {
-
+				console.log('complain sukses', response);
 				dispatch({
 					type: Dispatches.CLIENT_ARRIVAL_DATA,
 					payload: response.data,
@@ -913,8 +917,13 @@ export default {
 				});
 
 			})
-			.catch((error) => {
-
+			.catch((error: AxiosError) => {
+				console.log('complain error', error);
+				const errorData: any = error.response?.data ? error.response?.data : null;
+				dispatch({
+					type: Dispatches.COMPLAIN_RESULT,
+					payload: errorData ? errorData.stat_msg : 'complain error',
+				});
 			})
 			.finally(() => {
 				// set loading input km to false
