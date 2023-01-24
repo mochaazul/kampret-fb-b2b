@@ -187,7 +187,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							kgFactor: 3
 						}
 					}
-
 				};
 			});
 		} else {
