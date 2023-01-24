@@ -73,7 +73,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
 			if (pureItemId) {
-				const complainQty = calculateComplainQty();
+				const complainQty = !formik.values.complainQty ? calculateComplainQty() : formik.values.complainQty;
 				switch (complainQty) {
 					case '0':
 						setShowError('> QTY order : ' + qtyOrder?.order + ' kg  ');
