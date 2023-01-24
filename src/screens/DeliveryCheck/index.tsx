@@ -245,7 +245,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	}, [arrivalData?.carts, listCartReturned]);
 
 	const renderListItem = useMemo(() => {
-		console.log('item', itemChecks);
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
