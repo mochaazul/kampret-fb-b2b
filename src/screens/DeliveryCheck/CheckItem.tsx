@@ -25,6 +25,7 @@ export interface CheckItemProp {
 	};
 	isConfirm?: boolean;
 	onCheckConfirm?: () => void;
+
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {

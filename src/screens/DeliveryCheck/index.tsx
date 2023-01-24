@@ -177,7 +177,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						imageUrl: item.complaint_images,
 						followUp: item.complaint_follow_up
 					} : undefined,
-
 					isConfirm: item.confirmed,
 					qtyOrder: {
 						order: item.qty_order,
