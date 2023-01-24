@@ -19,6 +19,10 @@ export interface CheckItemProp {
 	clientId?: string;
 	existingComplain?: DeliveryInterface.IExistingComplain;
 	itemIndex: number;
+	qtyOrder: {
+		order: number,
+		kgFactor: number;
+	};
 	isConfirm?: boolean;
 	onCheckConfirm?: () => void;
 	qtyOrder: {
