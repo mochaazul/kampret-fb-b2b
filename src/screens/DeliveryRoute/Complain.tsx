@@ -410,7 +410,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					mt={ 20 }
 				/>
 				<View style={ styles.card }>
-					<View style={ [styles.row, { alignContent: 'center' }] }>
+					<View style={ styles.row }>
 						<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
 						{ formik.errors.photoTaken &&
 							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
