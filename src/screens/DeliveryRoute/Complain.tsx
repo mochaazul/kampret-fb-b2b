@@ -43,6 +43,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	const [showCamera, setShowCamera] = useState<boolean>(false);
 	const [showError, setShowError] = useState<string | null>(null);
 	const [progress, setProgress] = useState(0);
+	const [editReceived, setEditReceived] = useState<boolean>(false);
 
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
@@ -144,14 +145,16 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	}, [progress]);
 
 	useEffect(() => {
+		console.log('exist', existing);
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
-				qty: existing.qty + '',
+				qty: existing.qtyReceived + '',
 				followupSelected: existing.followUp,
 				complainSelected: existing.category,
 				photoTaken: existing.imageUrl && existing.imageUrl.length !== 0 ? true : false,
-				complainQty: null
+				complainQty: existing.qty + '',
+
 			});
 			if (existing.imageUrl && existing.imageUrl.length !== 0) {
 				setPhotos(existing.imageUrl);
@@ -374,11 +377,35 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 							/>
 							<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
 						</View> */}
-						<View style={ styles.row }>
-							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Qty :</Text>
-							<Text format={ Fonts.textBody.s.bold as TextStyle } color={ Colors.gray.default }>{ calculateComplainQty() } Kg</Text>
-						</View>
 
+						{ !editReceived &&
+							<View style={ styles.row }>
+
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Qty :</Text>
+								<View style={ styles.row }>
+									<Text format={ Fonts.textBody.s.bold as TextStyle } color={ Colors.gray.default }>{ calculateComplainQty() } Kg</Text>
+									<TouchableOpacity onPress={ () => setEditReceived(true) }
+										style={ { paddingVertical: 20, marginHorizontal: 15 } }
+									>
+										<Images.IconEdit />
+									</TouchableOpacity>
+								</View>
+							</View>
+						}
+						{ editReceived &&
+							<View style={ [styles.inputBorder, styles.rowInput] }>
+								<TextInput
+									value={ formik.values.complainQty ? formik.values.complainQty : undefined }
+									onChangeText={ text => formik.setFieldValue('complainQty', text) }
+									style={ [Fonts.heading.h2 as TextStyle, { padding: 0 }] }
+									keyboardType='numeric'
+									placeholder='0'
+									maxLength={ 4 }
+									placeholderTextColor={ Colors.gray.default }
+								/>
+								<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
+							</View>
+						}
 					</View>
 				</View>
 				<View style={ [styles.row, styles.card] }>

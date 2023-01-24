@@ -54,6 +54,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		},
 		onSubmit: () => {
 			if (route.params?.deliveryLocation) {
+				interval.start();
 				inputKmOnFinish({
 					finishLocation: route.params.deliveryLocation,
 					finishOdometer_image: previewImgURI,

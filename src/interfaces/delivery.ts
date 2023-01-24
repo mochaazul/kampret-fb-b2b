@@ -212,4 +212,5 @@ export interface IExistingComplain {
 	qty: number;
 	imageUrl: string[] | null;
 	followUp: string;
+	qtyReceived?: number;
 }
