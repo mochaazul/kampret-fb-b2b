@@ -1,10 +1,11 @@
 import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
+import { Image, ScrollView, TextStyle, TouchableOpacity, View, StyleSheet } from "react-native";
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from "@helpers";
+import { NavigationHelper, useAppDispatch, useAppSelector, Ratio, useInterval } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
 import { NavigationProps, DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
@@ -15,6 +16,7 @@ import ConfirmItem from "./ConfirmItem";
 import CheckItem, { CheckItemProp } from "./CheckItem";
 import ConfirmArrival from "./ConfirmArrival";
 import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
+import Notes from "./Notes";
 
 import styles from "./styles";
 
@@ -32,6 +34,10 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showConfirm, setShowConfirm] = useState<boolean>(false);
 	const [enableValidation, setEnableValidation] = useState<boolean>(false);
 	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
+	const [notes, setNotes] = useState<string | null>(null);
+	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
+	const [showNotes, setShowNotes] = useState<boolean>(false);
+	const [progress, setProgress] = useState(0);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -55,8 +61,42 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		return function () {
 			setTmpImgUri('');
 			setMultiplePhotoCapture(null);
+			setNotes(null);
+			setNeedConfirmMode(false);
+			interval.stop();
 		};
 	}, []);
+
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
+	useEffect(() => {
+		if (!arrivalLoading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
+	}, [arrivalLoading]);
+
+	const renderProgress = useMemo(() => {
+		if (progress > 80) {
+			interval.stop();
+		}
+
+		if (progress)
+			return (
+				<View style={ [styles.addImage, StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }] }>
+					<ProgressBar
+						styleAttr='Horizontal'
+						indeterminate={ false }
+						progress={ progress * .01 }
+						color={ Colors.company.red }
+						style={ styles.progressBar }
+					/>
+				</View>
+			);
+	}, [progress]);
 
 	// watcher to update list item
 	useEffect(() => {
@@ -81,7 +121,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			photoUri: '',
 			// returnChecked: [],
 		},
-		onSubmit: () => { setShowConfirm(true); },
+		onSubmit: () => { needConfirmMode ? setShowNotes(true) : setShowConfirm(true); },
 	});
 
 	const navigateToCapturePhoto = useCallback(
@@ -95,24 +135,29 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		if (miscState.tmpImageUri) {
 			formik.setFieldValue('photoUri', miscState.tmpImageUri);
 			return (
-				<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
+				<View style={ { position: 'relative' } }>
+					<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
+					{ renderProgress }
+				</View>
+
 			);
 		}
 
+		const onError: boolean = formik.errors && formik.errors.photoUri ? true : false;
 		return (
-			<View style={ styles.addImage }>
+			<View style={ onError ? [styles.addImage, { borderColor: Colors.alert.red }] : styles.addImage }>
 				<Images.IconCamera />
 
 				<Text
 					format={ Fonts.textBody.l.bold as TextStyle }
-					color={ Colors.gray.default }
+					color={ onError ? Colors.alert.red : Colors.gray.default }
 					mt={ 20 }
 				>
 					+ Tambah Foto
 				</Text>
 			</View>
 		);
-	}, [miscState.tmpImageUri]);
+	}, [miscState.tmpImageUri, formik.errors, progress]);
 
 	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null) => {
 
@@ -132,8 +177,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						imageUrl: item.complaint_images,
 						followUp: item.complaint_follow_up
 					} : undefined,
-					isConfirm: item.confirmed
-
+					isConfirm: item.confirmed,
+					qtyOrder: {
+						order: item.qty_order,
+						kgFactor: 3
+					}
 				};
 			});
 		} else {
@@ -205,11 +253,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						setItemChecks(newItems);
 
 						// TODO: add handler show complain dialog
-						// setShowComplain(data); 
+						setShowComplain(data);
 					} }
 					deliveryId={ route.params.deliveryId }
 					clientId={ route.params.clientId }
-					onClickConfirm={ (data) => setShowConfirmItem(data) }
+					onClickConfirm={ (data) => null }
 					itemIndex={ index }
 					onCheckConfirm={ () => {
 						const newItems = [...itemChecks];
@@ -314,9 +362,15 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							weight='700'
 							mt={ 30 }
 							useShadow={ true }
-							onPress={ () => { setEnableValidation(true); formik.handleSubmit(); } }
+							onPress={ () => {
+								if (needConfirmMode) {
+									setNeedConfirmMode(false);
+								}
+								setEnableValidation(true);
+								formik.handleSubmit();
+							} }
 							loading={ arrivalLoading }
-							disabled={ itemChecks.some((item) => !item.isComplain && !item.isConfirm) }
+							disabled={ itemChecks.some((item) => !item.isComplain ? !item.isConfirm : false) }
 						/>
 						<Button
 							type="outline"
@@ -327,7 +381,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							weight='700'
 							mt={ 20 }
 							useShadow={ true }
-							onPress={ () => console.log('pressed') }
+							onPress={ () => {
+								if (!needConfirmMode) {
+									setNeedConfirmMode(true);
+								}
+								setEnableValidation(true);
+								formik.handleSubmit();
+							} }
 
 						/>
 					</View>
@@ -356,6 +416,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ showComplain ? showComplain.clientId : undefined }
 					itemName={ showComplain ? showComplain.itemName : undefined }
 					existing={ showComplain ? showComplain.existing : undefined }
+					qtyOrder={ showComplain ? showComplain.qtyOrder : undefined }
 				/>
 			</BottomSheet>
 
@@ -385,18 +446,27 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				<ConfirmArrival
 					onClose={ () => setShowConfirm(false) }
 					onConfirm={ () => {
+						interval.start();
 						arrivalConfirmation({
 							recipientName: formik.values.receiverName,
 							imageUrl: formik.values.photoUri,
 							carts: listCartReturned.filter((cart) => cart != ''),
 							deliveryId: route.params.deliveryId,
 							clientId: route.params.clientId,
-							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : ''
+							clientName: arrivalData && arrivalData.client_name ? arrivalData.client_name : '',
+							needConfirm: needConfirmMode,
+							needConfirmNote: notes
 						});
 						setShowConfirm(false);
 						setShowSuccessDialog(true);
 					} }
 				/>
+			</BottomSheet>
+			<BottomSheet
+				visible={ showNotes }
+				onRequestClose={ () => setShowNotes(false) }
+				noScroll>
+				<Notes onCreateNotes={ (notes) => { setNotes(notes); setShowNotes(false); setShowConfirm(true); } } />
 			</BottomSheet>
 
 		</Container >

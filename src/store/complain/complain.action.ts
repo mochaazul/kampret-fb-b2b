@@ -18,7 +18,10 @@ export default {
 		API.delete<MiscInterface.BE<null>>
 			(`${ Endpoints.DELIVERY_COMPLAIN(params.deliveryId, params.clientId, params.itemId) }`)
 			.then(response => {
-
+				dispatch({
+					type: Dispatches.COMPLAIN_RESULT,
+					payload: 'success',
+				});
 			})
 			.finally(() => {
 				// set loading delivery list to false

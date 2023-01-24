@@ -41,4 +41,12 @@ export default StyleSheet.create({
 		borderWidth: 1,
 		height: 160
 	},
+
+	progressBar: {
+		marginTop: 10,
+		marginBottom: 20,
+		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
+		borderRadius: 10,
+		width: '100%'
+	},
 });

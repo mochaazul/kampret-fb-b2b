@@ -1,5 +1,6 @@
 import { FlatList, TextStyle, View } from 'react-native';
 import React, { useEffect } from 'react';
+import { PermissionsAndroid, Platform } from "react-native";
 
 import styles from './style';
 import DeliveryHistoryItem from './DeliveryHistoryItem';
@@ -16,6 +17,20 @@ const DeliveryHistory = () => {
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryHistory);
 
 	useEffect(() => { fetchList(); }, []);
+
+	const requestLocationPermission = async () => {
+		if (Platform.OS === 'ios') {
+
+		} else {
+			try {
+				const granted = await PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+				);
+			} catch (err) {
+				console.warn(err);
+			}
+		}
+	};
 
 	// show loading state
 	if (loading)

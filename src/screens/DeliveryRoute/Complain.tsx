@@ -2,11 +2,11 @@ import { StyleSheet, TextStyle, View, Image, TouchableOpacity, ScrollView, TextI
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { PhotoFile } from 'react-native-vision-camera';
-import Toast from 'react-native-toast-message';
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Input, Button, Text, Dropdown, CameraWidget } from '@components';
 import { Auth } from '@validator';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { useAppDispatch, useAppSelector, useInterval } from '@helpers';
 import { Colors, Fonts, Images } from '@constant';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
@@ -17,6 +17,10 @@ interface ComplainProps {
 	clientId: string | undefined;
 	itemName: string | undefined;
 	existing?: DeliveryInterface.IExistingComplain;
+	qtyOrder: {
+		order: number,
+		kgFactor: number;
+	} | undefined;
 }
 interface IComplain {
 	description: string | null;
@@ -24,6 +28,7 @@ interface IComplain {
 	complainSelected: string | null;
 	followupSelected: string | null;
 	photoTaken: boolean;
+	complainQty: string | null;
 }
 const complainDropdown = [
 	{ key: '1', value: 'Kuantitas Tidak Sesuai' },
@@ -31,11 +36,13 @@ const complainDropdown = [
 	{ key: '3', value: 'Barang Tidak Sesuai Spek' },
 ];
 
-const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName, existing }: ComplainProps) => {
+const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName, existing, qtyOrder }: ComplainProps) => {
 	// states
 	const [enableFormikValidation, setEnableFormikValidation] = useState<boolean>(false);
 	const [photos, setPhotos] = useState<null | string[]>(null);
 	const [showCamera, setShowCamera] = useState<boolean>(false);
+	const [showError, setShowError] = useState<string | null>(null);
+	const [progress, setProgress] = useState(0);
 
 	//actions
 	const sendComplain = useAppDispatch(Actions.deliveryAction.addComplaint);
@@ -44,9 +51,9 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 
 	//global state
 	const complainLoading = useAppSelector(state => state.deliveryReducers.loadingComplain);
+	const tmpApiResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
 
 	const formik: FormikProps<IComplain> = useFormik<IComplain>({
-
 		validationSchema: Auth.ComplainValidationSchema,
 		validateOnChange: enableFormikValidation,
 		validateOnBlur: enableFormikValidation,
@@ -55,7 +62,8 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 			qty: null,
 			followupSelected: '9',
 			complainSelected: '9',
-			photoTaken: false
+			photoTaken: false,
+			complainQty: null
 		},
 		onSubmit: () => {
 			//split itemID by '-'
@@ -64,28 +72,40 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				pureItemId = deliveryRouteItemId.split('-')[1];
 			}
 			if (pureItemId) {
-				if (existing) {
-					editComplain({
-						deliveryId,
-						clientId,
-						complaintDescription: formik.values.description,
-						complainImageUrl: photos,
-						itemId: pureItemId,
-						qty: formik.values.qty,
-						category: formik.values.complainSelected,
-						followUp: formik.values.followupSelected
-					});
-				} else {
-					sendComplain({
-						deliveryId,
-						clientId,
-						complaintDescription: formik.values.description,
-						complainImageUrl: photos,
-						itemId: pureItemId,
-						qty: formik.values.qty,
-						category: formik.values.complainSelected,
-						followUp: formik.values.followupSelected
-					});
+				const complainQty = calculateComplainQty();
+				switch (complainQty) {
+					case '0':
+						setShowError('> QTY order : ' + qtyOrder?.order + ' kg  ');
+						break;
+					default:
+						if (showError) setShowError(null);
+						interval.start();
+						if (existing) {
+							editComplain({
+								deliveryId,
+								clientId,
+								complaintDescription: formik.values.description,
+								complainImageUrl: photos,
+								itemId: pureItemId,
+								qty: complainQty,
+								category: formik.values.complainSelected,
+								followUp: formik.values.followupSelected,
+								receivedQty: formik.values.qty
+							});
+						} else {
+							sendComplain({
+								deliveryId,
+								clientId,
+								complaintDescription: formik.values.description,
+								complainImageUrl: photos,
+								itemId: pureItemId,
+								qty: complainQty,
+								category: formik.values.complainSelected,
+								followUp: formik.values.followupSelected,
+								receivedQty: formik.values.qty
+							});
+						}
+
 				}
 
 			}
@@ -94,18 +114,52 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	});
 
 	useEffect(() => {
+		if (!complainLoading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
+	}, [complainLoading]);
+
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
+	const renderProgress = useMemo(() => {
+		if (progress > 80) {
+			interval.stop();
+		}
+
+		if (progress)
+			return (
+				<ProgressBar
+					styleAttr='Horizontal'
+					indeterminate={ false }
+					progress={ progress * .01 }
+					color={ Colors.company.red }
+					style={ styles.progressBar }
+				/>
+
+			);
+	}, [progress]);
+
+	useEffect(() => {
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
 				qty: existing.qty + '',
 				followupSelected: existing.followUp,
 				complainSelected: existing.category,
-				photoTaken: existing.imageUrl && existing.imageUrl.length !== 0 ? true : false
+				photoTaken: existing.imageUrl && existing.imageUrl.length !== 0 ? true : false,
+				complainQty: null
 			});
 			if (existing.imageUrl && existing.imageUrl.length !== 0) {
 				setPhotos(existing.imageUrl);
 			}
 		}
+		return function () {
+			interval.stop();
+		};
 	}, []);
 
 
@@ -126,6 +180,22 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 		}
 	};
 
+	const calculateComplainQty = (): string => {
+		if (qtyOrder) {
+			if (formik.values.qty) {
+				const result = qtyOrder.order - parseFloat(formik.values.qty);
+				if (result < 0) {
+					return '0';
+				}
+				return result.toFixed(1) + '';
+			} else {
+				return '' + qtyOrder.order;
+			}
+		} else {
+			return '0';
+		}
+
+	};
 	const handleEditComplain = () => {
 		editComplain({
 			deliveryId: deliveryId,
@@ -190,6 +260,30 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 		);
 	}, [itemName]);
 
+	const renderItemReceived = () => {
+
+		return (
+			<View style={ styles.card }>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } style={ styles.headerTitle }>Penerimaan Barang</Text>
+				<View style={ [styles.box, { alignItems: 'center' }] }>
+					<Text format={ Fonts.textBody.s.bold as TextStyle } style={ [styles.headerTitle, { flex: 3 }] } color={ Colors.gray.default }>Qty Barang Diterima</Text>
+					<View style={ [styles.inputBorder, styles.rowInput] }>
+						<TextInput
+							value={ formik.values.qty ? formik.values.qty : undefined }
+							onChangeText={ text => formik.setFieldValue('qty', text) }
+							style={ [Fonts.heading.h2 as TextStyle, { padding: 0 }] }
+							keyboardType='numeric'
+							placeholder='0'
+							maxLength={ 4 }
+							placeholderTextColor={ Colors.gray.default }
+						/>
+						<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
+					</View>
+				</View>
+			</View>
+		);
+	};
+
 	const memoizedRenderImage = useMemo(() => {
 		// view photos when exist on local state
 		if (photos) {
@@ -250,9 +344,43 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 					<Images.IconClose />
 				</TouchableOpacity>
 			</View>
-
+			{ tmpApiResult &&
+				<View style={ [styles.card, { marginBottom: 20, flexDirection: 'row', alignItems: 'center' }] }>
+					<Images.IconWarnRed style={ { marginRight: 20 } } />
+					<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>{ tmpApiResult }</Text>
+				</View>
+			}
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
 				{ memoizedRenderComplainTitle }
+				{ renderItemReceived() }
+				<View style={ styles.card }>
+					<View style={ styles.row }>
+						<View style={ [styles.row, { flex: 3 }] }>
+							<Text format={ Fonts.textBody.l.bold as TextStyle }>Keluhan Barang</Text>
+							{ formik.errors.qty &&
+								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
+							}
+						</View>
+						{/* <View style={ [styles.inputBorder, styles.rowInput] }>
+							<TextInput
+								value={ formik.values.complainQty ? formik.values.complainQty : undefined }
+								onChangeText={ text => formik.setFieldValue('complainQty', text) }
+								style={ Fonts.heading.h2 as TextStyle }
+								keyboardType='numeric'
+								placeholder='0'
+								maxLength={ 4 }
+								placeholderTextColor={ Colors.gray.default }
+
+							/>
+							<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
+						</View> */}
+						<View style={ styles.row }>
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.gray.default }>Qty :</Text>
+							<Text format={ Fonts.textBody.s.bold as TextStyle } color={ Colors.gray.default }>{ calculateComplainQty() } Kg</Text>
+						</View>
+
+					</View>
+				</View>
 				<View style={ [styles.row, styles.card] }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Kategori Keluhan</Text>
 					{ formik.errors.complainSelected &&
@@ -283,35 +411,14 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				/>
 				<View style={ styles.card }>
 					<View style={ styles.row }>
-						<View style={ [styles.row, { flex: 3 }] }>
-							<Text format={ Fonts.textBody.l.bold as TextStyle }>Masukkan Qty Keluhan</Text>
-							{ formik.errors.qty &&
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
-							}
-						</View>
-						<View style={ [styles.inputBorder, styles.rowInput] }>
-							<TextInput
-								value={ formik.values.qty ? formik.values.qty : undefined }
-								onChangeText={ text => formik.setFieldValue('qty', text) }
-								style={ Fonts.heading.h2 as TextStyle }
-								keyboardType='numeric'
-								placeholder='0'
-								maxLength={ 4 }
-								placeholderTextColor={ Colors.gray.default }
-
-							/>
-							<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
-						</View>
-
+						<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
+						{ formik.errors.photoTaken &&
+							<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
+						}
+						{ !formik.errors.photoTaken && renderProgress }
 					</View>
+					{ memoizedRenderImage }
 				</View>
-				<View style={ styles.row }>
-					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Foto</Text>
-					{ formik.errors.photoTaken &&
-						<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib lampirkan foto</Text>
-					}
-				</View>
-				{ memoizedRenderImage }
 				{/* TAKE_OUT <View style={ styles.card }>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Bukti Video</Text>
 
@@ -368,7 +475,7 @@ const styles = StyleSheet.create({
 	container: {
 		padding: 20,
 		flex: -1,
-		backgroundColor: Colors.white.pure
+		backgroundColor: Colors.gray.light
 	},
 	row: {
 		flexDirection: 'row',
@@ -376,7 +483,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center'
 	},
 	card: {
-		marginTop: 20
+		marginTop: 20,
+		backgroundColor: Colors.white.pure
 	},
 	addGallery: {
 		justifyContent: 'center',
@@ -421,7 +529,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	scroll: {
-		paddingBottom: 30
+		paddingBottom: 30,
+		backgroundColor: Colors.gray.light
 	},
 	firstCard: {
 		marginBottom: 10
@@ -430,7 +539,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'row'
 	},
 	inputBorder: {
-		padding: 10, flex: 1, borderColor: Colors.black.default, borderWidth: 1, borderRadius: 10
+		padding: 10,
+		flex: 2,
+		borderColor: Colors.black.default,
+		borderWidth: 1,
+		borderRadius: 10
 	},
 	rowInput: {
 		flexDirection: 'row',
@@ -445,5 +558,11 @@ const styles = StyleSheet.create({
 		// justifyContent: 'space-between',
 		alignItems: 'center',
 		flex: 1
+	},
+	progressBar: {
+		marginHorizontal: 10,
+		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
+		borderRadius: 10,
+		width: '100%'
 	},
 });

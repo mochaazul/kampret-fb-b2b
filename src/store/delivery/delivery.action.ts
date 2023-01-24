@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import Toast from 'react-native-toast-message';
+import { AxiosError } from 'axios';
 
 import { Dispatches, Endpoints } from '@constant';
 import { API, NavigationHelper } from '@helpers';
@@ -697,6 +698,7 @@ export default {
 		API.post<MiscInterface.BE<DeliveryResponseInterface.DeliveryHistoryList[]>>
 			(`${ Endpoints.JUST_ARRIVE(deliveryId, clientId) }`, [])
 			.then(response => {
+
 				NavigationHelper.push('DeliveryCheck', { deliveryId, clientId });
 			})
 			.finally(() => {
@@ -757,6 +759,8 @@ export default {
 		} as any);
 		formData.append('recipient_name', params.recipientName);
 		formData.append('carts', params.carts?.join(';') ?? '');
+		formData.append('need_confirm', params.needConfirm ? 'true' : 'false');
+		formData.append('need_confirm_notes', params.needConfirmNote ? params.needConfirmNote : '');
 
 		API.upload(
 			Endpoints.ARRIVAL_CONFIRMATION(params.deliveryId, params.clientId),
@@ -893,6 +897,7 @@ export default {
 		formData.append('complaint_qty', params.qty);
 		formData.append('complaint_category', params.category);
 		formData.append('complaint_follow_up', params.followUp);
+		formData.append('received_qty', params.receivedQty);
 
 		API.upload(
 			Endpoints.ADD_COMPLAINT(params.deliveryId, params.clientId),
@@ -910,8 +915,13 @@ export default {
 				});
 
 			})
-			.catch((error) => {
+			.catch((error: AxiosError) => {
 
+				const errorData: any = error.response?.data ? error.response?.data : null;
+				dispatch({
+					type: Dispatches.COMPLAIN_RESULT,
+					payload: errorData ? errorData.stat_msg : 'complain error',
+				});
 			})
 			.finally(() => {
 				// set loading input km to false
