@@ -187,7 +187,6 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				if (result < 0) {
 					return '0';
 				}
-
 				return result.toFixed(1) + '';
 			} else {
 				return '' + qtyOrder.order;
