@@ -187,7 +187,11 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 				if (result < 0) {
 					return '0';
 				}
+<<<<<<< HEAD
 				return result.toFixed(1) + '';
+=======
+				return result + '';
+>>>>>>> e5523a9 ([conflict] resolved)
 			} else {
 				return '' + qtyOrder.order;
 			}
@@ -276,6 +280,10 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 							placeholder='0'
 							maxLength={ 4 }
 							placeholderTextColor={ Colors.gray.default }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e5523a9 ([conflict] resolved)
 						/>
 						<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.gray.default }>Kg</Text>
 					</View>
