@@ -126,7 +126,6 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	);
 
 	const renderProgress = useMemo(() => {
-		console.log('prog', progress);
 		if (progress > 80) {
 			interval.stop();
 		}

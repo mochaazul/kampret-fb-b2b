@@ -1,10 +1,11 @@
 import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
 import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, TextStyle, TouchableOpacity, View, FlatList } from "react-native";
+import { Image, ScrollView, TextStyle, TouchableOpacity, View, StyleSheet } from "react-native";
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from "@helpers";
+import { NavigationHelper, useAppDispatch, useAppSelector, Ratio, useInterval } from "@helpers";
 import { Delivery } from "@validator";
 import { Actions } from "@store";
 import { NavigationProps, DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
@@ -36,6 +37,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [notes, setNotes] = useState<string | null>(null);
 	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
 	const [showNotes, setShowNotes] = useState<boolean>(false);
+	const [progress, setProgress] = useState(0);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -61,8 +63,40 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			setMultiplePhotoCapture(null);
 			setNotes(null);
 			setNeedConfirmMode(false);
+			interval.stop();
 		};
 	}, []);
+
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
+	useEffect(() => {
+		if (!arrivalLoading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
+	}, [arrivalLoading]);
+
+	const renderProgress = useMemo(() => {
+		if (progress > 80) {
+			interval.stop();
+		}
+
+		if (progress)
+			return (
+				<View style={ [styles.addImage, StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }] }>
+					<ProgressBar
+						styleAttr='Horizontal'
+						indeterminate={ false }
+						progress={ progress * .01 }
+						color={ Colors.company.red }
+						style={ styles.progressBar }
+					/>
+				</View>
+			);
+	}, [progress]);
 
 	// watcher to update list item
 	useEffect(() => {
@@ -101,9 +135,14 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		if (miscState.tmpImageUri) {
 			formik.setFieldValue('photoUri', miscState.tmpImageUri);
 			return (
-				<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
+				<View style={ { position: 'relative' } }>
+					<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
+					{ renderProgress }
+				</View>
+
 			);
 		}
+
 		const onError: boolean = formik.errors && formik.errors.photoUri ? true : false;
 		return (
 			<View style={ onError ? [styles.addImage, { borderColor: Colors.alert.red }] : styles.addImage }>
@@ -118,7 +157,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				</Text>
 			</View>
 		);
-	}, [miscState.tmpImageUri, formik.errors]);
+	}, [miscState.tmpImageUri, formik.errors, progress]);
 
 	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null) => {
 
@@ -201,7 +240,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	}, [arrivalData?.carts, listCartReturned]);
 
 	const renderListItem = useMemo(() => {
-		console.log('item', itemChecks);
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
@@ -408,6 +446,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				<ConfirmArrival
 					onClose={ () => setShowConfirm(false) }
 					onConfirm={ () => {
+						interval.start();
 						arrivalConfirmation({
 							recipientName: formik.values.receiverName,
 							imageUrl: formik.values.photoUri,
