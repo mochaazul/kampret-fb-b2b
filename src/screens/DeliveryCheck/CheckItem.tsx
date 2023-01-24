@@ -55,6 +55,20 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 	const renderComplainBtn = useMemo(() => {
 
+		const handleClickComplain = () => {
+			if (item.onClickComplain) {
+				item.onClickComplain(
+					{
+						deliveryRouteItemId: item.id,
+						deliveryId: item.deliveryId,
+						clientId: item.clientId,
+						itemName: item.name,
+						existing: item.existingComplain,
+						qtyOrder: item.qtyOrder
+					}
+				);
+			}
+		};
 		if (!item.isComplain) {
 			return (
 				<View style={ styles.buttonContainer }>
