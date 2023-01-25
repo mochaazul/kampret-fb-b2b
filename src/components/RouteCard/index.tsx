@@ -70,9 +70,7 @@ const RouteCard = ({
 	};
 
 	const onPresssAction = useCallback(() => {
-		if (onClick) {
-			onClick();
-		} else {
+		if (!onClick) {
 			NavigationHelper.push('DeliveryHistoryDetail', { deliveryId, clientId: id });
 		}
 	}, [onClick, deliveryId, id]);
@@ -236,35 +234,37 @@ const RouteCard = ({
 						<Text style={ [Fonts.textBody.l.bold, styles.text] as TextStyle }>{ custName }</Text>
 					</View>
 
-					<View style={ styles.row }>
+					<View style={ { marginTop: 10, marginLeft: 32 } }>
 						<View style={ styles.leftIcon }></View>
-
-						<Text
-							style={ styles.text }
-							size={ 14 }
-							lineHeight={ 20 }
-							color={ Colors.gray.default }
-							weight='400'
-						>
-							{ address }
-						</Text>
-
 						<TouchableOpacity
 							activeOpacity={ .75 }
 							onPress={ () => Linking.openURL(`https://maps.google.com?q=${ (latitude && longitude) ? `${ latitude },${ longitude }` : address }`) }
 						>
+							<Text
+								style={ styles.text }
+								size={ 14 }
+								lineHeight={ 20 }
+								color={ Colors.gray.default }
+								weight='400'
+							>
+								{ address }
+							</Text>
+
+
+							<Text
+								style={ [styles.text, { textDecorationLine: 'underline', marginTop: 6 }] }
+								size={ 14 }
+								lineHeight={ 20 }
+								color={ Colors.blue.default }
+								weight='400'
+							>
+								Buka Google Maps
+							</Text>
+
 						</TouchableOpacity>
 					</View>
 
-					<Text
-						style={ [styles.text, { textDecorationLine: 'underline', marginLeft: 32, marginTop: 6 }] }
-						size={ 14 }
-						lineHeight={ 20 }
-						color={ Colors.blue.default }
-						weight='400'
-					>
-						Buka Google Maps
-					</Text>
+
 
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
