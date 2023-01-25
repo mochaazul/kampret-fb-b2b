@@ -72,7 +72,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 					extraData={ loadingStartClient }
 					data={ warehouseDataAdded }
 					renderItem={ ({ item, index }) => {
-						console.log('remder item', item);
+
 						return (
 							<RouteCard
 								client={ item }
