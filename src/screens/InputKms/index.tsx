@@ -97,13 +97,9 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			{ timeout: 60000, enableHighAccuracy: true }
 		);
 
-		const backHandler = BackHandler.addEventListener('hardwareBackPress', () => loading);
-
 		return function () {
 			clearLocation();
 			interval.stop();
-
-			backHandler.remove();
 		};
 	}, []);
 
@@ -112,6 +108,12 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			interval.stop();
 			setProgress(100);
 		}
+
+		const backHandler = BackHandler.addEventListener('hardwareBackPress', () => loading);
+
+		return () => {
+			backHandler.remove();
+		};
 	}, [loading]);
 
 	const renderProgress = useMemo(() => {
@@ -180,7 +182,10 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 					title: 'Input KM Kendaraan',
 					showLeftButton: false,
 					rightButton: <Images.IconClose />,
-					onPressRightButton: () => NavigationHelper.pop(1)
+					onPressRightButton: () => {
+						if (!loading)
+							NavigationHelper.pop(1);
+					}
 				}
 			}
 			contentContainerStyle={ { backgroundColor: Colors.white.pure } }
