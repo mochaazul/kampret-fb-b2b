@@ -58,7 +58,6 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 
 	const notReadyToFinish = (dataClient: DeliveryInterface.IDeliveryCustomer[]): boolean => {
 		const result = dataClient.some(route => (route.status != 1 && route.status != 7));
-		console.log('result', result);
 		return result;
 	};
 
