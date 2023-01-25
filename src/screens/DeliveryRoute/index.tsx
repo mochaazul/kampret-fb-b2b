@@ -39,19 +39,22 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 		};
 	}, []);
 
-	let addWareHouseOnLastData: DeliveryInterface.IDeliveryCustomer[] = [];
+	const warehouseDataAdded = useMemo(() => {
+		let addWareHouseOnLastData: DeliveryInterface.IDeliveryCustomer[] = [];
 
-	if (clients.length !== 0) {
-		addWareHouseOnLastData = [...clients, {
-			id: '0000',
-			deliveryId: clients[0].deliveryId,
-			custName: 'Warehouse Freshbox',
-			validated: true,
-			address: 'FreshBox HQ',
-			deliveryTime: undefined,
-			sequence: clients.length + 1
-		}];
-	}
+		if (clients.length !== 0) {
+			addWareHouseOnLastData = [...clients, {
+				id: '0000',
+				deliveryId: clients[0].deliveryId,
+				custName: 'Warehouse Freshbox',
+				validated: true,
+				address: 'FreshBox HQ',
+				deliveryTime: undefined,
+				sequence: clients.length + 1
+			}];
+		}
+		return addWareHouseOnLastData;
+	}, [loadingStartClient, listClient]);
 
 	return (
 		<Container
@@ -66,28 +69,31 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 			{ !loading &&
 				<FlatList
 					keyExtractor={ (item) => item.id }
-					extraData={ [loadingStartClient, listClient] }
-					data={ addWareHouseOnLastData }
-					renderItem={ ({ item, index }) =>
-						<RouteCard
-							client={ item }
-							isLastRoute={ index == addWareHouseOnLastData.length - 1 }
-							onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
-							disabled={ index == addWareHouseOnLastData.length - 1 ? clients.some(route => route.status !== 1) : false }
-							loading={ loadingStartClient }
-							onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
-							onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
-							onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
-							onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
-							onClickCart={ () => {
-								setListCart(item.carts ?? []);
-								setShowCart(true);
-							} }
-							onClickSo={ () => {
-								setListSo(item.listSo ?? []);
-								setShowListSo(true);
-							} }
-						/>
+					extraData={ loadingStartClient }
+					data={ warehouseDataAdded }
+					renderItem={ ({ item, index }) => {
+						console.log('remder item', item);
+						return (
+							<RouteCard
+								client={ item }
+								isLastRoute={ index == warehouseDataAdded.length - 1 }
+								onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+								disabled={ index == warehouseDataAdded.length - 1 ? clients.some(route => route.status !== 1) : false }
+								loading={ loadingStartClient }
+								onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
+								onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
+								onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+								onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
+								onClickCart={ () => {
+									setListCart(item.carts ?? []);
+									setShowCart(true);
+								} }
+								onClickSo={ () => {
+									setListSo(item.listSo ?? []);
+									setShowListSo(true);
+								} }
+							/>);
+					}
 					}
 					refreshing={ loading ? true : false }
 					onRefresh={ () => getClient(route.params?.deliveryId) }

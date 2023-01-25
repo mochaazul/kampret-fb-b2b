@@ -345,8 +345,8 @@ const RouteCard = ({
 
 export default React.memo(
 	RouteCard,
-	(prev, next) => prev.client.id == next.client.id
-		&& prev.client.status == next.client.status
+	(prev, next) =>
+		prev.client.status != next.client.status
 );
 
 const styles = StyleSheet.create({
