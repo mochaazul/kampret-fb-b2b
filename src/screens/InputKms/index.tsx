@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
-import { TextStyle, TouchableOpacity, View, Image, StyleSheet } from "react-native";
+import { TextStyle, TouchableOpacity, View, Image, StyleSheet, BackHandler } from "react-native";
 import { useTranslation } from 'react-i18next';
 import Geolocation from '@react-native-community/geolocation';
 import { ProgressBar } from "@react-native-community/progress-bar-android";
@@ -97,9 +97,13 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			{ timeout: 60000, enableHighAccuracy: true }
 		);
 
+		const backHandler = BackHandler.addEventListener('hardwareBackPress', () => loading);
+
 		return function () {
 			clearLocation();
 			interval.stop();
+
+			backHandler.remove();
 		};
 	}, []);
 
