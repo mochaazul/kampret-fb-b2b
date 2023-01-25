@@ -85,7 +85,7 @@ const RouteCard = ({
 	}, [sequence, disabled]);
 
 	const renderNumber = useMemo(() => {
-		if (status != 1) {
+		if (status != 1 && status != 7) {
 			if (!historyMode) {
 				return (
 					<View style={ disabled ? [styles.number, { backgroundColor: Colors.gray.default }] : styles.number }>
