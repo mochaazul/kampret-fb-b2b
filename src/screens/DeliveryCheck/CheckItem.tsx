@@ -42,7 +42,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					}
 				</TouchableOpacity>
 
-				<TouchableOpacity onPress={ item.onCheckConfirm } style={ { marginStart: 16 } }>
+				<TouchableOpacity onPress={ () => item.isComplain ? false : item.onCheckConfirm } style={ { marginStart: 16 } }>
 					{
 						item.isConfirm ?
 							<Images.ButtonCheck2 { ...btnProp } /> :
