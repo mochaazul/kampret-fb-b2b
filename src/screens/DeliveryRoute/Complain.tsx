@@ -145,7 +145,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	}, [progress]);
 
 	useEffect(() => {
-		console.log('exist', existing);
+
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
