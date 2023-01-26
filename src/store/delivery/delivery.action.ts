@@ -142,13 +142,14 @@ export default {
 				const clients = state
 					.deliveryReducers
 					.clientValidation
-					.map((value) => {
+					.map((client) => {
 						// check client where params
-						if (value.id == params.clientId && value.deliveryId == params.deliveryId) {
-							value.validated = true;
+						if (client.id == params.clientId && client.deliveryId == params.deliveryId) {
 							found = true;
+							return { ...client, validated: true };
 						}
-						return value;
+
+						return client;
 					});
 
 				if (found) {
