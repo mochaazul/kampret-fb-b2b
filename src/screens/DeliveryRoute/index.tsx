@@ -56,6 +56,11 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 		return addWareHouseOnLastData;
 	}, [loadingStartClient, listClient]);
 
+	const notReadyToFinish = (dataClient: DeliveryInterface.IDeliveryCustomer[]): boolean => {
+		const result = dataClient.some(route => (route.status != 1 && route.status != 7));
+		return result;
+	};
+
 	return (
 		<Container
 			noPadding noScroll
@@ -78,7 +83,7 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 								client={ item }
 								isLastRoute={ index == warehouseDataAdded.length - 1 }
 								onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
-								disabled={ index == warehouseDataAdded.length - 1 ? clients.some(route => route.status !== 1) : false }
+								disabled={ index == warehouseDataAdded.length - 1 ? notReadyToFinish(clients) : false }
 								loading={ loadingStartClient }
 								onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 								onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
