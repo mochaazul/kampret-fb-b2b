@@ -164,6 +164,12 @@ export default {
 						payload: true,
 					});
 				} else {
+					// set validate result
+					dispatch({
+						type: Dispatches.VALIDATE_CLIENT_RESULT,
+						payload: false,
+					});
+
 					Toast.show({
 						type: 'error',
 						text1: 'checking client ID ' + params.clientId,
@@ -186,6 +192,13 @@ export default {
 					payload: false,
 				});
 			});
+	},
+
+	setValidateClientResult: (value: boolean) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.VALIDATE_CLIENT_RESULT,
+			payload: value,
+		});
 	},
 
 	// actions to get client items

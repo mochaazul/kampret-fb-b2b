@@ -7,7 +7,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingList: false,
 	clientValidation: [],
 	loadingClient: false,
-	loadingValidateClient: false,
+	loadingValidateClient: undefined,
 	resultValidateClient: undefined,
 	clientItems: [],
 	clientCarts: [],
@@ -69,7 +69,7 @@ const deliveryReducers = (
 		case Dispatches.LOADING_VALIDATE_CLIENT:
 			return {
 				...state,
-				loadingClient: payload,
+				loadingValidateClient: payload,
 			};
 		case Dispatches.VALIDATE_CLIENT_RESULT:
 			return {

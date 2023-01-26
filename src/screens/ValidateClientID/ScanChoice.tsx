@@ -21,18 +21,32 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
 	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
 
+	const [scanResult, setScanResult] = useState('');
+
 	const { frameProcessor } = useScanBarcodes({
-		callback: (value) => validateClient({
-			deliveryId: deliveryId,
-			clientId: value
-		})
+		callback: (value) => {
+			setScanResult(value);
+			setTimeout(() => setLoading(true), 100);
+		}
 	});
 
-	const loading = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
+	// const loading = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
+	const [loading, setLoading] = useState(false);
 	const result = useAppSelector(state => state.deliveryReducers.resultValidateClient);
-	const loadingValidateClient = useAppSelector(state => state.deliveryReducers.loadingClient);
 
 	const validateClient = useAppDispatch(Actions.deliveryAction.validateClient);
+
+	useEffect(
+		() => {
+			if (!loading && scanResult) {
+				validateClient({
+					deliveryId: deliveryId,
+					clientId: scanResult
+				});
+			}
+		},
+		[loading, scanResult]
+	);
 
 	const formik: FormikProps<ManualInput> = useFormik<ManualInput>({
 		validateOnBlur: true,
@@ -43,17 +57,20 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 		},
 		onSubmit: () => {
 			const clientId = formik.values.clientID;
-			if (clientId)
+			if (clientId) {
 				validateClient({
 					deliveryId: deliveryId,
 					clientId: clientId
 				});
+
+				setLoading(true);
+			}
 		},
 	});
 
 	useEffect(() => {
-		if (result)
-			onChoosen(formik.values.clientID ?? '');
+		if (result != undefined)
+			onChoosen(result ? formik.values.clientID ?? '' : '');
 	}, [result]);
 
 	const renderButton = useMemo(() => (
@@ -65,14 +82,18 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 			weight='700'
 			mt={ 30 }
 			useShadow={ true }
-			loading={ loadingValidateClient }
+			loading={ loading }
 
 		/>
-	), [loadingValidateClient]);
+	), [loading]);
 
 	const renderLoading = useMemo(() => {
 		if (loading) {
-			return <ActivityIndicator size="large" color={ Colors.white.pure } style={ styles.loadingStyle } />;
+			return <ActivityIndicator
+				size="large"
+				color={ Colors.white.pure }
+				style={ styles.loadingStyle }
+			/>;
 		}
 		return null;
 	}, [loading]);
