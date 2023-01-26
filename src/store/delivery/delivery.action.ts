@@ -144,12 +144,12 @@ export default {
 					.clientValidation
 					.map((client) => {
 						// check client where params
-						const newClient = { ...client };
 						if (client.id == params.clientId && client.deliveryId == params.deliveryId) {
-							newClient.validated = true;
 							found = true;
+							return { ...client, validated: true };
 						}
-						return newClient;
+
+						return client;
 					});
 
 				if (found) {
