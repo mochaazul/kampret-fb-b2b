@@ -58,19 +58,15 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 		onSubmit: () => {
 			const clientId = formik.values.clientID;
 			if (clientId) {
-				validateClient({
-					deliveryId: deliveryId,
-					clientId: clientId
-				});
-
-				setLoading(true);
+				setScanResult(clientId);
+				setTimeout(() => setLoading(true), 100);
 			}
 		},
 	});
 
 	useEffect(() => {
 		if (result != undefined)
-			onChoosen(result ? formik.values.clientID ?? '' : '');
+			onChoosen(result ? scanResult : '');
 	}, [result]);
 
 	const renderButton = useMemo(() => (
