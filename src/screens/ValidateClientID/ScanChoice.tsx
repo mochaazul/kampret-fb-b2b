@@ -39,7 +39,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	useEffect(
 		() => {
 			if (!loading && scanResult) {
-				console.log('validate scan res', loading, scanResult);
 				validateClient({
 					deliveryId: deliveryId,
 					clientId: scanResult
@@ -70,7 +69,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	});
 
 	useEffect(() => {
-		console.log('validate result', result);
 		if (result != undefined)
 			onChoosen(result ? formik.values.clientID ?? '' : '');
 	}, [result]);
