@@ -30,6 +30,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	);
 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryClient);
+	const setValidateClientResult = useAppDispatch(Actions.deliveryAction.setValidateClientResult);
 
 	const delivery = deliveryList.find((value) => value.id == route.params?.deliveryId);
 
@@ -52,8 +53,9 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	const handleOnChoosen = (value: string) => {
 		if (value) {
 			setShowResult(true);
-			setShowScanChoices(false);
 		}
+		setShowScanChoices(false);
+		setValidateClientResult(undefined);
 	};
 
 	const renderCustomers = useMemo(() => {
