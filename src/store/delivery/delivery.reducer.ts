@@ -7,7 +7,7 @@ const initialState: DeliveryInterface.DeliveryState = {
 	loadingList: false,
 	clientValidation: [],
 	loadingClient: false,
-	loadingValidateClient: false,
+	loadingValidateClient: undefined,
 	resultValidateClient: undefined,
 	clientItems: [],
 	clientCarts: [],
