@@ -80,6 +80,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	}, [arrivalLoading]);
 
 	const renderProgress = useMemo(() => {
+
 		if (progress > 80) {
 			interval.stop();
 		}
@@ -241,7 +242,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				)
 			);
 		} else {
-			return (<View />);
+			return (<View style={ styles.row }>
+				<Images.ButtonCheck2 width={ 28 } height={ 28 } />
+				<Text format={ Fonts.textBody.l.regular as TextStyle }
+					color={ Colors.black.default }
+					style={ { marginStart: 12 } }>Tidak ada</Text>
+			</View>);
 		}
 
 	}, [arrivalData?.carts, listCartReturned]);
@@ -252,12 +258,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				{ index > 0 && <View style={ { height: 5 } } /> }
 				<CheckItem { ...item }
 					onClickComplain={ (data) => {
-						const newItems = [...itemChecks];
-						newItems[index].isComplain = newItems[index].isComplain ? false : true;
+						// const newItems = [...itemChecks];
+						// newItems[index].isComplain = newItems[index].isComplain ? false : true;
 
-						if (newItems[index].isComplain) newItems[index].isConfirm = false;
+						// if (newItems[index].isComplain) newItems[index].isConfirm = false;
 
-						setItemChecks(newItems);
+						// setItemChecks(newItems);
 
 						// TODO: add handler show complain dialog
 						setShowComplain(data);
@@ -289,7 +295,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			</View>
 		);
 	};
-
 	return (
 		<Container
 			noPadding
@@ -389,6 +394,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							mt={ 20 }
 							useShadow={ true }
 							onPress={ () => {
+
 								if (!needConfirmMode) {
 									setNeedConfirmMode(true);
 								}
