@@ -184,6 +184,7 @@ const Complain = ({ onClose, deliveryRouteItemId, deliveryId, clientId, itemName
 	};
 
 	const calculateComplainQty = (): string => {
+
 		if (qtyOrder) {
 			if (formik.values.qty) {
 				const result = qtyOrder.order - parseFloat(formik.values.qty);
