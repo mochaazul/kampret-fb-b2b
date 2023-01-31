@@ -1,6 +1,8 @@
 import { FlatList, TextStyle, View } from 'react-native';
 import React, { useEffect } from 'react';
 import OneSignal from 'react-native-onesignal';
+import * as Sentry from '@sentry/react-native';
+import Config from "react-native-config";
 
 import styles from './style';
 import DeliveryItem from './DeliveryItem';
@@ -13,7 +15,7 @@ const DeliveryList = () => {
 
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingList);
-
+	const user = useAppSelector(state => state.authReducers.user);
 
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryList);
 	const pushXplayer = useAppDispatch(Actions.authAction.registerPushNotif);
@@ -23,7 +25,22 @@ const DeliveryList = () => {
 		fetchList();
 		innitiatePushNotif();
 		getNotification();
+		initSentry();
 	}, []);
+
+	const initSentry = () => {
+		Sentry.init({
+			dsn: Config.RN_sentry,
+			tracesSampleRate: 1.0,
+			beforeSend(event, hint) {
+				if (event.user) {
+					event.user.username = user && user.user_name ? user.user_name : 'null';
+					event.user.email = Config.RN_buildVersion + '/' + Config.RN_version;
+				}
+				return event;
+			},
+		});
+	};
 
 	const innitiatePushNotif = async () => {
 		OneSignal.addSubscriptionObserver(async event => {

@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import Toast from 'react-native-toast-message';
 import codePush from 'react-native-code-push';
+import * as Sentry from '@sentry/react-native';
 
 import { AppRouter } from '@router';
 import { ReduxConfig } from '@config';
@@ -26,4 +27,4 @@ const App = () => {
 	);
 };
 
-export default codePush(CODE_PUSH_OPTIONS)(App);
+export default codePush(CODE_PUSH_OPTIONS)(Sentry.wrap(App));
