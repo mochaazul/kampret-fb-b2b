@@ -16,12 +16,12 @@ const DeliveryList = () => {
 
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryList);
 	const pushXplayer = useAppDispatch(Actions.authAction.registerPushNotif);
-	const getNotification = useAppDispatch(Actions.notificationAction.getDeliveryList);
+	const getNotification = useAppDispatch(Actions.notificationAction.getNotificationList);
 
 	useEffect(() => {
 		fetchList();
 		innitiatePushNotif();
-		getNotification(3);
+		getNotification();
 	}, []);
 
 	const innitiatePushNotif = async () => {

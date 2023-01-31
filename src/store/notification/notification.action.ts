@@ -18,7 +18,7 @@ export default {
 		};
 	},
 	// action to get notification list
-	getDeliveryList: (link?: string) => (dispatch: Dispatch) => {
+	getNotificationList: (link?: string) => (dispatch: Dispatch) => {
 		// set loading notification
 		dispatch({
 			type: Dispatches.NOTIFICATION_LOADING,
@@ -47,5 +47,17 @@ export default {
 				});
 			});
 	},
+	// action triggered after user click the notification
+	notificationReaded: (notifId: number) => (dispatch: Dispatch) => {
 
+		// send to api
+		API.get<MiscInterface.BE<any>>
+			(`${ Endpoints.READ_NOTIF(notifId) }`)
+			.then(response => {
+				console.log('notif read', response);
+			})
+			.finally(() => {
+
+			});
+	},
 };
