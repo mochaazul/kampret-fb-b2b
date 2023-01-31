@@ -6,6 +6,7 @@ export * from './navigation';
 import * as DeliveryInterface from './delivery';
 import * as DeliveryResponseInterface from './deliveryResponses';
 import * as ServerResponses from './serverResponses';
+import * as NotificationInterface from './notification';
 
 export {
 	ContactInterface,
@@ -14,5 +15,6 @@ export {
 	ComponentInterface,
 	DeliveryInterface,
 	DeliveryResponseInterface,
-	ServerResponses
+	ServerResponses,
+	NotificationInterface
 };

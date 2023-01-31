@@ -12,12 +12,16 @@ import deliveryReducers from './delivery/delivery.reducer';
 
 import complainAction from './complain/complain.action';
 
+import notificationAction from './notification/notification.action';
+import notificationReducers from './notification/notification.reducer';
+
 const Actions = {
 	authAction,
 	miscAction,
 	contactAction,
 	deliveryAction,
-	complainAction
+	complainAction,
+	notificationAction
 };
 
 const Reducers = {
@@ -25,6 +29,7 @@ const Reducers = {
 	miscReducers,
 	contactReducers,
 	deliveryReducers,
+	notificationReducers
 };
 
 export {
