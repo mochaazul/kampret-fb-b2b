@@ -2,7 +2,8 @@ export type NotificationState = {
 	loading: boolean,
 	notification: notificationData | null,
 	next: string | null,
-	prev: string | null;
+	prev: string | null,
+	latestNotifReaded: number;
 };
 
 export interface notificationData {

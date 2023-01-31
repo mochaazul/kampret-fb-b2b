@@ -26,10 +26,16 @@ export default {
 		});
 
 		// request delivery list data from api
-		API.get<MiscInterface.BE<NotificationInterface.Notification>>
+		API.get<MiscInterface.BE<NotificationInterface.notificationData>>
 			(`${ Endpoints.GET_NOTIFICATION(link) }`)
 			.then(response => {
-				console.log('notif', response);
+
+				if (response.data && response.data.not_read_count) {
+					dispatch({
+						type: Dispatches.TMP_NOTIF,
+						payload: true,
+					});
+				}
 				dispatch({
 					type: Dispatches.SET_NOTIFICATION,
 					payload: response.data,
@@ -51,10 +57,14 @@ export default {
 	notificationReaded: (notifId: number) => (dispatch: Dispatch) => {
 
 		// send to api
-		API.get<MiscInterface.BE<any>>
-			(`${ Endpoints.READ_NOTIF(notifId) }`)
+		API.post<MiscInterface.BE<any>>
+			(`${ Endpoints.READ_NOTIF(notifId) }`, [])
 			.then(response => {
-				console.log('notif read', response);
+
+				dispatch({
+					type: Dispatches.NOTIFICATION_READ,
+					payload: notifId,
+				});
 			})
 			.finally(() => {
 

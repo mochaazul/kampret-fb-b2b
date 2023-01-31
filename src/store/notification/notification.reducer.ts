@@ -6,7 +6,8 @@ const initialState: NotificationInterface.NotificationState = {
 	loading: false,
 	notification: null,
 	next: null,
-	prev: null
+	prev: null,
+	latestNotifReaded: 0
 };
 
 type Actions = { type: string; payload: any; };
@@ -38,7 +39,16 @@ const notificationReducers = (
 				...state,
 				loading: false,
 			};
+		case Dispatches.NOTIFICATION_READ:
+			const modifiedNotification = state.notification;
+			const notifIndex = modifiedNotification ? modifiedNotification.notifications.findIndex(notif => notif.id == payload) : -1;
+			if (notifIndex != -1 && modifiedNotification) modifiedNotification.notifications[notifIndex].is_read = true;
 
+			return {
+				...state,
+				notification: modifiedNotification,
+				latestNotifReaded: payload
+			};
 		default:
 			return state;
 	}

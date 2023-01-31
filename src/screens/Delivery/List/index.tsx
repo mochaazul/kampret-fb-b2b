@@ -14,6 +14,7 @@ const DeliveryList = () => {
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingList);
 
+
 	const fetchList = useAppDispatch(Actions.deliveryAction.getDeliveryList);
 	const pushXplayer = useAppDispatch(Actions.authAction.registerPushNotif);
 	const getNotification = useAppDispatch(Actions.notificationAction.getNotificationList);
