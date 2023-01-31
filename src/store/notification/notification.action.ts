@@ -18,7 +18,7 @@ export default {
 		};
 	},
 	// action to get notification list
-	getDeliveryList: (offset: number) => (dispatch: Dispatch) => {
+	getDeliveryList: (link?: string) => (dispatch: Dispatch) => {
 		// set loading notification
 		dispatch({
 			type: Dispatches.NOTIFICATION_LOADING,
@@ -27,7 +27,7 @@ export default {
 
 		// request delivery list data from api
 		API.get<MiscInterface.BE<NotificationInterface.Notification>>
-			(`${ Endpoints.GET_NOTIFICATION(offset) }`)
+			(`${ Endpoints.GET_NOTIFICATION(link) }`)
 			.then(response => {
 				console.log('notif', response);
 				dispatch({

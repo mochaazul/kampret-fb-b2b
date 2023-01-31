@@ -22,6 +22,17 @@ const notificationReducers = (
 				...state,
 				loading: true,
 			};
+		case Dispatches.SET_NOTIFICATION:
+			return {
+				...state,
+				notification: payload,
+			};
+		case Dispatches.SET_NOTIFICATION_PAGINATION:
+			return {
+				...state,
+				next: payload.next,
+				prev: payload.prev
+			};
 		case Dispatches.API_LOADING_END:
 			return {
 				...state,

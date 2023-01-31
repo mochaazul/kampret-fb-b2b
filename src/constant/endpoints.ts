@@ -11,7 +11,7 @@ export default {
 	DELIVERY_HISTORY_LIST: '/v1/delivery-history',
 	GET_DELIVERY_PROCESS: '/v1/delivery-process',
 	PUSH_NOTIF: '/v1/notifications/user-device',
-	GET_NOTIFICATION: (offset: number) => (`/v1/notifications?order=id,desc&limit=10&offset=${ offset }`),
+	GET_NOTIFICATION: (link: string | undefined) => link ? link : (`/v1/notifications?order=id,desc&limit=10&offset=0`),
 	DELIVERY_HISTORY_CLIENT_DETAIL: (deliveryId: string, clientId: string) => (`v1/delivery-history/${ deliveryId }/client/${ clientId }`),
 	DELIVERY_HISTORY_ROUTE: (deliveryId: string) => (`v1/delivery-history/${ deliveryId }`),
 	DELIVERY_CLIENT: (deliveryId: string) => (`v1/delivery-count-item/${ deliveryId }`),
