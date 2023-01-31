@@ -86,6 +86,10 @@ project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
 ]
 
+project.ext.sentryCli = [
+    logLevel: "debug"
+]
+
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
