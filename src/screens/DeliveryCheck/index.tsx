@@ -53,6 +53,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
+	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
 
 	useEffect(() => {
 
@@ -280,6 +281,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 						setItemChecks(newItems);
 					} }
+					onClickDelete={ (deleteItem) => deleteComplain(deleteItem) }
 				/>
 			</View>
 		);

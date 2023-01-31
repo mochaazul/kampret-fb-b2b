@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo } from "react";
-import { StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TextStyle, TouchableOpacity, View, Image } from "react-native";
 
 import { Button, Text } from "@components";
 import { Images, Colors, Fonts } from "@constant";
@@ -25,7 +25,13 @@ export interface CheckItemProp {
 	};
 	isConfirm?: boolean;
 	onCheckConfirm?: () => void;
-
+	onClickDelete: (
+		deleteItem: {
+			deliveryId: string | undefined,
+			clientId: string | undefined,
+			itemId: string | null;
+		}
+	) => void;
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
@@ -53,48 +59,6 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 			</View>
 		);
 	}, [item.isComplain, item.isConfirm]);
-
-	const renderComplainBtn = useMemo(() => {
-
-		const handleClickComplain = () => {
-			if (item.onClickComplain) {
-				item.onClickComplain(
-					{
-						deliveryRouteItemId: item.id,
-						deliveryId: item.deliveryId,
-						clientId: item.clientId,
-						itemName: item.name,
-						existing: item.existingComplain,
-						qtyOrder: item.qtyOrder
-					}
-				);
-			}
-		};
-		if (!item.isComplain) {
-			return (
-				<View style={ styles.buttonContainer }>
-					<Button
-						weight='700'
-						backgroundColor='transparent'
-						type='outline'
-						color={ Colors.company.red }
-						text='Buat Keluhan'
-						onPress={ () => handleClickComplain() }
-					/></View>
-			);
-		} else {
-			return (
-				<View style={ styles.buttonContainer }>
-					<Button
-						weight='700'
-						backgroundColor='transparent'
-						color={ Colors.gray.default }
-						text='Ubah Keluhan'
-						onPress={ () => handleClickComplain() }
-					/></View>);
-		}
-
-	}, [item]);
 
 	const handleClickComplain = () => {
 		if (item.onClickComplain) {
@@ -124,6 +88,75 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 			);
 		}
 	};
+
+	const complainThumbnail = (existing?: DeliveryInterface.IExistingComplain) => {
+		let pureItemId: string | null = null;
+
+		if (existing) {
+			if (item && item.id) {
+				pureItemId = item.id.split('-')[1];
+			}
+			return (
+				<View style={ styles.upLine }>
+					<View style={ styles.thumbnail }>
+						<View style={ { flex: 4 } }>
+							<View style={ [styles.thumbnail, { marginTop: 10 }] }>
+								<Text
+									format={ Fonts.textBody.l.bold as TextStyle }
+									color={ Colors.alert.red }
+									numberOfLines={ 1 }
+								>
+									{ existing.qty + ' ' }
+								</Text>
+								<Text
+									format={ Fonts.textBody.l.bold as TextStyle }
+									color={ Colors.black.default }
+									ellipsizeMode='head'
+									numberOfLines={ 2 }
+								>
+									{ existing.category }
+								</Text>
+							</View>
+							<Text
+								format={ Fonts.textBody.s.regular as TextStyle }
+								color={ Colors.black.default }
+								ellipsizeMode='middle'
+								numberOfLines={ 3 }
+								mt={ 10 }
+							>
+								{ existing.description + 'asdhjfahd ahgdfahsdfahfdhasfdh ahdfahsdgfajhsfdhjafsgdaj ytsdahdav sdahfdjahsgdf' }
+							</Text>
+
+							{ existing.imageUrl &&
+								<View style={ styles.thumbnail }>
+
+									<Image source={ { uri: existing.imageUrl[0] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } />
+									{ existing.imageUrl[1] && <Image source={ { uri: existing.imageUrl[1] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } /> }
+									{ existing.imageUrl[2] && <Image source={ { uri: existing.imageUrl[2] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } /> }
+								</View>
+							}
+
+						</View>
+						<TouchableOpacity
+							style={ styles.deleteButton }
+							onPress={ () => item.onClickDelete(
+								{
+									deliveryId: item.deliveryId,
+									clientId: item.clientId,
+									itemId: pureItemId
+								}
+							) }
+						>
+							<Images.IconTrash />
+						</TouchableOpacity>
+
+					</View>
+				</View>);
+		} else {
+			return <View />;
+		}
+	};
+
 	return (
 		<View style={ styles.container } key={ item.id + '_' + item.itemIndex }>
 
@@ -137,7 +170,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 						ellipsizeMode='middle'
 						numberOfLines={ 2 }
 					>
-						{ item.name }
+						{ item.name + ' : ' + item.qtyOrder.order }
 					</Text>
 
 					<Text
@@ -155,6 +188,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 			</View>
 
+			{ complainThumbnail(item.existingComplain) }
 		</View>
 	);
 };
@@ -190,5 +224,29 @@ const styles = StyleSheet.create({
 		flex: 3,
 		alignSelf: 'center',
 		marginLeft: 5,
+	},
+	upLine: {
+		borderTopColor: Colors.gray.line,
+		borderTopWidth: 1,
+		marginTop: 10,
+		marginLeft: 20
+	},
+	thumbnail: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	images: {
+		height: 80,
+		width: 80,
+		marginTop: 20,
+		marginRight: 5,
+		borderRadius: 5
+	},
+	deleteButton: {
+		flexGrow: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		height: 80
+
 	}
 });

@@ -1,36 +1,44 @@
 import React from "react";
-import { TextStyle, View } from "react-native";
+import { TextStyle, View, TouchableOpacity } from "react-native";
+import moment from "moment";
 
 import { Colors, Fonts } from "@constant";
 import Text from "../Text";
+import { NotificationInterface } from "@interfaces";
 
 import { styles } from "./style";
 
+interface NotifItemProps {
+	item: NotificationInterface.Notification,
+	onClick: (id: number) => void;
+}
 const Bullet = () => (<View style={ styles.bullet } />);
 
-const NotifItem = () => (
-	<View style={ styles.container }>
-		<View style={ styles.row }>
-			<Bullet />
+const NotifItem = ({ item, onClick }: NotifItemProps) => {
+	return (
 
-			<View style={ styles.content }>
-				<Text
-					format={ Fonts.paragraph.m.regular as TextStyle }
-					color={ Colors.black.default }
-				>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sodales mattis tincidunt orci vestibulum.
-				</Text>
+		<TouchableOpacity style={ styles.container } onPress={ () => onClick(item.id) }>
+			<View style={ styles.row }>
+				{ !item.is_read && <Bullet /> }
+				<View style={ styles.content }>
+					<Text
+						format={ Fonts.paragraph.m.regular as TextStyle }
+						color={ Colors.black.default }
+					>
+						{ '[' + item.title + '] ' + item.detail }
+					</Text>
 
-				<Text
-					format={ Fonts.paragraph.s.regular as TextStyle }
-					color={ Colors.gray.default }
-					mt={ 8 }
-				>
-					Hari ini, 06:00 WIB
-				</Text>
+					<Text
+						format={ Fonts.paragraph.s.regular as TextStyle }
+						color={ Colors.gray.default }
+						mt={ 8 }
+					>
+						{ moment(item.date).fromNow() }
+					</Text>
+				</View>
 			</View>
-		</View>
-	</View>
-);
+		</TouchableOpacity>
+	);
+};
 
 export default React.memo(NotifItem);

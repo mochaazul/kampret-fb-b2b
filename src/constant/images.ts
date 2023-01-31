@@ -43,6 +43,7 @@ import IconChevronRight from '../assets/images/ic_chevron_right.svg';
 import IconWarn from '../assets/images/ic_warn.svg';
 import IconWarnRed from '../assets/images/ic_warn_red.svg';
 import IconEdit from '../assets/images/edit.svg';
+import IconTrash from '../assets/images/trash.svg';
 
 const OnBoarding = {
 	1: OnBoarding1,
@@ -91,5 +92,6 @@ export default {
 	IconChevronRight,
 	IconWarn,
 	IconWarnRed,
-	IconEdit
+	IconEdit,
+	IconTrash
 };

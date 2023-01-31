@@ -20,9 +20,13 @@ export type UploadProgress = {
 
 export type BE<T> = {
 	data: T | null,
-	pagination: any[],
+	pagination: Pagination,
 	stat_code: string,
 	stat_msg: string;
 };
+export interface Pagination {
+	prev: string;
+	next: string;
+}
 
 export type MultiplePhotoCapture = { [id: string]: string; };
