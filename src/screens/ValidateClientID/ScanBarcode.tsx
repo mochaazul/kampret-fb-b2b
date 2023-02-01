@@ -7,6 +7,7 @@ import { BottomSheet, Camera, Text } from "@components";
 import { useNavigation } from "@react-navigation/native";
 import { Actions } from "@store";
 import { NavigationProps } from "@interfaces";
+import { navigationRef } from '../../helpers/navigationHelper';
 
 const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 	const [cameraActive, setActive] = useState(true);
@@ -27,8 +28,12 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 
 	useEffect(() => {
 		if (result != undefined)
-			NavigationHelper.pop(1);
+			setInactive()
 	}, [result]);
+
+	useEffect(()=>{
+		if(!cameraActive) NavigationHelper.pop(1)
+	},[cameraActive])
 
 	const { frameProcessor } = useScanBarcodes({
 		callback: (value) => {
@@ -54,8 +59,7 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 
 	return (
 		<View style={ styles.container }>
-			<TouchableOpacity style={ styles.row } onPress={ () => NavigationHelper.pop(1) }
-			>
+			<TouchableOpacity style={ styles.row } onPress={ () => setInactive()}>
 				<View style={ { flex: 1 } } />
 				<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
 				<Images.IconClose style={ { flex: 1 } } />
@@ -69,7 +73,6 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 					style={ styles.camera }
 					isActive={ cameraActive }
 				/>
-
 				{ renderLoading }
 			</View>
 
