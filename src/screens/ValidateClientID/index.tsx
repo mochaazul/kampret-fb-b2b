@@ -121,7 +121,8 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 				else
 					NavigationHelper.push('InputKms', { deliveryId: delivery?.id });
 			} }
-			disabled={ clientList.some((client) => !client.validated) }
+			// disabled={ clientList.some((client) => !client.validated) }
+			disabled={ false }
 		/>
 	), [clientList]);
 
