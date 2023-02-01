@@ -1,54 +1,53 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity,  Modal} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
 
 import { Camera } from '@components';
-import { Camera as CameraVision , PhotoFile} from 'react-native-vision-camera';
+import { Camera as CameraVision, PhotoFile } from 'react-native-vision-camera';
 
 type CameraWidgetProps = {
-  isActive: boolean,
-  onCapture: (photo:PhotoFile) => void;
-  onClose: () => void;
-}
+	isActive: boolean,
+	onCapture: (photo: PhotoFile) => void;
+	onClose: () => void;
+};
 
-const CameraWidget:React.FC<CameraWidgetProps> = ({
-  isActive, 
-  onCapture,
-  onClose,
-  ...props
+const CameraWidget: React.FC<CameraWidgetProps> = ({
+	isActive,
+	onCapture,
+	onClose,
+	...props
 }) => {
 
-  const [isOpen, setOpen] = useState<boolean>(false)
+	const [isOpen, setOpen] = useState<boolean>(false);
 
-  useEffect(()=>{
-    setOpen(isActive)
-  },[isActive])
+	useEffect(() => {
+		setOpen(isActive);
+	}, [isActive]);
 
-  useEffect(()=>{
-    if(!isOpen) onClose()
-  },[isOpen])
+	useEffect(() => {
+		if (!isOpen) onClose();
+	}, [isOpen]);
 
-  const cameraRef = useRef<CameraVision>(null)
+	const cameraRef = useRef<CameraVision>(null);
 
-  
-  const onPress = async () => {
-    if(cameraRef.current){
-      const capturedImg = await cameraRef.current.takePhoto({
-        qualityPrioritization:'quality'
-      })
-      onCapture(capturedImg)
-    }
-    setOpen(false)
-  }
+	const onPress = async () => {
+		if (cameraRef.current) {
+			const capturedImg = await cameraRef.current.takePhoto({
+				qualityPrioritization: 'quality'
+			});
+			onCapture(capturedImg);
+		}
+		setOpen(false);
+	};
 	return (
-		<Modal 
-      visible={ isOpen }
-    >
-      <Camera 
+		<Modal
+			visible={ isOpen }
+		>
+			<Camera
 				style={ [StyleSheet.absoluteFill, { flex: 1 }] }
 				photo={ true }
-        cameraRef={cameraRef}
-
-				/>
+				cameraRef={ cameraRef }
+				isActive={ isOpen }
+			/>
 			<View style={ styles.buttonWrapper }>
 				<TouchableOpacity onPress={ onPress } style={ styles.button } />
 			</View>

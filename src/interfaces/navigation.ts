@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { PhotoFile } from 'react-native-vision-camera';
 import { MultiplePhotoCapture } from './misc';
 
 export type NavigationProps<T extends keyof RootStackParamList> =
@@ -39,8 +40,6 @@ export type RootStackParamList = {
 			id: string,
 			currentStore: MultiplePhotoCapture | null,
 		};
-		onSinglePictureTaken?: (path: string) => void;
-		onClosed?: () => void;
 	};
 	Notification?: {
 		item: any;
@@ -55,5 +54,8 @@ export type RootStackParamList = {
 	DeliveryCheck: {
 		deliveryId?: string;
 		clientId?: string;
+	};
+	ScanBarcode?: {
+		deliveryId: string;
 	};
 };

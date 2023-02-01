@@ -17,7 +17,7 @@ export function replace(name: ScreenNameType, params?: object) {
 	}
 }
 
-export function reset(name: ScreenNameType, params?: object, index:number = 0) {
+export function reset(name: ScreenNameType, params?: object, index: number = 0) {
 	if (navigationRef.isReady()) {
 		navigationRef.dispatch(CommonActions.reset({
 			index: index,

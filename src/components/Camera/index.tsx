@@ -29,7 +29,14 @@ const Camera = ({ notFoundCameraComponent, frameProcessor, isActive = true, phot
 	const renderCamera = useMemo(() => {
 		if (device) {
 			return (
-				<ReanimatedCamera ref={ cameraRef }   photo frameProcessor={ frameProcessor } isActive={ isActive } device={ device } { ...props } />
+				<CameraVision
+					ref={ cameraRef }
+					photo
+					frameProcessor={ frameProcessor }
+					isActive={ isActive }
+					device={ device }
+					{ ...props }
+				/>
 			);
 		} else {
 			if (notFoundCameraComponent) {
@@ -40,7 +47,7 @@ const Camera = ({ notFoundCameraComponent, frameProcessor, isActive = true, phot
 			);
 		}
 
-	}, [device]);
+	}, [device, isActive]);
 
 	return (
 		<Fragment>

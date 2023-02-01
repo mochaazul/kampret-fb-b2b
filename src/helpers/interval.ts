@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type AppInterval = {
 	start: () => void;
@@ -9,9 +9,10 @@ const useInterval = (
 	action: () => void,
 	timeout: number,
 ): AppInterval => {
+
 	const id = useRef<number>();
 
-	return {
+	const interval = {
 		start: () => {
 			id.current = setInterval(
 				() => action(),
@@ -19,9 +20,16 @@ const useInterval = (
 			);
 		},
 		stop: () => {
-			clearInterval(id.current);
+			if (id.current !== undefined) {
+				clearInterval(id.current);
+				id.current = undefined;
+			}
 		},
 	};
+
+	useEffect(() => interval.stop, []);
+
+	return interval;
 };
 
 export default useInterval;

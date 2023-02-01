@@ -13,6 +13,7 @@ import CapturePhoto from './CapturePhoto';
 import DeliveryCheck from './DeliveryCheck';
 import DeliveryRouteHistory from './DeliveryRouteHistory';
 import DeliveryHistoryDetail from './DeliveryHistoryDetail';
+import ScanBarcode from './ValidateClientID/ScanBarcode';
 
 export {
 	Splash,
@@ -30,4 +31,5 @@ export {
 	DeliveryCheck,
 	DeliveryRouteHistory,
 	DeliveryHistoryDetail,
+	ScanBarcode,
 };

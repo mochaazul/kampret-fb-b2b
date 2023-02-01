@@ -38,10 +38,12 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	const { t: translate } = useTranslation();
 
-	const onCapture = (photo: PhotoFile) => {
-		const imageURI = `file://` + photo.path;
-		setPreviewImgURI(imageURI);
-		formik.setFieldValue('photoUri', imageURI);
+	const onCapture = (photo?: PhotoFile) => {
+		if (photo) {
+			const imageURI = `file://` + photo.path;
+			setPreviewImgURI(imageURI);
+			formik.setFieldValue('photoUri', imageURI);
+		}
 	};
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
@@ -53,8 +55,9 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
+			interval.start();
+
 			if (route.params?.deliveryLocation) {
-				interval.start();
 				inputKmOnFinish({
 					finishLocation: route.params.deliveryLocation,
 					finishOdometer_image: previewImgURI,
@@ -64,7 +67,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 					odometer: formik.values.kmSpeedometer
 				});
 			} else {
-				interval.start();
 				doInputKm(
 					{
 						lat: latitude,
@@ -73,7 +75,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 						imageUrl: previewImgURI,
 						deliveryId: route.params?.deliveryId
 					}
-
 				);
 			}
 		},
@@ -99,7 +100,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 		return function () {
 			clearLocation();
-			interval.stop();
 		};
 	}, []);
 
@@ -208,7 +208,12 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			<TouchableOpacity
 				activeOpacity={ .75 }
-				onPress={ () => { if (!progress) setShowCamera(true); } }
+				onPress={ () => {
+					// if (!progress) setShowCamera(true);
+					NavigationHelper.push('CapturePhoto', {
+						onSinglePictureTaken: onCapture
+					});
+				} }
 			>
 				{ renderImage() }
 
@@ -216,11 +221,11 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 			{ renderButton }
 
-			<CameraWidget
+			{/* <CameraWidget
 				isActive={ showCamera }
 				onCapture={ onCapture }
 				onClose={ () => setShowCamera(false) }
-			/>
+			/> */}
 
 		</Container >
 	);
