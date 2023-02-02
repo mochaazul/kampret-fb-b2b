@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { PhotoFile } from 'react-native-vision-camera';
+import { ComplainItemParams } from 'src/screens/DeliveryCheck/ComplainItem';
 import { MultiplePhotoCapture } from './misc';
 
 export type NavigationProps<T extends keyof RootStackParamList> =
@@ -58,4 +58,5 @@ export type RootStackParamList = {
 	ScanBarcode?: {
 		deliveryId: string;
 	};
+	ComplainItem?: ComplainItemParams;
 };
