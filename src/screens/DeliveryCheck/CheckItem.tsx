@@ -124,7 +124,7 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 								numberOfLines={ 3 }
 								mt={ 10 }
 							>
-								{ existing.description + 'asdhjfahd ahgdfahsdfahfdhasfdh ahdfahsdgfajhsfdhjafsgdaj ytsdahdav sdahfdjahsgdf' }
+								{ existing.description }
 							</Text>
 
 							{ existing.imageUrl &&

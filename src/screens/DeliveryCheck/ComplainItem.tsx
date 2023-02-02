@@ -54,6 +54,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
 	const editComplain = useAppDispatch(Actions.complainAction.updateComplain);
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const setComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
 
 	//global state
 	const previewImgURI = useAppSelector(state => state.miscReducers.tmpImageUri);
@@ -82,7 +83,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 				const complainQty = !formik.values.complainQty ? calculateComplainQty() : formik.values.complainQty;
 				switch (complainQty) {
 					case '0':
-						setShowError('> QTY order : ' + qtyOrder?.order + ' kg  ');
+						setShowError('QTY diterima > ' + qtyOrder?.order + ' kg  ');
 						break;
 					default:
 						if (showError) setShowError(null);
@@ -252,11 +253,31 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 		if (!itemName) return <View />;
 		return (
 			<View style={ [styles.card, { marginBottom: 10 }] }>
-				<Text format={ Fonts.textBody.l.bold as TextStyle } style={ styles.headerTitle }>{ itemName }</Text>
+				<Text format={ Fonts.textBody.l.bold as TextStyle } style={ styles.headerTitle }>{ itemName + ' : ' + qtyOrder?.order }</Text>
 				<Text format={ Fonts.textBody.m.regular as TextStyle } style={ styles.headerTitle } color={ Colors.gray.default }>{ deliveryRouteItemId }</Text>
 			</View>
 		);
 	}, [itemName]);
+
+	const memoizedWarning = useMemo(() => {
+		console.log('stat', tmpApiResult, showError);
+		if (tmpApiResult || showError) {
+			return (
+				<View style={ [styles.card, { marginBottom: 10, flexDirection: 'row', alignItems: 'center' }] }>
+					<Images.IconWarnRed style={ { marginRight: 16 } } height={ 24 } />
+					{ tmpApiResult &&
+						<Text format={ Fonts.textBody.m.regular as TextStyle } color={ tmpApiResult == 'success' ? Colors.alert.green : Colors.alert.red }>{ tmpApiResult }</Text>
+					}
+					{ showError &&
+						<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.alert.red }>{ showError }</Text>
+					}
+				</View>
+			);
+		} else {
+			return (<View />);
+		}
+
+	}, [tmpApiResult, showError]);
 
 	const renderItemReceived = () => {
 
@@ -349,12 +370,8 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 			contentContainerStyle={ styles.container }
 		>
 
-			{ tmpApiResult &&
-				<View style={ [styles.card, { marginBottom: 10, flexDirection: 'row', alignItems: 'center' }] }>
-					<Images.IconWarnRed style={ { marginRight: 16 } } height={ 24 } />
-					<Text format={ Fonts.textBody.m.regular as TextStyle } color={ Colors.alert.red }>{ tmpApiResult }</Text>
-				</View>
-			}
+			{ memoizedWarning }
+
 			<ScrollView contentContainerStyle={ styles.scroll } showsVerticalScrollIndicator={ false }>
 				{ memoizedRenderComplainTitle }
 
