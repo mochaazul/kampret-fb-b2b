@@ -12,8 +12,10 @@ import {
 	DeliveryRoute,
 	CapturePhoto,
 	DeliveryCheck,
+	ComplainItem,
 	DeliveryRouteHistory,
-	DeliveryHistoryDetail
+	DeliveryHistoryDetail,
+	ScanBarcode
 } from '@screens';
 
 export const screens = [
@@ -89,6 +91,21 @@ export const screens = [
 		name: 'DeliveryHistoryDetail',
 		component: DeliveryHistoryDetail,
 	},
+	{
+		name: 'ComplainItem',
+		component: ComplainItem,
+	},
+	{
+		name: 'ScanBarcode',
+		component: ScanBarcode,
+	},
 ] as const;
 
-export type ScreenNameType = typeof screens[number]['name']
+export const modals = [
+	{
+		name: 'ScanBarcode',
+		component: ScanBarcode,
+	},
+] as const;
+
+export type ScreenNameType = typeof screens[number]['name'];

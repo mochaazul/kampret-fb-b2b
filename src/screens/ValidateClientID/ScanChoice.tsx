@@ -5,7 +5,7 @@ import { Images, Fonts, Colors } from '@constant';
 import { Text, Input, Button, Camera } from '@components';
 import { FormikProps, useFormik } from 'formik';
 import { Auth } from '@validator';
-import { useAppDispatch, useAppSelector, useScanBarcodes } from '@helpers';
+import { NavigationHelper, useAppDispatch, useAppSelector, useScanBarcodes } from '@helpers';
 import { Actions } from '@store';
 
 interface ManualInput {
@@ -20,6 +20,7 @@ interface ScanChoiceProps {
 const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
 	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
+	const [cameraActive, setCameraActive] = useState<boolean>(false);
 
 	const [scanResult, setScanResult] = useState('');
 
@@ -97,7 +98,12 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	if (!inputManualMode && !inputFromScanner) {
 		return (
 			<View style={ styles.container }>
-				<TouchableOpacity style={ styles.row } onPress={ () => setInputFromScanner(true) }>
+				<TouchableOpacity
+					style={ styles.row }
+					onPress={ () => {
+						NavigationHelper.push('ScanBarcode', { deliveryId: deliveryId });
+					} }
+				>
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Scan Barcode</Text>
 					<Images.IconRight />
 				</TouchableOpacity>
@@ -110,7 +116,11 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 	} else if (inputFromScanner) {
 		return (
 			<View style={ styles.container }>
-				<TouchableOpacity style={ styles.row } onPress={ () => setInputFromScanner(false) }>
+				<TouchableOpacity style={ styles.row } onPress={ () => {
+					setInputFromScanner(false);
+					setTimeout(() => setCameraActive(false), 200);
+				} }
+				>
 					<View style={ { flex: 1 } } />
 					<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
 					<Images.IconClose style={ { flex: 1 } } />
@@ -119,7 +129,12 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 					untuk Validasi Client ID</Text>
 
 				<View style={ styles.cameraContainer }>
-					<Camera frameProcessor={ frameProcessor } style={ styles.camera } />
+					<Camera
+						frameProcessor={ frameProcessor }
+						style={ styles.camera }
+						isActive={ cameraActive }
+					/>
+
 					{ renderLoading }
 				</View>
 

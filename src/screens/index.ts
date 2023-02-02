@@ -11,8 +11,10 @@ import InputKms from './InputKms';
 import DeliveryRoute from './DeliveryRoute';
 import CapturePhoto from './CapturePhoto';
 import DeliveryCheck from './DeliveryCheck';
+import ComplainItem from './DeliveryCheck/ComplainItem';
 import DeliveryRouteHistory from './DeliveryRouteHistory';
 import DeliveryHistoryDetail from './DeliveryHistoryDetail';
+import ScanBarcode from './ValidateClientID/ScanBarcode';
 
 export {
 	Splash,
@@ -28,6 +30,8 @@ export {
 	DeliveryRoute,
 	CapturePhoto,
 	DeliveryCheck,
+	ComplainItem,
 	DeliveryRouteHistory,
 	DeliveryHistoryDetail,
+	ScanBarcode,
 };

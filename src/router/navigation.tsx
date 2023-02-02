@@ -4,8 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { NavigationHelper, useLinking } from '@helpers';
-import { screens } from './screens';
-
+import { screens, modals } from './screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,15 +41,31 @@ const AppRouter = () => {
 				initialRouteName='Splash'
 				screenOptions={ { headerShown: false } }>
 				{
-					screens.map(({ name, component }, index) => {
-						return (
-							<Stack.Screen
-								key={ index }
-								name={ name }
-								component={ component } />
-						);
-					})
+					screens
+						// .filter(({ name }) => name != 'ScanBarcode')
+						.map(({ name, component }, index) => {
+							return (
+								<Stack.Screen
+									key={ index }
+									name={ name }
+									component={ component } />
+							);
+						})
 				}
+
+				{/* <Stack.Group screenOptions={ { presentation: 'modal' } }>
+					{
+						modals
+							.map(({ name, component }, index) => {
+								return (
+									<Stack.Screen
+										key={ index }
+										name={ name }
+										component={ component } />
+								);
+							})
+					}
+				</Stack.Group> */}
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

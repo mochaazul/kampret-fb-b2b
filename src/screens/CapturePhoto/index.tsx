@@ -1,6 +1,7 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Platform } from 'react-native';
 import { Camera as CameraVision } from 'react-native-vision-camera';
+import { useNavigation } from '@react-navigation/native';
 
 import { Camera } from '@components';
 import { NavigationHelper, useAppDispatch } from '@helpers';
@@ -11,6 +12,8 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 	const cameraRef = useRef<CameraVision>(null);
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const setCustomStore = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
+
+	const [active, setActive] = useState(true);
 
 	const onTakeCapture = useCallback(
 		async () => {
@@ -40,21 +43,31 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 						"file://" + result?.path;
 				}
 
-			} else {
-				setTmpImgUri(Platform.OS === "ios" ?
-					decodeURIComponent(result?.path ?? '') :
-					"file://" + result?.path);
 			}
 
+			setTmpImgUri(
+				Platform.OS === "ios" ?
+					decodeURIComponent(result?.path ?? '') :
+					"file://" + result?.path
+			);
+
 			NavigationHelper.pop(1);
-			route.params?.onClosed?.call(null);
 		},
 		[cameraRef],
 	);
 
+	const navigation = useNavigation();
+	const setInactive = () => setActive(false);
+
+	useEffect(() => {
+		navigation.addListener('beforeRemove', setInactive);
+
+		return () => navigation.removeListener('beforeRemove', setInactive);
+	}, [navigation]);
+
 	return (
 		<View style={ styles.container }>
-			<Camera style={ StyleSheet.absoluteFill } photo={ true } cameraRef={ cameraRef } />
+			<Camera style={ StyleSheet.absoluteFill } photo={ true } cameraRef={ cameraRef } isActive={ active } />
 			<View style={ styles.buttonWrapper }>
 				<TouchableOpacity onPress={ onTakeCapture } style={ styles.button } />
 			</View>
