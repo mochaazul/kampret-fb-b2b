@@ -19,6 +19,7 @@ import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
 import Notes from "./Notes";
 
 import styles from "./styles";
+import { useIsFocused } from "@react-navigation/native";
 
 interface CheckValues {
 	receiverName: string,
@@ -27,7 +28,7 @@ interface CheckValues {
 }
 
 const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
-	const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
+	// const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
 	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
 	const [complainSetter, setComplainSetter] = useState<string | null>(null);
@@ -38,6 +39,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
 	const [showNotes, setShowNotes] = useState<boolean>(false);
 	const [progress, setProgress] = useState(0);
+	const [complainKey, setComplainKey] = useState(0);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -53,6 +55,14 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
+
+	const isFocused = useIsFocused();
+
+	useEffect(() => {
+		if (isFocused && complainKey) {
+			setComplainKey(0);
+		}
+	}, [isFocused]);
 
 	useEffect(() => {
 
@@ -108,7 +118,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	useEffect(() => {
 		if (apiComplainResult) {
 			getArrivalData(route.params.deliveryId, route.params.clientId);
-			setShowComplain(null);
+			// setShowComplain(null);
 			setApiComplainResult(null);
 		}
 	}, [apiComplainResult]);
@@ -258,15 +268,9 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				{ index > 0 && <View style={ { height: 5 } } /> }
 				<CheckItem { ...item }
 					onClickComplain={ (data) => {
-						// const newItems = [...itemChecks];
-						// newItems[index].isComplain = newItems[index].isComplain ? false : true;
-
-						// if (newItems[index].isComplain) newItems[index].isConfirm = false;
-
-						// setItemChecks(newItems);
-
-						// TODO: add handler show complain dialog
-						setShowComplain(data);
+						NavigationHelper.push("ComplainItem", { ...data });
+						// setShowComplain(data);
+						setComplainKey(1);
 					} }
 					deliveryId={ route.params.deliveryId }
 					clientId={ route.params.clientId }
@@ -417,10 +421,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				/>
 			</ModalDialog>
 
-			<BottomSheet
+			{/* <BottomSheet
 				visible={ showComplain ? true : false }
 				onRequestClose={ () => setShowComplain(null) }
 				noScroll
+				key={ complainKey }
 			>
 				<Complain
 					onClose={ () => setShowComplain(null) }
@@ -430,8 +435,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					itemName={ showComplain ? showComplain.itemName : undefined }
 					existing={ showComplain ? showComplain.existing : undefined }
 					qtyOrder={ showComplain ? showComplain.qtyOrder : undefined }
+					onClickCamera={ () => {
+						NavigationHelper.push('CapturePhoto');
+						setComplainKey(1);
+					} }
 				/>
-			</BottomSheet>
+			</BottomSheet> */}
 
 			<BottomSheet
 				visible={ showConfirmItem ? true : false }
@@ -446,7 +455,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					itemName={ showConfirmItem ? showConfirmItem.itemName : undefined }
 					onOpenComplain={ (item) => {
 						setShowConfirmItem(null);
-						setShowComplain(item);
+						// setShowComplain(item);
+						NavigationHelper.push("ComplainItem", { ...showConfirmItem });
 					} }
 				/>
 			</BottomSheet>

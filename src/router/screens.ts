@@ -12,6 +12,7 @@ import {
 	DeliveryRoute,
 	CapturePhoto,
 	DeliveryCheck,
+	ComplainItem,
 	DeliveryRouteHistory,
 	DeliveryHistoryDetail,
 	ScanBarcode
@@ -89,6 +90,10 @@ export const screens = [
 	{
 		name: 'DeliveryHistoryDetail',
 		component: DeliveryHistoryDetail,
+	},
+	{
+		name: 'ComplainItem',
+		component: ComplainItem,
 	},
 	{
 		name: 'ScanBarcode',

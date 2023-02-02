@@ -23,6 +23,7 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 		noPadding,
 		type,
 		mt,
+		mh,
 		disabled,
 		useShadow,
 		buttonStyle,
@@ -61,6 +62,10 @@ const Button: React.FC<ComponentInterface.IButton> = props => {
 
 		if (mt) {
 			defaultStyle.marginTop = Ratio.normalize(mt);
+		}
+
+		if (mh) {
+			defaultStyle.marginHorizontal = Ratio.normalize(mh);
 		}
 
 		if (type) {

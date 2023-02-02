@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Geolocation from '@react-native-community/geolocation';
 import { ProgressBar } from "@react-native-community/progress-bar-android";
 
-import { Button, CameraWidget, Container, Input, Text } from "@components";
+import { Button, Container, Input, Text } from "@components";
 import styles from "./style";
 import { Colors, Fonts, Images } from "@constant";
 import { NavigationHelper, useAppSelector, useAppDispatch, useInterval } from "@helpers";
@@ -12,7 +12,6 @@ import { NavigationProps } from '@interfaces';
 import { Actions } from "@store";
 import { FormikProps, useFormik } from 'formik';
 import { Delivery } from '@validator';
-import { PhotoFile } from "react-native-vision-camera";
 
 type InputKmsScreenProps = NavigationProps<'InputKms'>;
 type InputKM = {
@@ -20,31 +19,22 @@ type InputKM = {
 	photoUri: string | null;
 };
 const InputKms = ({ route }: InputKmsScreenProps) => {
-	const [showCamera, setShowCamera] = useState<boolean>(false);
-	const [previewImgURI, setPreviewImgURI] = useState<string>("");
 	const [progress, setProgress] = useState(0);
 
 	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
 	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 
+	const previewImgURI = useAppSelector(state => state.miscReducers.tmpImageUri);
 	const latitude = useAppSelector(state => state.miscReducers.currentLatitude);
 	const longitude = useAppSelector(state => state.miscReducers.currentLongitude);
 	const loading = useAppSelector(state => state.deliveryReducers.loadingInputKm);
-	const uploadProgress = useAppSelector(state => state.miscReducers.uploadProgress);
 
 	const doInputKm = useAppDispatch(Actions.deliveryAction.inputKms);
 	const clearLocation = useAppDispatch(Actions.miscAction.clearLocation);
 	const inputKmOnFinish = useAppDispatch(Actions.deliveryAction.deliveryFinish);
 
 	const { t: translate } = useTranslation();
-
-	const onCapture = (photo?: PhotoFile) => {
-		if (photo) {
-			const imageURI = `file://` + photo.path;
-			setPreviewImgURI(imageURI);
-			formik.setFieldValue('photoUri', imageURI);
-		}
-	};
 
 	const formik: FormikProps<InputKM> = useFormik<InputKM>({
 		validateOnBlur: true,
@@ -100,6 +90,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 		return function () {
 			clearLocation();
+			setTmpImgUri('');
 		};
 	}, []);
 
@@ -115,6 +106,11 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			backHandler.remove();
 		};
 	}, [loading]);
+
+	useEffect(() => {
+		if (previewImgURI !== '')
+			formik.setFieldValue('photoUri', previewImgURI);
+	}, [previewImgURI]);
 
 	const renderProgress = useMemo(() => {
 
@@ -137,10 +133,10 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 	}, [progress]);
 
 	const renderImage = () => {
-		if ((route && route.params?.photo) || previewImgURI !== '') {
+		if (previewImgURI !== '') {
 			return (
 				<View style={ { position: 'relative' } }>
-					<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
+					<Image style={ styles.addImage } source={ { uri: previewImgURI! } } />
 					{ renderProgress }
 				</View>
 			);
@@ -210,9 +206,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 				activeOpacity={ .75 }
 				onPress={ () => {
 					// if (!progress) setShowCamera(true);
-					NavigationHelper.push('CapturePhoto', {
-						onSinglePictureTaken: onCapture
-					});
+					NavigationHelper.push('CapturePhoto');
 				} }
 			>
 				{ renderImage() }
@@ -220,12 +214,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			</TouchableOpacity>
 
 			{ renderButton }
-
-			{/* <CameraWidget
-				isActive={ showCamera }
-				onCapture={ onCapture }
-				onClose={ () => setShowCamera(false) }
-			/> */}
 
 		</Container >
 	);

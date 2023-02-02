@@ -1,5 +1,6 @@
-import { FlatList, View, TextStyle } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
+import { FlatList, View, TextStyle } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 import { Container, RouteCard, BottomSheet, Shimmer, Text } from '@components';
 import { Variables, Images, Fonts, Colors } from '@constant';
@@ -8,12 +9,12 @@ import ReportIssue from './ReportIssue';
 import { NavigationHelper, useAppDispatch, useAppSelector, Ratio } from '@helpers';
 import { Actions } from '@store';
 
-const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) => {
+const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
-	//const [showComplain, setShowComplain] = useState<boolean>(false);
 	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
 	const [showCart, setShowCart] = useState<boolean>(false);
 	const [showListSo, setShowListSo] = useState<boolean>(false);
+	const [reportKey, setReportKey] = useState(0);
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
 	const loadingStartClient = useAppSelector(state => state.deliveryReducers.loadingStartDeliveryClient);
@@ -24,19 +25,27 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 	const getClient = useAppDispatch(Actions.deliveryAction.getDeliveryProcess);
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 
 	const [listCart, setListCart] = useState<DeliveryInterface.IDeliveryCart[]>([]);
 	const [listSo, setListSo] = useState<string[]>([]);
 
-	useEffect(() => {
-		//auto reload using focus listener as trigger
-		const setFocusListener = navigation.addListener('focus', () => {
-			getClient(route.params?.deliveryId);
-		});
+	const isFocused = useIsFocused();
 
-		return () => {
-			setFocusListener();
-		};
+	useEffect(() => {
+		if (isFocused) {
+			//auto reload using focus listener as trigger
+			getClient(route.params?.deliveryId);
+
+			if (reportKey) {
+				setReportKey(0);
+				// setShowReportIssue(true);
+			}
+		}
+	}, [isFocused]);
+
+	useEffect(() => {
+		return () => setTmpImgUri('');
 	}, []);
 
 	const warehouseDataAdded = useMemo(() => {
@@ -123,11 +132,16 @@ const DeliveryRoute = ({ route, navigation }: NavigationProps<'DeliveryRoute'>) 
 				visible={ showReportIssue }
 				onRequestClose={ () => setShowReportIssue(false) }
 				noScroll
+				key={ reportKey }
 			>
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
 					onClose={ () => setShowReportIssue(false) }
-
+					onClickCamera={ () => {
+						// setShowReportIssue(false);
+						NavigationHelper.push('CapturePhoto');
+						setReportKey(1);
+					} }
 				/>
 			</BottomSheet>
 
