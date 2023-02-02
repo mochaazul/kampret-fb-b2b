@@ -922,10 +922,7 @@ export default {
 					type: Dispatches.CLIENT_ARRIVAL_DATA,
 					payload: response.data,
 				});
-				dispatch({
-					type: Dispatches.COMPLAIN_RESULT,
-					payload: 'success',
-				});
+				NavigationHelper.pop(1);
 
 			})
 			.catch((error: AxiosError) => {
