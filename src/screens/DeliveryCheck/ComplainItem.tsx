@@ -260,7 +260,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 	}, [itemName]);
 
 	const memoizedWarning = useMemo(() => {
-		console.log('stat', tmpApiResult, showError);
+
 		if (tmpApiResult || showError) {
 			return (
 				<View style={ [styles.card, { marginBottom: 10, flexDirection: 'row', alignItems: 'center' }] }>
