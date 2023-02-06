@@ -8,7 +8,7 @@ import { store } from '../../config/reduxConfig';
 
 export default {
 	// action to get delivery history list
-	deleteComplain: (params: { deliveryId: string, clientId: string, itemId: string; }) => (dispatch: Dispatch) => {
+	deleteComplain: (params: { deliveryId: string, clientId: string, itemId: string, useRedirect?: boolean; }) => (dispatch: Dispatch) => {
 		//set loading delivery list
 		dispatch({
 			type: Dispatches.LOADING_DELIVERY_LIST,
@@ -22,6 +22,7 @@ export default {
 					type: Dispatches.COMPLAIN_RESULT,
 					payload: 'success',
 				});
+				if (params.useRedirect) NavigationHelper.pop(1);
 			})
 			.finally(() => {
 				// set loading delivery list to false

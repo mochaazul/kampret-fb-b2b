@@ -941,7 +941,7 @@ export default {
 			});
 	},
 
-	submitDeliveryIssue: (deliveryId: string, complain: DeliveryInterface.IComplain) => (dispatch: Dispatch) => {
+	submitDeliveryIssue: (payload: DeliveryInterface.ReportIssuePayload) => (dispatch: Dispatch) => {
 		// set loading submit delivery issue
 		dispatch({
 			type: Dispatches.LOADING_DELIVERY_ISSUE,
@@ -949,15 +949,15 @@ export default {
 		});
 
 		const formData = new FormData();
-		formData.append('title', complain.title ?? '');
-		formData.append('description', complain.description ?? '');
+		formData.append('title', payload.complain.title ?? '');
+		formData.append('description', payload.complain.description ?? '');
 		formData.append('image', {
-			uri: complain.image ?? 'test',
+			uri: payload.complain.image ?? 'test',
 			name: 'complain.jpg',
 			type: 'image/jpeg',
 		} as any);
 
-		API.upload(Endpoints.DELIVERY_PROCESS(deliveryId), formData)
+		API.upload(Endpoints.ADD_DELIVERY_ISSUE(payload.deliveryId, payload.clientId), formData)
 			.then(() => {
 				// set result submit delivery issue
 				dispatch({

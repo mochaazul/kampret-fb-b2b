@@ -187,6 +187,16 @@ export interface IAddComplainDelivery {
 	receivedQty: string;
 }
 
+export interface ReportIssuePayload {
+	deliveryId: string,
+	clientId: string,
+	complain: IReport;
+}
+export interface IReport {
+	title: string | null;
+	description: string | null;
+	image: string | null;
+}
 export interface IComplain {
 	title: string | null;
 	description: string | null;
