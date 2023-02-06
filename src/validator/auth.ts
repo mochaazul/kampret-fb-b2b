@@ -50,7 +50,7 @@ export const ComplainValidationSchema = yup.object().shape({
 	followupSelected: yup.string().notOneOf(['9'], 'wajib pilih salah satu'),
 	complainSelected: yup.string().notOneOf(['9'], 'wajib pilih salah satu').nullable(),
 	photoTaken: yup.bool().isTrue('wajib lampirkan photo'),
-	qty: yup.string().required('Qty wajib diisi').nullable()
+	qty: yup.string().nullable()
 });
 
 export const ReportIssueValidation = yup.object().shape({

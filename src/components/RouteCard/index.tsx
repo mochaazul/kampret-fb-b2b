@@ -22,6 +22,7 @@ export interface RouteCardParam {
 	onRedirect?: () => void;
 	onClickCart: () => void;
 	onClickSo: () => void;
+	onReportClick?: (clientId: string) => void;
 	historyMode?: boolean;
 }
 
@@ -37,7 +38,8 @@ const RouteCard = ({
 	onRedirect,
 	historyMode,
 	onClickCart,
-	onClickSo
+	onClickSo,
+	onReportClick
 }: RouteCardParam) => {
 
 	const {
@@ -215,6 +217,7 @@ const RouteCard = ({
 			key={ 'route_' + sequence }
 			activeOpacity={ .7 }
 			onPress={ onPresssAction }
+			disabled={ true }
 		>
 
 			<View style={ styles.numbering }>
@@ -227,11 +230,17 @@ const RouteCard = ({
 			<View style={ styles.contentContainer }>
 				<View style={ disabled ? styles.contentDisabled : styles.content }>
 
-					<View style={ styles.row }>
+					<View style={ [styles.row, { alignItems: 'center' }] }>
 						<View style={ styles.leftIcon }>
 							<Images.IconLocation width={ 16 } height={ 16 } />
 						</View>
 						<Text style={ [Fonts.textBody.l.bold, styles.text] as TextStyle }>{ custName }</Text>
+						<TouchableOpacity
+							disabled={ disabled }
+							style={ styles.reportButton }
+							onPress={ () => onReportClick ? onReportClick(client.id) : null }>
+							<Images.IconAlert />
+						</TouchableOpacity>
 					</View>
 
 					<View style={ { marginTop: 10, marginLeft: 32 } }>
@@ -443,4 +452,7 @@ const styles = StyleSheet.create({
 		height: 20
 	},
 
+	reportButton: {
+		padding: 10
+	}
 });

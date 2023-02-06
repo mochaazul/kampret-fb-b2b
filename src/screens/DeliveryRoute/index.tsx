@@ -11,7 +11,7 @@ import { Actions } from '@store';
 
 const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 
-	const [showReportIssue, setShowReportIssue] = useState<boolean>(false);
+	const [showReportIssue, setShowReportIssue] = useState<string | null>(null);
 	const [showCart, setShowCart] = useState<boolean>(false);
 	const [showListSo, setShowListSo] = useState<boolean>(false);
 	const [reportKey, setReportKey] = useState(0);
@@ -76,8 +76,6 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 			header={ {
 				title: 'Rute Pengiriman',
 				type: 'regular',
-				rightButton: (<Images.IconAlert />),
-				onPressRightButton: () => setShowReportIssue(true)
 			} }
 		>
 			{ !loading &&
@@ -106,6 +104,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 									setListSo(item.listSo ?? []);
 									setShowListSo(true);
 								} }
+								onReportClick={ (clientId) => setShowReportIssue(clientId) }
 							/>);
 					}
 					}
@@ -129,14 +128,15 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 				/>
 			}
 			<BottomSheet
-				visible={ showReportIssue }
-				onRequestClose={ () => setShowReportIssue(false) }
+				visible={ showReportIssue ? true : false }
+				onRequestClose={ () => setShowReportIssue(null) }
 				noScroll
 				key={ reportKey }
 			>
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
-					onClose={ () => setShowReportIssue(false) }
+					onClose={ () => setShowReportIssue(null) }
+					clientId={ showReportIssue }
 					onClickCamera={ () => {
 						// setShowReportIssue(false);
 						NavigationHelper.push('CapturePhoto');

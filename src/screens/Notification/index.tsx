@@ -15,6 +15,8 @@ const Notification = ({ route }: NotificationProps) => {
 
 	const notificationList = useAppSelector(state => state.notificationReducers.notification);
 	const latestNotifReaded = useAppSelector(state => state.notificationReducers.latestNotifReaded);
+	const nextPage = useAppSelector(state => state.notificationReducers.next);
+	const prevPage = useAppSelector(state => state.notificationReducers.prev);
 
 	const readNotif = useAppDispatch(Actions.notificationAction.notificationReaded);
 
@@ -23,7 +25,6 @@ const Notification = ({ route }: NotificationProps) => {
 			setArrSize(prevState => prevState + 1);
 		}
 	}, [route]);
-
 
 	return (
 		<Container
