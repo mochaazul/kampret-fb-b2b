@@ -14,9 +14,10 @@ interface ComplainProps {
 	deliveryId: string;
 	onClose: () => void;
 	onClickCamera: () => void;
+	clientId: string | null;
 }
 
-const ReportIssue = ({ deliveryId, onClose, onClickCamera }: ComplainProps) => {
+const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainProps) => {
 
 	const { t: translate } = useTranslation();
 
@@ -43,7 +44,7 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera }: ComplainProps) => {
 			image: previewImgURI ?? '',
 		},
 		onSubmit: () => {
-			submitIssue(deliveryId, formik.values);
+			if (clientId) submitIssue({ deliveryId, complain: formik.values, clientId });
 		},
 	});
 

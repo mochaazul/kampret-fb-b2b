@@ -22,6 +22,7 @@ export default {
 	INPUT_KM: (deliveryId: string) => (`v1/delivery/${ deliveryId }/start`),
 	INPUT_KM_FINISH: (deliveryId: string) => (`v1/delivery/${ deliveryId }/finish`),
 	DELIVERY_PROCESS: (deliveryId: string) => (`v1/delivery-process/${ deliveryId }`),
+	ADD_DELIVERY_ISSUE: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/problem-report/${ clientId }`),
 	START_DELIVERY_CLIENT: (deliveryId: string, clientId: string) => (`v1/delivery-process/${ deliveryId }/client/${ clientId }`),
 	JUST_ARRIVE: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }`),
 	ARRIVAL_CONFIRMATION: (deliveryId: string, clientId: string) => (`v1/delivery-arrival/${ deliveryId }/client/${ clientId }/confirmation`),

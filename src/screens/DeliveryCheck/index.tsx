@@ -335,83 +335,84 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				</View>
 				{ !arrivalLoading && renderListItem }
 				{ arrivalLoading && renderShimmerLoading() }
-				<View>
-					<View style={ styles.separator } />
-					<Text
-						color={ Colors.black.default }
-						format={ Fonts.paragraph.l.bold as TextStyle }
-						style={ styles.label }
-					>
-						Bukti Pesanan Diterima
-					</Text>
-
-					<View style={ styles.section }>
-						<Input
-							formik={ formik }
-							name="receiverName"
-							label="Nama Penerima"
-						/>
-
-						<TouchableOpacity
-							activeOpacity={ .75 }
-							onPress={ navigateToCapturePhoto }
+				{ !arrivalLoading &&
+					<View>
+						<View style={ styles.separator } />
+						<Text
+							color={ Colors.black.default }
+							format={ Fonts.paragraph.l.bold as TextStyle }
+							style={ styles.label }
 						>
-							{ renderImage }
+							Bukti Pesanan Diterima
+						</Text>
 
-						</TouchableOpacity>
+						<View style={ styles.section }>
+							<Input
+								formik={ formik }
+								name="receiverName"
+								label="Nama Penerima"
+							/>
+
+							<TouchableOpacity
+								activeOpacity={ .75 }
+								onPress={ navigateToCapturePhoto }
+							>
+								{ renderImage }
+
+							</TouchableOpacity>
+						</View>
+
+						<View style={ styles.separator } />
+						<Text
+							color={ Colors.black.default }
+							format={ Fonts.paragraph.l.bold as TextStyle }
+							style={ styles.label }
+						>
+							Barang Yang Harus Dibawa Kembali
+						</Text>
+
+						<View style={ styles.section }>
+
+							{ renderListCart }
+
+							<Button
+								text='Pengiriman Selesai'
+								textSize={ 14 }
+								weight='700'
+								mt={ 30 }
+								useShadow={ true }
+								onPress={ () => {
+									if (needConfirmMode) {
+										setNeedConfirmMode(false);
+									}
+									setEnableValidation(true);
+									formik.handleSubmit();
+								} }
+								loading={ arrivalLoading }
+								disabled={ itemChecks.some((item) => !item.isComplain ? !item.isConfirm : false) }
+							/>
+							<Button
+								type="outline"
+								backgroundColor="transparent"
+								color={ Colors.company.red }
+								text='Pengiriman Selesai & Butuh Konfirmasi'
+								textSize={ 14 }
+								weight='700'
+								mt={ 20 }
+								useShadow={ true }
+								onPress={ () => {
+
+									if (!needConfirmMode) {
+										setNeedConfirmMode(true);
+									}
+									setEnableValidation(true);
+									formik.handleSubmit();
+								} }
+
+							/>
+						</View>
 					</View>
-
-					<View style={ styles.separator } />
-					<Text
-						color={ Colors.black.default }
-						format={ Fonts.paragraph.l.bold as TextStyle }
-						style={ styles.label }
-					>
-						Barang Yang Harus Dibawa Kembali
-					</Text>
-
-					<View style={ styles.section }>
-
-						{ renderListCart }
-
-						<Button
-							text='Pengiriman Selesai'
-							textSize={ 14 }
-							weight='700'
-							mt={ 30 }
-							useShadow={ true }
-							onPress={ () => {
-								if (needConfirmMode) {
-									setNeedConfirmMode(false);
-								}
-								setEnableValidation(true);
-								formik.handleSubmit();
-							} }
-							loading={ arrivalLoading }
-							disabled={ itemChecks.some((item) => !item.isComplain ? !item.isConfirm : false) }
-						/>
-						<Button
-							type="outline"
-							backgroundColor="transparent"
-							color={ Colors.company.red }
-							text='Pengiriman Selesai & Butuh Konfirmasi'
-							textSize={ 14 }
-							weight='700'
-							mt={ 20 }
-							useShadow={ true }
-							onPress={ () => {
-
-								if (!needConfirmMode) {
-									setNeedConfirmMode(true);
-								}
-								setEnableValidation(true);
-								formik.handleSubmit();
-							} }
-
-						/>
-					</View>
-				</View>
-
+				}
 			</ScrollView>
 			<ModalDialog visible={ successArrival !== null }
 				onRequestClose={ () => closeArrivalSuccessDialog() }>

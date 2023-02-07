@@ -87,8 +87,9 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 						break;
 					default:
 						if (showError) setShowError(null);
-						interval.start();
+
 						if (existing) {
+							interval.start();
 							editComplain({
 								deliveryId,
 								clientId,
@@ -101,17 +102,23 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 								receivedQty: formik.values.qty
 							});
 						} else {
-							sendComplain({
-								deliveryId,
-								clientId,
-								complaintDescription: formik.values.description,
-								complainImageUrl: photos,
-								itemId: pureItemId,
-								qty: complainQty,
-								category: formik.values.complainSelected,
-								followUp: formik.values.followupSelected,
-								receivedQty: formik.values.qty
-							});
+							if (formik.values.qty && !photos) {
+								setShowError('Wajib melampirkan Bukti Foto');
+							} else {
+								interval.start();
+								sendComplain({
+									deliveryId,
+									clientId,
+									complaintDescription: formik.values.description,
+									complainImageUrl: photos ? photos : [],
+									itemId: pureItemId,
+									qty: complainQty,
+									category: formik.values.complainSelected,
+									followUp: formik.values.followupSelected,
+									receivedQty: formik.values.qty ? formik.values.qty : 0
+								});
+							}
+
 						}
 
 				}
@@ -211,7 +218,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 	const handleDeleteComplain = () => {
 		if (deliveryRouteItemId) {
 			const itemId = deliveryRouteItemId.split('-');
-			deleteComplain({ deliveryId, clientId, itemId: itemId[1] });
+			deleteComplain({ deliveryId, clientId, itemId: itemId[1], useRedirect: true });
 		}
 	};
 
@@ -381,9 +388,6 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 					<View style={ styles.row }>
 						<View style={ [styles.row, { flex: 3 }] }>
 							<Text format={ Fonts.textBody.l.bold as TextStyle }>Keluhan Barang</Text>
-							{ formik.errors.qty &&
-								<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Wajib diisi</Text>
-							}
 						</View>
 
 						{ !editReceived &&
