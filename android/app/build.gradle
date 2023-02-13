@@ -5,6 +5,7 @@ import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -83,6 +84,10 @@ apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
+]
+
+project.ext.sentryCli = [
+    logLevel: "debug"
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -255,7 +260,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-
+implementation project(':@sentry_react-native')
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

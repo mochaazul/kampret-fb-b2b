@@ -6,7 +6,7 @@ install! 'cocoapods', :deterministic_uuids => false
 
 target 'ReactNativeSkeleton' do
   config = use_native_modules!
-
+pod 'RNSentry', :path => '../node_modules/@sentry/react-native/RNSentry.podspec'
   # Flags change depending on the env values.
   flags = get_default_flags()
 

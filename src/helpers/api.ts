@@ -2,6 +2,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import Toast from 'react-native-toast-message';
 import Config from "react-native-config";
+import * as Sentry from '@sentry/react-native';
 
 import { Dispatches } from '@constant';
 import { store } from '../config/reduxConfig';
@@ -94,10 +95,20 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 							text1: 'Error',
 							text2: 'Oops, sorry, we are experiencing some problem',
 						});
+						Sentry.captureException(JSON.stringify(url), {
+							tags: {
+								"error_api": 'line100' + method
+							}
+						});
 						return Promise.reject(err);
 				}
 			} else
 				return Promise.reject(err);
+			Sentry.captureException(JSON.stringify(url), {
+				tags: {
+					"error_api": 'line109' + method
+				}
+			});
 		})
 		.finally(() => {
 			// store.dispatch({
