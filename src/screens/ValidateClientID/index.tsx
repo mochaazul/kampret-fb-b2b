@@ -23,6 +23,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 	const loading = useAppSelector(state => state.deliveryReducers.loadingClient);
 	const deliveryList = useAppSelector(state => state.deliveryReducers.deliveryList);
 	const client = useAppSelector(state => state.deliveryReducers.clientValidation);
+	const resultValidate = useAppSelector(state => state.deliveryReducers.resultValidateClient);
 
 	const clientList = useMemo(() =>
 		(client.filter((value) => value.deliveryId == route.params?.deliveryId)),
@@ -50,10 +51,15 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 		}
 	}, []);
 
-	const handleOnChoosen = (value: string) => {
-		if (value) {
+	useEffect(() => {
+		if (resultValidate)
 			setShowResult(true);
-		}
+	}, [resultValidate]);
+
+	const handleOnChoosen = (value: string) => {
+		// if (value) {
+		// 	setShowResult(true);
+		// }
 		setShowScanChoices(false);
 		setValidateClientResult(undefined);
 	};
@@ -150,6 +156,7 @@ const ValidateClientID = ({ route }: NavigationProps<'ValidateClientID'>) => {
 				<ScanChoice
 					onChoosen={ handleOnChoosen }
 					deliveryId={ delivery?.id ?? '' }
+					onClose={ () => setShowScanChoices(false) }
 				/>
 			</BottomSheet>
 

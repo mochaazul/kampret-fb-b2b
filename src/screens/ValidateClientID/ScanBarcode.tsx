@@ -1,21 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Modal, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 
 import { Colors, Images } from "@constant";
 import { NavigationHelper, useAppDispatch, useAppSelector, useScanBarcodes } from "@helpers";
-import { BottomSheet, Camera, Text } from "@components";
+import { Camera, Text } from "@components";
 import { useNavigation } from "@react-navigation/native";
 import { Actions } from "@store";
 import { NavigationProps } from "@interfaces";
-import { navigationRef } from '../../helpers/navigationHelper';
 
 const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 	const [cameraActive, setActive] = useState(true);
 	const [loading, setLoading] = useState(false);
+	const [scanResult, setScanResult] = useState('');
 
 	const result = useAppSelector(state => state.deliveryReducers.resultValidateClient);
 
 	const validateClient = useAppDispatch(Actions.deliveryAction.validateClient);
+	const setValidateClientResult = useAppDispatch(Actions.deliveryAction.setValidateClientResult);
 
 	const navigation = useNavigation();
 	const setInactive = () => setActive(false);
@@ -27,26 +28,31 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 	}, [navigation]);
 
 	useEffect(() => {
-		if (result != undefined)
-			setInactive()
+		if (result != undefined) {
+			setInactive();
+		}
 	}, [result]);
 
-	useEffect(()=>{
-		if(!cameraActive) NavigationHelper.pop(1)
-	},[cameraActive])
+	useEffect(() => {
+		if (!cameraActive && result != undefined) NavigationHelper.pop(1);
+	}, [cameraActive, result]);
+
+	useEffect(() => {
+		if (scanResult && !loading)
+			validateClient({
+				deliveryId: route.params?.deliveryId,
+				clientId: scanResult
+			});
+	}, [scanResult, loading]);
 
 	const { frameProcessor } = useScanBarcodes({
 		callback: (value) => {
-			setLoading(true);
-
-			validateClient({
-				deliveryId: route.params?.deliveryId,
-				clientId: value
-			});
+			setScanResult(value);
+			setTimeout(() => setLoading(true), 100);
 		}
 	});
 
-	const renderLoading = useMemo(() => {
+	const renderLoading = () => {
 		if (loading) {
 			return <ActivityIndicator
 				size="large"
@@ -55,11 +61,11 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 			/>;
 		}
 		return null;
-	}, [loading]);
+	};
 
 	return (
 		<View style={ styles.container }>
-			<TouchableOpacity style={ styles.row } onPress={ () => setInactive()}>
+			<TouchableOpacity style={ styles.row } onPress={ () => setInactive() }>
 				<View style={ { flex: 1 } } />
 				<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
 				<Images.IconClose style={ { flex: 1 } } />
