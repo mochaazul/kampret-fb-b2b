@@ -2,11 +2,12 @@ import { StyleSheet, TextStyle, View, Image, ScrollView, ViewStyle, TouchableOpa
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { ProgressBar } from "@react-native-community/progress-bar-android";
 
 import { Input, Button, Text, Dropdown } from '@components';
 import { Auth } from '@validator';
 import { Colors, Fonts, Images } from '@constant';
-import { useAppDispatch, useAppSelector } from '@helpers';
+import { useAppDispatch, useAppSelector, useInterval } from '@helpers';
 import { Actions } from '@store';
 import { DeliveryInterface } from '@interfaces';
 
@@ -44,11 +45,15 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainP
 			image: previewImgURI ?? '',
 		},
 		onSubmit: () => {
-			if (clientId) submitIssue({ deliveryId, complain: formik.values, clientId });
+			if (clientId) {
+				interval.start();
+				submitIssue({ deliveryId, complain: formik.values, clientId });
+			}
 		},
 	});
 
 	const [btnDisable, setBtnDisable] = useState(!formik.isValid || formik.initialValues == formik.values);
+	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
 		if (result != undefined) {
@@ -57,13 +62,42 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainP
 		}
 	}, [result]);
 
+	const interval = useInterval(
+		() => setProgress(progress => progress + 1),
+		500,
+	);
+
 	const renderImage = useMemo(() => {
+
 		if (previewImgURI) {
-			formik.setFieldValue('image', previewImgURI);
-			setBtnDisable(!formik.isValid);
-			return (
-				<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
-			);
+			if (progress > 80) {
+				interval.stop();
+			}
+			if (formik.values.image != previewImgURI) formik.setFieldValue('image', previewImgURI);
+			if (btnDisable != !formik.isValid) setBtnDisable(!formik.isValid);
+			if (progress) {
+				return (
+					<View style={ { position: 'relative' } }>
+						<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
+						<View style={ [styles.addImage, StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }] }>
+							<ProgressBar
+								styleAttr='Horizontal'
+								indeterminate={ false }
+								progress={ progress * .01 }
+								color={ Colors.company.red }
+								style={ styles.progressBar }
+							/>
+						</View>
+					</View>
+				);
+			} else {
+				return (
+					<View style={ { position: 'relative' } }>
+						<Image style={ styles.addImage } source={ { uri: previewImgURI } } />
+					</View>
+				);
+			}
+
 		}
 
 		return (
@@ -77,9 +111,13 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainP
 				</Text>
 			</View>
 		);
-	}, [previewImgURI]);
+	}, [previewImgURI, progress]);
 
 	const renderButton = useMemo(() => {
+		if (!loading && progress) {
+			interval.stop();
+			setProgress(100);
+		}
 		return (
 			<Button
 				onPress={ () => formik.handleSubmit() }
@@ -218,5 +256,12 @@ const styles = StyleSheet.create({
 		borderStyle: 'dashed',
 		borderWidth: 1,
 		height: 167
+	},
+	progressBar: {
+		marginTop: 10,
+		marginBottom: 20,
+		transform: [{ scaleX: 1.0 }, { scaleY: 2.5 }],
+		borderRadius: 10,
+		width: '100%'
 	},
 });
