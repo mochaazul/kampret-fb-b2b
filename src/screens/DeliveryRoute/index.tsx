@@ -129,13 +129,19 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 			}
 			<BottomSheet
 				visible={ showReportIssue ? true : false }
-				onRequestClose={ () => setShowReportIssue(null) }
+				onRequestClose={ () => {
+					setTmpImgUri('');
+					setShowReportIssue(null);
+				} }
 				noScroll
 				key={ reportKey }
 			>
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
-					onClose={ () => setShowReportIssue(null) }
+					onClose={ () => {
+						setTmpImgUri('');
+						setShowReportIssue(null);
+					} }
 					clientId={ showReportIssue }
 					onClickCamera={ () => {
 						// setShowReportIssue(false);
