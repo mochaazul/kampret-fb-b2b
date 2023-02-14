@@ -86,7 +86,7 @@ const ScanChoice = ({ onChoosen, deliveryId, onClose }: ScanChoiceProps) => {
 						NavigationHelper.push('ScanBarcode', { deliveryId: deliveryId });
 					} }
 				>
-					<Text format={ Fonts.textBody.l.bold as TextStyle }>Scan Barcode</Text>
+					<Text format={ Fonts.textBody.l.bold as TextStyle }>Scan Qrcode</Text>
 					<Images.IconRight />
 				</TouchableOpacity>
 				<TouchableOpacity style={ styles.row } onPress={ () => setInputManualMode(true) }>
