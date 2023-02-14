@@ -26,7 +26,7 @@ const SuccessDeliveryDialog = ({
 
 				<Text format={ Fonts.paragraph.m.regular as TextStyle } mt={ 10 } style={ { textAlign: 'center' } }>
 					Terima kasih anda telah berhasil menyelesaikan pengiriman ke
-					<Text format={ Fonts.paragraph.m.bold as TextStyle }> { custName }.</Text>
+					<Text format={ Fonts.paragraph.m.bold as TextStyle } numberOfLines={ 2 } > { custName }.</Text>
 				</Text>
 
 			</View>
