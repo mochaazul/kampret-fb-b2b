@@ -14,11 +14,18 @@ import { DeliveryInterface } from '@interfaces';
 interface ComplainProps {
 	deliveryId: string;
 	onClose: () => void;
-	onClickCamera: () => void;
+	onClickCamera: (values?: DeliveryInterface.IComplain) => void;
 	clientId: string | null;
+	initValues?: DeliveryInterface.IComplain;
 }
 
-const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainProps) => {
+const ReportIssue = ({
+	deliveryId,
+	onClose,
+	onClickCamera,
+	clientId,
+	initValues
+}: ComplainProps) => {
 
 	const { t: translate } = useTranslation();
 
@@ -39,7 +46,7 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainP
 	const formik: FormikProps<DeliveryInterface.IComplain> = useFormik<DeliveryInterface.IComplain>({
 		validateOnBlur: true,
 		validationSchema: Auth.ReportIssueValidation,
-		initialValues: {
+		initialValues: initValues ?? {
 			title: issueOptions[0].value,
 			description: '',
 			image: previewImgURI ?? '',
@@ -173,7 +180,9 @@ const ReportIssue = ({ deliveryId, onClose, onClickCamera, clientId }: ComplainP
 
 					<TouchableOpacity
 						activeOpacity={ .75 }
-						onPress={ onClickCamera }
+						onPress={ () => {
+							onClickCamera(formik.values);
+						} }
 					>
 						{ renderImage }
 					</TouchableOpacity>
