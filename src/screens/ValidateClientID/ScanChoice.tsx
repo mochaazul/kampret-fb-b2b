@@ -1,11 +1,11 @@
-import { StyleSheet, TextStyle, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, TextStyle, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Images, Fonts, Colors } from '@constant';
-import { Text, Input, Button, Camera } from '@components';
+import { Text, Input, Button } from '@components';
 import { FormikProps, useFormik } from 'formik';
 import { Auth } from '@validator';
-import { NavigationHelper, useAppDispatch, useAppSelector, useScanBarcodes } from '@helpers';
+import { NavigationHelper, useAppDispatch, useAppSelector } from '@helpers';
 import { Actions } from '@store';
 
 interface ManualInput {
@@ -15,21 +15,13 @@ interface ManualInput {
 interface ScanChoiceProps {
 	onChoosen: (value: string) => void;
 	deliveryId: string;
+	onClose: () => void;
 }
 
-const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
+const ScanChoice = ({ onChoosen, deliveryId, onClose }: ScanChoiceProps) => {
 	const [inputManualMode, setInputManualMode] = useState<boolean>(false);
-	const [inputFromScanner, setInputFromScanner] = useState<boolean>(false);
-	const [cameraActive, setCameraActive] = useState<boolean>(false);
 
 	const [scanResult, setScanResult] = useState('');
-
-	const { frameProcessor } = useScanBarcodes({
-		callback: (value) => {
-			setScanResult(value);
-			setTimeout(() => setLoading(true), 100);
-		}
-	});
 
 	// const loading = useAppSelector(state => state.deliveryReducers.loadingValidateClient);
 	const [loading, setLoading] = useState(false);
@@ -84,23 +76,13 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 		/>
 	), [loading]);
 
-	const renderLoading = useMemo(() => {
-		if (loading) {
-			return <ActivityIndicator
-				size="large"
-				color={ Colors.white.pure }
-				style={ styles.loadingStyle }
-			/>;
-		}
-		return null;
-	}, [loading]);
-
-	if (!inputManualMode && !inputFromScanner) {
+	if (!inputManualMode) {
 		return (
 			<View style={ styles.container }>
 				<TouchableOpacity
 					style={ styles.row }
 					onPress={ () => {
+						onClose();
 						NavigationHelper.push('ScanBarcode', { deliveryId: deliveryId });
 					} }
 				>
@@ -111,36 +93,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 					<Text format={ Fonts.textBody.l.bold as TextStyle }>Input Manual</Text>
 					<Images.IconRight />
 				</TouchableOpacity>
-			</View>
-		);
-	} else if (inputFromScanner) {
-		return (
-			<View style={ styles.container }>
-				<TouchableOpacity style={ styles.row } onPress={ () => {
-					setInputFromScanner(false);
-					setTimeout(() => setCameraActive(false), 200);
-				} }
-				>
-					<View style={ { flex: 1 } } />
-					<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
-					<Images.IconClose style={ { flex: 1 } } />
-				</TouchableOpacity>
-				<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Barcode di Keranjang
-					untuk Validasi Client ID</Text>
-
-				<View style={ styles.cameraContainer }>
-					<Camera
-						frameProcessor={ frameProcessor }
-						style={ styles.camera }
-						isActive={ cameraActive }
-					/>
-
-					{ renderLoading }
-				</View>
-
-				<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan barcode berada di dalam area kotak
-					yang sudah tersedia</Text>
-
 			</View>
 		);
 	} else {
@@ -161,7 +113,6 @@ const ScanChoice = ({ onChoosen, deliveryId }: ScanChoiceProps) => {
 			</View>
 		);
 	}
-
 };
 
 export default React.memo(ScanChoice);
