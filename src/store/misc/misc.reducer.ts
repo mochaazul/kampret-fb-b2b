@@ -14,7 +14,8 @@ const initialState: MiscInterface.MiscState = {
 	deliveryIssueTitle: '',
 	deliveryIssueDesc: '',
 	tmpDeliveryComplainResult: null,
-	uploadProgress: undefined
+	uploadProgress: undefined,
+	tempArrivalCheckItems: null
 };
 
 type Actions = { type: string; payload: any; };
@@ -90,6 +91,12 @@ const miscReducers = (
 			return {
 				...state,
 				uploadProgress: payload,
+			};
+		case Dispatches.SET_TEMP_ARRIVAL_CHECKITEMS:
+
+			return {
+				...state,
+				tempArrivalCheckItems: payload,
 			};
 		default:
 			return state;

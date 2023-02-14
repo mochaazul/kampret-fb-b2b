@@ -11,8 +11,8 @@ export default {
 	deleteComplain: (params: { deliveryId: string, clientId: string, itemId: string, useRedirect?: boolean; }) => (dispatch: Dispatch) => {
 		//set loading delivery list
 		dispatch({
-			type: Dispatches.LOADING_DELIVERY_LIST,
-			payload: true,
+			type: Dispatches.LOADING_COMPLAIN,
+			payload: true
 		});
 		// request delivery list data from api
 		API.delete<MiscInterface.BE<null>>
@@ -27,8 +27,8 @@ export default {
 			.finally(() => {
 				// set loading delivery list to false
 				dispatch({
-					type: Dispatches.LOADING_DELIVERY_LIST,
-					payload: false,
+					type: Dispatches.LOADING_COMPLAIN,
+					payload: false
 				});
 			});
 	},

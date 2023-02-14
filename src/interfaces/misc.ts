@@ -1,3 +1,5 @@
+import { CheckItemProp } from '../screens/DeliveryCheck/CheckItem';
+
 export type MiscState = {
 	loading: boolean,
 	deviceHeight: number,
@@ -11,6 +13,7 @@ export type MiscState = {
 	deliveryIssueDesc: string;
 	tmpDeliveryComplainResult: string | null;
 	uploadProgress: UploadProgress | undefined;
+	tempArrivalCheckItems: CheckItemProp[] | null;
 };
 
 export type UploadProgress = {
