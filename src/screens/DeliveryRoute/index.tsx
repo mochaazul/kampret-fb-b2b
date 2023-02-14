@@ -15,6 +15,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	const [showCart, setShowCart] = useState<boolean>(false);
 	const [showListSo, setShowListSo] = useState<boolean>(false);
 	const [reportKey, setReportKey] = useState(0);
+	const [reportValues, setReportValues] = useState<DeliveryInterface.IComplain>();
 
 	const loading = useAppSelector(state => state.deliveryReducers.loadingDeliveryProcess);
 	const loadingStartClient = useAppSelector(state => state.deliveryReducers.loadingStartDeliveryClient);
@@ -129,19 +130,29 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 			}
 			<BottomSheet
 				visible={ showReportIssue ? true : false }
-				onRequestClose={ () => setShowReportIssue(null) }
+				onRequestClose={ () => {
+					setTmpImgUri('');
+					setShowReportIssue(null);
+					setReportValues(undefined);
+				} }
 				noScroll
 				key={ reportKey }
 			>
 				<ReportIssue
 					deliveryId={ route.params?.deliveryId ?? '' }
-					onClose={ () => setShowReportIssue(null) }
+					onClose={ () => {
+						setTmpImgUri('');
+						setShowReportIssue(null);
+						setReportValues(undefined);
+					} }
 					clientId={ showReportIssue }
-					onClickCamera={ () => {
+					onClickCamera={ (reportValues) => {
 						// setShowReportIssue(false);
+						setReportValues(reportValues);
 						NavigationHelper.push('CapturePhoto');
 						setReportKey(1);
 					} }
+					initValues={ reportValues }
 				/>
 			</BottomSheet>
 
