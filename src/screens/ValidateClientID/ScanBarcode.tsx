@@ -70,7 +70,7 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 				<Text weight='700' size={ 16 } lineHeight={ 18 } align='center' style={ { flex: 5 } }>Validasi Client ID</Text>
 				<Images.IconClose style={ { flex: 1 } } />
 			</TouchableOpacity>
-			<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Barcode di Keranjang
+			<Text weight='700' size={ 20 } lineHeight={ 27 } align='center' mt={ 20 } color={ Colors.company.red } style={ { paddingHorizontal: 20 } }>Scan Qrcode di Keranjang
 				untuk Validasi Client ID</Text>
 
 			<View style={ styles.cameraContainer }>
@@ -82,7 +82,7 @@ const ScanBarcode = ({ route }: NavigationProps<'ScanBarcode'>) => {
 				{ renderLoading }
 			</View>
 
-			<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan barcode berada di dalam area kotak
+			<Text weight='400' size={ 14 } lineHeight={ 20 } align='center' mt={ 30 } style={ { paddingHorizontal: 20 } }>*Pastikan qrcode berada di dalam area kotak
 				yang sudah tersedia</Text>
 
 		</View>

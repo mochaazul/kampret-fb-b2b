@@ -20,6 +20,7 @@ const NotifItem = ({ item, onClick }: NotifItemProps) => {
 		<TouchableOpacity style={ styles.container } onPress={ () => onClick(item.id) }>
 			<View style={ styles.row }>
 				{ !item.is_read && <Bullet /> }
+				{ item.is_read && <View style={ styles.bulletDisabled } /> }
 				<View style={ styles.content }>
 					<Text
 						format={ Fonts.paragraph.m.regular as TextStyle }
