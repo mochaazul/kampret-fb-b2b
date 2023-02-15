@@ -24,7 +24,8 @@ export interface CheckItemProp {
 		kgFactor: number;
 	};
 	isConfirm?: boolean;
-	onCheckConfirm?: () => void;
+	onCheckConfirm?: (id: string) => void;
+	onUncheckConfirm?: (id: string) => void;
 	onClickDelete: (
 		deleteItem: {
 			deliveryId: string | undefined,
@@ -35,6 +36,13 @@ export interface CheckItemProp {
 };
 
 const CheckItem: React.FC<CheckItemProp> = item => {
+
+	const checkHandler = () => {
+		if (item.isConfirm && item.onUncheckConfirm)
+			item.onUncheckConfirm(item.id);
+		else if (!item.isConfirm && item.onCheckConfirm)
+			item.onCheckConfirm(item.id);
+	};
 
 	const renderAction = useMemo(() => {
 		const btnProp = { width: 32, height: 32 };
@@ -48,7 +56,10 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 					}
 				</TouchableOpacity>
 
-				<TouchableOpacity onPress={ () => item.isComplain ? false : item.onCheckConfirm ? item.onCheckConfirm() : null } style={ { marginStart: 16 } }>
+				<TouchableOpacity
+					onPress={ () => item.isComplain ? false : checkHandler() }
+					style={ { marginStart: 16 } }
+				>
 					{
 						item.isConfirm ?
 							<Images.ButtonCheck2 { ...btnProp } /> :

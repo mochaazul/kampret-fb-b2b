@@ -67,7 +67,14 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 
 	return (
 		<View style={ styles.container }>
-			<Camera style={ StyleSheet.absoluteFill } photo={ true } cameraRef={ cameraRef } isActive={ active } />
+			<Camera
+				style={ StyleSheet.absoluteFill }
+				photo={ true }
+				cameraRef={ cameraRef }
+				isActive={ active }
+				preset={ route?.params?.cameraPreest ?? 'medium' }
+			/>
+
 			<View style={ styles.buttonWrapper }>
 				<TouchableOpacity onPress={ onTakeCapture } style={ styles.button } />
 			</View>

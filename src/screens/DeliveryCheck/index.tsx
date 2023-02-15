@@ -110,10 +110,12 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			);
 	}, [progress]);
 
+	const [listConfirmIds, setListConfirmIds] = useState<string[]>([]);
+
 	// watcher to update list item
 	useEffect(() => {
 		if (arrivalData) setItemChecks(mappingItem(arrivalData));
-	}, [arrivalData]);
+	}, [arrivalData, listConfirmIds]);
 
 	//watcher to hide bottomSheet after receive api response
 	useEffect(() => {
@@ -175,8 +177,10 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 		if (arrive && arrive.items) {
 			return arrive.items.map((item) => {
+				const id = item.sales_no + '-' + item.delivery_route_item_id;
+				const isConfirm = listConfirmIds.some((item) => item == id);
 				return {
-					id: item.sales_no + '-' + item.delivery_route_item_id,
+					id: id,
 					name: item.item_name,
 					isComplain: item.complaint_description !== '',
 					complainAmount: item.qty_reject + '',
@@ -191,11 +195,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						qtyReceived: item.qty_received
 
 					} : undefined,
-					isConfirm: item.confirmed,
+					isConfirm: isConfirm,
 					qtyOrder: {
 						order: item.qty_order,
 						kgFactor: 3,
-						isConfirm: item.confirmed,
+						isConfirm: isConfirm,
 						qtyOrder: {
 							order: item.qty_order,
 							kgFactor: 3
@@ -263,6 +267,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	}, [arrivalData?.carts, listCartReturned]);
 
+	const checkItem = (id: string) => setListConfirmIds([...listConfirmIds, id]);
+
+	const uncheckItem = (id: string) =>
+		setListConfirmIds([...listConfirmIds.filter((item) => item != id)]);
+
 	const renderListItem = useMemo(() => {
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
@@ -277,14 +286,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ route.params.clientId }
 					onClickConfirm={ (data) => null }
 					itemIndex={ index }
-					onCheckConfirm={ () => {
-						const newItems = [...itemChecks];
-						newItems[index].isConfirm = newItems[index].isConfirm ? false : true;
-
-						if (newItems[index].isConfirm) newItems[index].isComplain = false;
-
-						setItemChecks(newItems);
-					} }
+					onCheckConfirm={ checkItem }
+					onUncheckConfirm={ uncheckItem }
 					onClickDelete={ (deleteItem) => deleteComplain(deleteItem) }
 				/>
 			</View>
