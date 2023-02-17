@@ -47,6 +47,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
 	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
 	const apiComplainResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
+	const existingArrivalCheckItems = useAppSelector(state => state.miscReducers.tempArrivalCheckItems);
 
 	const [itemChecks, setItemChecks] = useState<any[]>([]);
 
@@ -57,6 +58,8 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
 	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
+	const setTempArrivalItemCheck = useAppDispatch(Actions.miscAction.setArrivalCheckItems);
+	const clearArrivalData = useAppDispatch(Actions.miscAction.clearArrivalData);
 
 	const isFocused = useIsFocused();
 
@@ -72,8 +75,10 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 		return function () {
 			setTmpImgUri('');
+			setTempArrivalItemCheck(null);
 			setMultiplePhotoCapture(null);
 			setNotes(null);
+			clearArrivalData;
 			setNeedConfirmMode(false);
 			interval.stop();
 		};
@@ -113,8 +118,9 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	// watcher to update list item
 	useEffect(() => {
-		if (arrivalData) setItemChecks(mappingItem(arrivalData));
-	}, [arrivalData, listConfirmIds]);
+
+		if (arrivalData) setItemChecks(mappingItem(arrivalData, existingArrivalCheckItems));
+	}, [arrivalData]);
 
 	//watcher to hide bottomSheet after receive api response
 	useEffect(() => {
@@ -172,14 +178,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		);
 	}, [miscState.tmpImageUri, formik.errors, progress]);
 
-	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null) => {
+	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null, existingDataCheckItems: CheckItemProp[] | null) => {
 
 		if (arrive && arrive.items) {
-			return arrive.items.map((item) => {
-				const id = item.sales_no + '-' + item.delivery_route_item_id;
-				const isConfirm = listConfirmIds.some((item) => item == id);
+			return arrive.items.map((item, index) => {
+
 				return {
-					id: id,
+					id: item.sales_no + '-' + item.delivery_route_item_id,
 					name: item.item_name,
 					isComplain: item.complaint_description !== '',
 					complainAmount: item.qty_reject + '',
@@ -194,11 +199,11 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						qtyReceived: item.qty_received
 
 					} : undefined,
-					isConfirm: isConfirm,
+					isConfirm: existingDataCheckItems && existingDataCheckItems[index].isConfirm ? true : item.confirmed,
 					qtyOrder: {
 						order: item.qty_order,
 						kgFactor: 3,
-						isConfirm: isConfirm,
+						isConfirm: existingDataCheckItems && existingDataCheckItems[index].isConfirm ? true : item.confirmed,
 						qtyOrder: {
 							order: item.qty_order,
 							kgFactor: 3
@@ -266,21 +271,15 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	}, [arrivalData?.carts, listCartReturned]);
 
-	const checkItem = useCallback((id: string) => {
-		// console.log('before', listConfirmIds, id, [...listConfirmIds, id]);
-		setListConfirmIds([...listConfirmIds, id]);
-	}, [listConfirmIds]);
-
-	const uncheckItem = (id: string) => {
-		// setListConfirmIds([...listConfirmIds.filter((item) => item != id)]); 
-	};
-
 	const renderListItem = () => {
+
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
 				<CheckItem { ...item }
 					onClickComplain={ (data) => {
+						setTmpImgUri('');
+						setTempArrivalItemCheck(itemChecks);
 						NavigationHelper.push("ComplainItem", { ...data });
 						// setShowComplain(data);
 						setComplainKey(1);
@@ -289,9 +288,18 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ route.params.clientId }
 					onClickConfirm={ (data) => null }
 					itemIndex={ index }
-					onCheckConfirm={ (id) => { checkItem(id); } }
-					onUncheckConfirm={ uncheckItem }
-					onClickDelete={ (deleteItem) => deleteComplain(deleteItem) }
+					onCheckConfirm={ () => {
+						const newItems = [...itemChecks];
+						newItems[index].isConfirm = newItems[index].isConfirm ? false : true;
+
+						if (newItems[index].isConfirm) newItems[index].isComplain = false;
+
+						setItemChecks(newItems);
+					} }
+					onClickDelete={ (deleteItem) => {
+						setTempArrivalItemCheck(itemChecks);
+						deleteComplain(deleteItem);
+					} }
 				/>
 			</View>
 		);

@@ -2,6 +2,8 @@ import { Dispatch } from 'redux';
 import { Dispatches } from '@constant';
 import { MiscInterface } from '@interfaces';
 
+import { CheckItemProp } from '../../screens/DeliveryCheck/CheckItem';
+
 export default {
 	startLoader: () => {
 		return {
@@ -87,4 +89,16 @@ export default {
 			payload: value,
 		});
 	},
+	setArrivalCheckItems: (data: CheckItemProp[] | null) => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.SET_TEMP_ARRIVAL_CHECKITEMS,
+			payload: data,
+		});
+	},
+	clearArrivalData: () => (dispatch: Dispatch) => {
+		dispatch({
+			type: Dispatches.CLIENT_ARRIVAL_DATA,
+			payload: null,
+		});
+	}
 };
