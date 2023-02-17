@@ -15,7 +15,8 @@ import {
 	ComplainItem,
 	DeliveryRouteHistory,
 	DeliveryHistoryDetail,
-	ScanBarcode
+	ScanBarcode,
+	DeliveryArrival
 } from '@screens';
 
 export const screens = [
@@ -82,6 +83,10 @@ export const screens = [
 	{
 		name: 'DeliveryCheck',
 		component: DeliveryCheck,
+	},
+	{
+		name: 'DeliveryArrival',
+		component: DeliveryArrival,
 	},
 	{
 		name: 'DeliveryRouteHistory',

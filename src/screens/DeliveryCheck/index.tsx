@@ -40,6 +40,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const [showNotes, setShowNotes] = useState<boolean>(false);
 	const [progress, setProgress] = useState(0);
 	const [complainKey, setComplainKey] = useState(0);
+	const [listConfirmIds, setListConfirmIds] = useState<string[]>([]);
 
 	const miscState = useAppSelector(state => state.miscReducers);
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
@@ -109,8 +110,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				</View>
 			);
 	}, [progress]);
-
-	const [listConfirmIds, setListConfirmIds] = useState<string[]>([]);
 
 	// watcher to update list item
 	useEffect(() => {
@@ -267,12 +266,16 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 
 	}, [arrivalData?.carts, listCartReturned]);
 
-	const checkItem = (id: string) => setListConfirmIds([...listConfirmIds, id]);
+	const checkItem = useCallback((id: string) => {
+		// console.log('before', listConfirmIds, id, [...listConfirmIds, id]);
+		setListConfirmIds([...listConfirmIds, id]);
+	}, [listConfirmIds]);
 
-	const uncheckItem = (id: string) =>
-		setListConfirmIds([...listConfirmIds.filter((item) => item != id)]);
+	const uncheckItem = (id: string) => {
+		// setListConfirmIds([...listConfirmIds.filter((item) => item != id)]); 
+	};
 
-	const renderListItem = useMemo(() => {
+	const renderListItem = () => {
 		return itemChecks.map((item, index) =>
 			<View key={ 'item_' + index }>
 				{ index > 0 && <View style={ { height: 5 } } /> }
@@ -286,13 +289,13 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					clientId={ route.params.clientId }
 					onClickConfirm={ (data) => null }
 					itemIndex={ index }
-					onCheckConfirm={ checkItem }
+					onCheckConfirm={ (id) => { checkItem(id); } }
 					onUncheckConfirm={ uncheckItem }
 					onClickDelete={ (deleteItem) => deleteComplain(deleteItem) }
 				/>
 			</View>
 		);
-	}, [itemChecks]);
+	};
 
 	const renderShimmerLoading = () => {
 		return Array(6).fill(0).map((item, index) =>
@@ -336,7 +339,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						Pesanan
 					</Text>
 				</View>
-				{ !arrivalLoading && renderListItem }
+				{ renderListItem() }
 				{ arrivalLoading && renderShimmerLoading() }
 				{ !arrivalLoading &&
 					<View>

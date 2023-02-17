@@ -90,13 +90,15 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 							<RouteCard
 								client={ item }
 								isLastRoute={ index == warehouseDataAdded.length - 1 }
-								onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+								onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryArrival', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
+								// onClick={ () => item.status == Variables.DELIVERY_STATUS.ARRIVED ? NavigationHelper.push('DeliveryCheck', { deliveryId: route.params?.deliveryId, clientId: item.id }) : null }
 								disabled={ index == warehouseDataAdded.length - 1 ? notReadyToFinish(clients) : false }
 								loading={ loadingStartClient }
 								onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 								onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
 								onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
-								onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
+								onRedirect={ () => NavigationHelper.push('DeliveryArrival', { deliveryId: item.deliveryId, clientId: item.id }) }
+								// onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
 								onClickCart={ () => {
 									setListCart(item.carts ?? []);
 									setShowCart(true);
