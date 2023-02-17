@@ -77,7 +77,6 @@ const CheckItem2: React.FC<CheckItemProp2> = prop => {
 
 	const renderComplain = () => {
 		if (item.complaint_description) {
-			console.log('complain imgs', item.complaint_images);
 			return (
 				<View style={ styles.upLine }>
 					<View style={ styles.thumbnail }>
