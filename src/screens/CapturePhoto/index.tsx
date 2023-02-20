@@ -7,6 +7,7 @@ import { Camera } from '@components';
 import { NavigationHelper, useAppDispatch } from '@helpers';
 import { Actions } from '@store';
 import { NavigationProps } from '@interfaces';
+import { Variables } from '@constant';
 
 const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 	const cameraRef = useRef<CameraVision>(null);
@@ -67,7 +68,32 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 
 	return (
 		<View style={ styles.container }>
-			<Camera style={ StyleSheet.absoluteFill } photo={ true } cameraRef={ cameraRef } isActive={ active } />
+			<Camera
+				style={ StyleSheet.absoluteFill }
+				photo={ true }
+				cameraRef={ cameraRef }
+				isActive={ active }
+				//preset={ route?.params?.cameraPreest ?? 'medium' }
+				format={ {
+					photoHeight: Variables.PHOTO_SIZE.HEIGHT,
+					photoWidth: Variables.PHOTO_SIZE.WIDTH,
+					videoHeight: Variables.PHOTO_SIZE.HEIGHT,
+					videoWidth: Variables.PHOTO_SIZE.WIDTH,
+					isHighestPhotoQualitySupported: false,
+					maxISO: 1500,
+					minISO: 100,
+					fieldOfView: 128,
+					colorSpaces: ['yuv'],
+					supportsPhotoHDR: true,
+					supportsVideoHDR: false,
+					frameRateRanges: [{ minFrameRate: 70, maxFrameRate: 100 }],
+					autoFocusSystem: 'phase-detection',
+					videoStabilizationModes: ['standard'],
+					pixelFormat: '420v',
+					maxZoom: 3
+				} }
+			/>
+
 			<View style={ styles.buttonWrapper }>
 				<TouchableOpacity onPress={ onTakeCapture } style={ styles.button } />
 			</View>

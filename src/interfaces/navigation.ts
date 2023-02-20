@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { CameraPreset } from 'react-native-vision-camera';
 import { ComplainItemParams } from 'src/screens/DeliveryCheck/ComplainItem';
 import { MultiplePhotoCapture } from './misc';
 
@@ -40,6 +41,7 @@ export type RootStackParamList = {
 			id: string,
 			currentStore: MultiplePhotoCapture | null,
 		};
+		cameraPreest?: CameraPreset,
 	};
 	Notification?: {
 		item: any;

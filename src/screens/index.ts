@@ -15,6 +15,7 @@ import ComplainItem from './DeliveryCheck/ComplainItem';
 import DeliveryRouteHistory from './DeliveryRouteHistory';
 import DeliveryHistoryDetail from './DeliveryHistoryDetail';
 import ScanBarcode from './ValidateClientID/ScanBarcode';
+import DeliveryArrival from './DeliveryCheck/index2';
 
 export {
 	Splash,
@@ -34,4 +35,5 @@ export {
 	DeliveryRouteHistory,
 	DeliveryHistoryDetail,
 	ScanBarcode,
+	DeliveryArrival
 };

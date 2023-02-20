@@ -11,5 +11,10 @@ export default {
 		SENT: 5,
 		ARRIVED: 6,
 		FINISH: 1
+	},
+	PHOTO_SIZE: {
+		WIDTH: 950,
+		HEIGHT: 580
 	}
+
 };
