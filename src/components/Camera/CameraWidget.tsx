@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
-
-import { Camera } from '@components';
 import { Camera as CameraVision, PhotoFile } from 'react-native-vision-camera';
+import { Variables } from '@constant';
+import { Camera } from '@components';
+
 
 type CameraWidgetProps = {
 	isActive: boolean,
@@ -47,6 +48,24 @@ const CameraWidget: React.FC<CameraWidgetProps> = ({
 				photo={ true }
 				cameraRef={ cameraRef }
 				isActive={ isOpen }
+				format={ {
+					photoHeight: Variables.PHOTO_SIZE.HEIGHT,
+					photoWidth: Variables.PHOTO_SIZE.WIDTH,
+					videoHeight: Variables.PHOTO_SIZE.HEIGHT,
+					videoWidth: Variables.PHOTO_SIZE.WIDTH,
+					isHighestPhotoQualitySupported: false,
+					maxISO: 1500,
+					minISO: 100,
+					fieldOfView: 128,
+					colorSpaces: ['yuv'],
+					supportsPhotoHDR: true,
+					supportsVideoHDR: false,
+					frameRateRanges: [{ minFrameRate: 70, maxFrameRate: 100 }],
+					autoFocusSystem: 'phase-detection',
+					videoStabilizationModes: ['standard'],
+					pixelFormat: '420v',
+					maxZoom: 3
+				} }
 			/>
 			<View style={ styles.buttonWrapper }>
 				<TouchableOpacity onPress={ onPress } style={ styles.button } />
