@@ -36,6 +36,7 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
+	const clearArrivalData = useAppDispatch(Actions.miscAction.clearArrivalData);
 
 	const [listCheckIds, setListCheckIds] = useState<number[]>([]);
 	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
@@ -65,6 +66,7 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 		getArrivalData(route.params.deliveryId, route.params.clientId);
 
 		return () => {
+			clearArrivalData();
 			setTmpImgUri('');
 		};
 	}, []);
@@ -244,7 +246,7 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			noPadding
 			noScroll
 			header={ {
-				title: 'Cek Serah Terima x',
+				title: 'Cek Serah Terima',
 				type: 'regular'
 			} }
 			contentContainerStyle={ styles.container }
@@ -256,6 +258,7 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			<FlatList
 				data={ arrivalData?.items }
 				keyExtractor={ (item) => String(item.delivery_route_item_id) }
+				extraData={ [listCheckIds] }
 				renderItem={
 					({ item }) => <CheckItem2
 						item={ item }

@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
 import { Camera as CameraVision, PhotoFile } from 'react-native-vision-camera';
+
 import { Variables } from '@constant';
 import { Camera } from '@components';
-
+import { sentryReporter } from '@helpers';
 
 type CameraWidgetProps = {
 	isActive: boolean,
@@ -33,10 +34,17 @@ const CameraWidget: React.FC<CameraWidgetProps> = ({
 	const onPress = async () => {
 		if (cameraRef.current) {
 			const capturedImg = await cameraRef.current.takePhoto({
-				qualityPrioritization: 'quality'
+				qualityPrioritization: 'quality',
+				skipMetadata: true
 			});
+			if (capturedImg && capturedImg.height !== Variables.PHOTO_SIZE.HEIGHT) {
+				sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+			} else if (capturedImg && capturedImg.width !== Variables.PHOTO_SIZE.WIDTH) {
+				sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+			}
 			onCapture(capturedImg);
 		}
+
 		setOpen(false);
 	};
 	return (

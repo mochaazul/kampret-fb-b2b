@@ -159,7 +159,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 	}, [progress]);
 
 	useEffect(() => {
-		console.log('existing', existing);
+
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
