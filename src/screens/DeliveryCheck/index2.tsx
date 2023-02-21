@@ -244,7 +244,7 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			noPadding
 			noScroll
 			header={ {
-				title: 'Cek Serah Terima',
+				title: 'Cek Serah Terima x',
 				type: 'regular'
 			} }
 			contentContainerStyle={ styles.container }
@@ -263,25 +263,28 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 						onConfirm={ confirmItem }
 						onUnconfirm={ unconfirmItem }
 						onComplain={
-							(item) => NavigationHelper.push('ComplainItem', {
-								deliveryRouteItemId: item.sales_no + '-' + item.delivery_route_item_id,
-								deliveryId: route.params.deliveryId,
-								clientId: route.params.clientId,
-								itemName: item.item_name,
-								existing: item.complaint_description ? {
-									category: item.complaint_category,
-									description: item.complaint_description,
-									qty: item.qty_reject,
-									imageUrl: item.complaint_images,
-									followUp: item.complaint_follow_up,
-									qtyReceived: item.qty_received
+							(item) => {
+								setTmpImgUri(null);
+								NavigationHelper.push('ComplainItem', {
+									deliveryRouteItemId: item.sales_no + '-' + item.delivery_route_item_id,
+									deliveryId: route.params.deliveryId,
+									clientId: route.params.clientId,
+									itemName: item.item_name,
+									existing: item.complaint_description ? {
+										category: item.complaint_category,
+										description: item.complaint_description,
+										qty: item.qty_reject,
+										imageUrl: item.complaint_images,
+										followUp: item.complaint_follow_up,
+										qtyReceived: item.qty_received
 
-								} : undefined,
-								qtyOrder: {
-									order: item.qty_order,
-									kgFactor: 3
-								}
-							})
+									} : undefined,
+									qtyOrder: {
+										order: item.qty_order,
+										kgFactor: 3
+									}
+								});
+							}
 						}
 						onDeleteComplain={ (item) => deleteComplain({
 							deliveryId: route.params.deliveryId,

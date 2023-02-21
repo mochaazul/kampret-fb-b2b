@@ -20,6 +20,7 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 		async () => {
 			const result = await cameraRef?.current?.takePhoto({
 				qualityPrioritization: 'quality',
+				skipMetadata: true
 			});
 
 			if (route.params?.customStore) {
@@ -51,7 +52,7 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 					decodeURIComponent(result?.path ?? '') :
 					"file://" + result?.path
 			);
-
+			console.log('result:', result);
 			NavigationHelper.pop(1);
 		},
 		[cameraRef],
@@ -73,7 +74,6 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 				photo={ true }
 				cameraRef={ cameraRef }
 				isActive={ active }
-				//preset={ route?.params?.cameraPreest ?? 'medium' }
 				format={ {
 					photoHeight: Variables.PHOTO_SIZE.HEIGHT,
 					photoWidth: Variables.PHOTO_SIZE.WIDTH,

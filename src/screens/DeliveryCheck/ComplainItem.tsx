@@ -159,7 +159,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 	}, [progress]);
 
 	useEffect(() => {
-
+		console.log('existing', existing);
 		if (existing) {
 			formik.setValues({
 				description: existing.description,
@@ -176,7 +176,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 		}
 		return function () {
 			interval.stop();
-			setTmpImgUri('');
+			setTmpImgUri(null);
 		};
 	}, []);
 
@@ -361,7 +361,7 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 				</View>
 			);
 		}
-	}, [photos]);
+	}, [photos, previewImgURI]);
 
 	return (
 		<Container

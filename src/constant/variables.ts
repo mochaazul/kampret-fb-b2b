@@ -13,8 +13,8 @@ export default {
 		FINISH: 1
 	},
 	PHOTO_SIZE: {
-		WIDTH: 950,
-		HEIGHT: 580
+		WIDTH: 720,
+		HEIGHT: 960
 	}
 
 };
