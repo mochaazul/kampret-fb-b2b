@@ -121,7 +121,6 @@ const RouteCard = ({
 
 	const renderAction = useMemo(() => {
 		//make condition by delivery status
-		console.log('status delivery', status);
 		switch (status) {
 			case undefined:
 				return (
@@ -215,14 +214,7 @@ const RouteCard = ({
 						}
 					</View>
 				);
-			// case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
-			// 	return (
-			// 		<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-			// 			<View style={ styles.totalItem }>
-			// 				<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Item Not Validate</Text>
-			// 			</View>
-			// 		</View>
-			// 	);
+
 		}
 	}, [numItem, status, loading, disabled]);
 
@@ -287,8 +279,6 @@ const RouteCard = ({
 
 						</TouchableOpacity>
 					</View>
-
-
 
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>

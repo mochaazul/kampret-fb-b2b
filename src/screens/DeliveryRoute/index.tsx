@@ -27,6 +27,7 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 	const startDeliveryClient = useAppDispatch(Actions.deliveryAction.startDeliveryClient);
 	const arrivedDeliveryClient = useAppDispatch(Actions.deliveryAction.justArrived);
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const getOdometer = useAppDispatch(Actions.miscAction.getStartOdometer);
 
 	const [listCart, setListCart] = useState<DeliveryInterface.IDeliveryCart[]>([]);
 	const [listSo, setListSo] = useState<string[]>([]);
@@ -96,7 +97,8 @@ const DeliveryRoute = ({ route }: NavigationProps<'DeliveryRoute'>) => {
 								loading={ loadingStartClient }
 								onStart={ () => startDeliveryClient(route.params?.deliveryId, item.id) }
 								onArrived={ () => arrivedDeliveryClient(route.params?.deliveryId, item.id) }
-								onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+								// onFinish={ () => NavigationHelper.push('InputKms', { deliveryId: item.deliveryId, deliveryLocation: item.address }) }
+								onFinish={ () => getOdometer({ deliveryId: item.deliveryId, deliveryLocation: item.address }) }
 								onRedirect={ () => NavigationHelper.push('DeliveryArrival', { deliveryId: item.deliveryId, clientId: item.id }) }
 								// onRedirect={ () => NavigationHelper.push('DeliveryCheck', { deliveryId: item.deliveryId, clientId: item.id }) }
 								onClickCart={ () => {
