@@ -82,13 +82,24 @@ const CheckItem2: React.FC<CheckItemProp2> = prop => {
 					<View style={ styles.thumbnail }>
 						<View style={ { flex: 4 } }>
 							<View style={ [styles.thumbnail, { marginTop: 10 }] }>
-								<Text
-									format={ Fonts.textBody.l.bold as TextStyle }
-									color={ Colors.alert.red }
-									numberOfLines={ 1 }
-								>
-									{ `${ item.qty_reject } ` }
-								</Text>
+								{ item.complaint_category == 'Kuantitas Tidak Sesuai' &&
+									<Text
+										format={ Fonts.textBody.l.bold as TextStyle }
+										color={ Colors.alert.red }
+										numberOfLines={ 1 }
+									>
+										{ `${ item.qty_reject == 0 ? item.qty_received : item.qty_reject } ` }
+									</Text>
+								}
+								{ item.complaint_category != 'Kuantitas Tidak Sesuai' &&
+									<Text
+										format={ Fonts.textBody.l.bold as TextStyle }
+										color={ Colors.alert.red }
+										numberOfLines={ 1 }
+									>
+										{ `${ item.qty_reject } ` }
+									</Text>
+								}
 								<Text
 									format={ Fonts.textBody.l.bold as TextStyle }
 									color={ Colors.black.default }
