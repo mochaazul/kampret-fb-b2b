@@ -38,9 +38,13 @@ const CameraWidget: React.FC<CameraWidgetProps> = ({
 				skipMetadata: true
 			});
 			if (capturedImg && capturedImg.height !== Variables.PHOTO_SIZE.HEIGHT) {
-				sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+				if (capturedImg.height !== Variables.PHOTO_SIZE.WIDTH) {
+					sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+				}
 			} else if (capturedImg && capturedImg.width !== Variables.PHOTO_SIZE.WIDTH) {
-				sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+				if (capturedImg.width !== Variables.PHOTO_SIZE.HEIGHT) {
+					sentryReporter.imageWatcher('uknown', capturedImg.height, capturedImg.width);
+				}
 			}
 			onCapture(capturedImg);
 		}

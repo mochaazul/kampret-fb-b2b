@@ -32,11 +32,13 @@ const SuccessDeliveryDialog = ({
 			</View>
 			<View style={ styles.content }>
 				<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-					<View>
+					<View style={ { flex: 1 } }>
 						<Text format={ Fonts.textBody.l.bold as TextStyle }>{ testBarcodeValue }</Text>
 
-						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 }>{ custName } </Text>
-
+						<Text
+							format={ Fonts.textBody.m.regular as TextStyle }
+							numberOfLines={ 2 } ellipsizeMode='middle'
+							mt={ 10 }>{ custName }</Text>
 						<Text format={ Fonts.textBody.m.regular as TextStyle } mt={ 10 } color={ Colors.gray.default }>{ time }</Text>
 
 					</View>

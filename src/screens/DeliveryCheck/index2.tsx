@@ -415,7 +415,8 @@ const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				/>
 			</BottomSheet>
 
-			<ModalDialog visible={ successArrival !== null }
+			<ModalDialog
+				visible={ successArrival !== null }
 				onRequestClose={ () => closeArrivalSuccessDialog() }>
 				<SuccessDeliveryDialog
 					testBarcodeValue={ successArrival?.deliveryId }

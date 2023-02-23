@@ -42,7 +42,8 @@ const Colors = {
 		default: '#27AE60'
 	},
 	orange: {
-		default: '#E1A226'
+		default: '#E1A226',
+		light: '#F9EBD2',
 	}
 };
 

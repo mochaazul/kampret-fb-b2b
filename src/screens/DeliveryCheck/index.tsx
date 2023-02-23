@@ -438,27 +438,6 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				/>
 			</ModalDialog>
 
-			{/* <BottomSheet
-				visible={ showComplain ? true : false }
-				onRequestClose={ () => setShowComplain(null) }
-				noScroll
-				key={ complainKey }
-			>
-				<Complain
-					onClose={ () => setShowComplain(null) }
-					deliveryRouteItemId={ showComplain ? showComplain.deliveryRouteItemId : 'null' }
-					deliveryId={ showComplain ? showComplain.deliveryId : undefined }
-					clientId={ showComplain ? showComplain.clientId : undefined }
-					itemName={ showComplain ? showComplain.itemName : undefined }
-					existing={ showComplain ? showComplain.existing : undefined }
-					qtyOrder={ showComplain ? showComplain.qtyOrder : undefined }
-					onClickCamera={ () => {
-						NavigationHelper.push('CapturePhoto');
-						setComplainKey(1);
-					} }
-				/>
-			</BottomSheet> */}
-
 			<BottomSheet
 				visible={ showConfirmItem ? true : false }
 				onRequestClose={ () => setShowConfirmItem(null) }

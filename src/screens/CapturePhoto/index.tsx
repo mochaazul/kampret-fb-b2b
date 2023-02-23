@@ -57,9 +57,13 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 			);
 
 			if (result && result.height !== Variables.PHOTO_SIZE.HEIGHT) {
-				sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				if (result.height !== Variables.PHOTO_SIZE.WIDTH) {
+					sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				}
 			} else if (result && result.width !== Variables.PHOTO_SIZE.WIDTH) {
-				sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				if (result.width !== Variables.PHOTO_SIZE.HEIGHT) {
+					sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				}
 			}
 			NavigationHelper.pop(1);
 

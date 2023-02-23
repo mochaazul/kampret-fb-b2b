@@ -121,6 +121,7 @@ const RouteCard = ({
 
 	const renderAction = useMemo(() => {
 		//make condition by delivery status
+		console.log('status delivery', status);
 		switch (status) {
 			case undefined:
 				return (
@@ -135,6 +136,20 @@ const RouteCard = ({
 								onPress={ onArrivedPressed }
 							/>
 						}
+					</View>
+				);
+			case Variables.DELIVERY_STATUS.NEED_CONFIRM:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between', alignItems: 'center' }] }>
+						{ renderTotalBarang }
+
+						<Text
+							color={ Colors.orange.default }
+							format={ Fonts.textBody.s.bold as TextStyle }
+							style={ styles.labelNeedConfirm }
+						>
+							Need Confirm
+						</Text>
 					</View>
 				);
 			case Variables.DELIVERY_STATUS.FINISH:
@@ -425,6 +440,12 @@ const styles = StyleSheet.create({
 	labelComplete: {
 		borderRadius: 48,
 		backgroundColor: Colors.green.light,
+		paddingHorizontal: 10,
+		paddingVertical: 6
+	},
+	labelNeedConfirm: {
+		borderRadius: 48,
+		backgroundColor: Colors.orange.light,
 		paddingHorizontal: 10,
 		paddingVertical: 6
 	},

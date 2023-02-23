@@ -75,7 +75,7 @@ const CheckItem2: React.FC<CheckItemProp2> = prop => {
 		);
 	};
 
-	const renderComplain = () => {
+	const renderComplain = (key: string) => {
 		if (item.complaint_description) {
 			return (
 				<View style={ styles.upLine }>
@@ -111,13 +111,14 @@ const CheckItem2: React.FC<CheckItemProp2> = prop => {
 							{ item.complaint_images &&
 								<View style={ styles.thumbnail }>
 									{
-										item.complaint_images.map((item) => {
+										item.complaint_images.map((item, index) => {
 											return (
 												<Image
 													source={ { uri: item } }
 													resizeMethod='resize'
 													resizeMode='cover'
 													style={ styles.images }
+													key={ key + index }
 												/>
 											);
 										})
@@ -154,7 +155,7 @@ const CheckItem2: React.FC<CheckItemProp2> = prop => {
 				{ renderAction() }
 			</View>
 
-			{ renderComplain() }
+			{ renderComplain(`${ item.sales_no }-${ item.delivery_route_item_id }`) }
 		</View>
 	);
 };

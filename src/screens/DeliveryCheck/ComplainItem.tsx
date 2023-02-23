@@ -82,9 +82,10 @@ const ComplainItem = ({ route }: NavigationProps<'ComplainItem'>) => {
 			if (pureItemId) {
 				const complainQty = !formik.values.complainQty ? calculateComplainQty() : formik.values.complainQty;
 				switch (complainQty) {
-					case '0':
-						setShowError('QTY diterima > ' + qtyOrder?.order + ' kg  ');
-						break;
+					// deactived over qty validation
+					// case '0':
+					// 	setShowError('QTY diterima > ' + qtyOrder?.order + ' kg  ');
+					// 	break;
 					default:
 						if (showError) setShowError(null);
 
