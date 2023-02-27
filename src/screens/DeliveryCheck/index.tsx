@@ -1,110 +1,142 @@
-import { BottomSheet, Button, Container, Input, ModalDialog, Text } from "@components";
-import { FormikProps, useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, TextStyle, TouchableOpacity, View, StyleSheet } from "react-native";
+import { FlatList, Image, TextStyle, TouchableOpacity, View, StyleSheet } from "react-native";
 import { ProgressBar } from "@react-native-community/progress-bar-android";
+import { FormikProps, useFormik } from "formik";
 
-import { Colors, Fonts, Images } from "@constant";
-import { NavigationHelper, useAppDispatch, useAppSelector, Ratio, useInterval } from "@helpers";
-import { Delivery } from "@validator";
+import { NavigationHelper, Ratio, useAppDispatch, useAppSelector, useInterval } from "@helpers";
+import { DeliveryResponseInterface, NavigationProps } from "@interfaces";
 import { Actions } from "@store";
-import { NavigationProps, DeliveryInterface, DeliveryResponseInterface } from '@interfaces';
-import { Shimmer } from "@components";
-
-import Complain from "../DeliveryRoute/Complain";
-import ConfirmItem from "./ConfirmItem";
-import CheckItem, { CheckItemProp } from "./CheckItem";
-import ConfirmArrival from "./ConfirmArrival";
-import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
-import Notes from "./Notes";
+import { BottomSheet, Button, Container, Input, ModalDialog, Shimmer, Text } from "@components";
+import { Colors, Fonts, Images } from "@constant";
+import { Delivery } from "@validator";
 
 import styles from "./styles";
-import { useIsFocused } from "@react-navigation/native";
+import CheckItem from "./CheckItem";
+import ConfirmArrival from "./ConfirmArrival";
+import Notes from "./Notes";
+import SuccessDeliveryDialog from "./SuccessDeliveryDialog";
 
 interface CheckValues {
 	receiverName: string,
 	photoUri: string,
-	// returnChecked: Array<string>;
 }
 
-const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
-	// const [showComplain, setShowComplain] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
-	const [showConfirmItem, setShowConfirmItem] = useState<DeliveryInterface.IComplainDialogProps | null>(null);
-	const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
-	const [complainSetter, setComplainSetter] = useState<string | null>(null);
-	const [showConfirm, setShowConfirm] = useState<boolean>(false);
-	const [enableValidation, setEnableValidation] = useState<boolean>(false);
-	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
-	const [notes, setNotes] = useState<string | null>(null);
-	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
-	const [showNotes, setShowNotes] = useState<boolean>(false);
-	const [progress, setProgress] = useState(0);
-	const [complainKey, setComplainKey] = useState(0);
-	const [listConfirmIds, setListConfirmIds] = useState<string[]>([]);
 
-	const miscState = useAppSelector(state => state.miscReducers);
+const DeliveryArrival = ({ route }: NavigationProps<'DeliveryCheck'>) => {
+
 	const arrivalData = useAppSelector(state => state.deliveryReducers.clientArrivalData);
-	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
 	const arrivalLoading = useAppSelector(state => state.deliveryReducers.arrivalLoading);
+	const tmpImgUri = useAppSelector(state => state.miscReducers.tmpImageUri);
+	const successArrival = useAppSelector(state => state.deliveryReducers.arrivalConfirmation);
 	const apiComplainResult = useAppSelector(state => state.miscReducers.tmpDeliveryComplainResult);
-	const existingArrivalCheckItems = useAppSelector(state => state.miscReducers.tempArrivalCheckItems);
 
-	const [itemChecks, setItemChecks] = useState<any[]>([]);
-
-	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
-	const setMultiplePhotoCapture = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
 	const getArrivalData = useAppDispatch(Actions.deliveryAction.getClientArrivalData);
+	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
+	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
 	const arrivalConfirmation = useAppDispatch(Actions.deliveryAction.arrivalConfirmation);
 	const closeArrivalSuccessDialog = useAppDispatch(Actions.deliveryAction.closeSuccessArrivalConfirmationDialog);
 	const setApiComplainResult = useAppDispatch(Actions.miscAction.setDeliveryComplainResult);
-	const deleteComplain = useAppDispatch(Actions.complainAction.deleteComplain);
-	const setTempArrivalItemCheck = useAppDispatch(Actions.miscAction.setArrivalCheckItems);
 	const clearArrivalData = useAppDispatch(Actions.miscAction.clearArrivalData);
 
-	const isFocused = useIsFocused();
-
-	useEffect(() => {
-		if (isFocused && complainKey) {
-			setComplainKey(0);
-		}
-	}, [isFocused]);
-
-	useEffect(() => {
-
-		getArrivalData(route.params.deliveryId, route.params.clientId);
-
-		return function () {
-			setTmpImgUri('');
-			setTempArrivalItemCheck(null);
-			setMultiplePhotoCapture(null);
-			setNotes(null);
-			clearArrivalData;
-			setNeedConfirmMode(false);
-			interval.stop();
-		};
-	}, []);
+	const [listCheckIds, setListCheckIds] = useState<number[]>([]);
+	const [needConfirmMode, setNeedConfirmMode] = useState<boolean>(false);
+	const [showConfirm, setShowConfirm] = useState<boolean>(false);
+	const [progress, setProgress] = useState(0);
+	const [listCartReturned, setListCartReturned] = useState<Array<string>>([]);
+	const [showNotes, setShowNotes] = useState<boolean>(false);
+	const [notes, setNotes] = useState<string | null>(null);
 
 	const interval = useInterval(
 		() => setProgress(progress => progress + 1),
 		500,
 	);
 
+	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
+		validateOnBlur: true,
+		// validateOnChange: enableValidation,
+		validationSchema: Delivery.DeliveryCheckValidationSchema,
+		initialValues: {
+			receiverName: '',
+			photoUri: '',
+		},
+		onSubmit: () => { needConfirmMode ? setShowNotes(true) : setShowConfirm(true); },
+	});
+
 	useEffect(() => {
-		if (!arrivalLoading && progress) {
-			interval.stop();
-			setProgress(100);
+		getArrivalData(route.params.deliveryId, route.params.clientId);
+
+		return () => {
+			clearArrivalData();
+			setTmpImgUri('');
+		};
+	}, []);
+
+	//watcher to hide bottomSheet after receive api response
+	useEffect(() => {
+		if (apiComplainResult) {
+			getArrivalData(route.params.deliveryId, route.params.clientId);
+			setApiComplainResult(null);
 		}
-	}, [arrivalLoading]);
+	}, [apiComplainResult]);
 
-	const renderProgress = useMemo(() => {
+	const renderShimmerLoading = () => {
+		return Array(6).fill(0).map((_item, index) =>
+			<View
+				key={ index }
+				style={ {
+					alignSelf: 'center',
+					marginVertical: 12
+				} }>
+				<Shimmer
+					animate={ true }
+					active
+					width={ Ratio.screenWidth - 48 }
+					height={ 120 }
+				/>
+			</View>
+		);
+	};
 
+	const renderCustomerInfo = () => {
+		return (
+			<>
+				<View style={ styles.customerInfo }>
+					<Images.IconLocation style={ { marginTop: 4 } } />
+
+					<View style={ { marginStart: 16 } }>
+
+						<Text
+							format={ Fonts.paragraph.l.bold as TextStyle }
+							color={ Colors.black.default }>
+							{ arrivalData?.client_name }
+						</Text>
+
+						<Text
+							format={ Fonts.paragraph.m.regular as TextStyle }
+							color={ Colors.gray.default } style={ { marginTop: 10 } }>
+							{ arrivalData?.client_address }
+						</Text>
+					</View>
+				</View>
+
+				<View style={ styles.separator } />
+			</>
+		);
+	};
+
+	const renderProgress = () => {
 		if (progress > 80) {
 			interval.stop();
 		}
 
 		if (progress)
 			return (
-				<View style={ [styles.addImage, StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }] }>
+				<View
+					style={ [
+						styles.addImage,
+						StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(255, 255, 255, .5)' }
+					] }
+				>
 					<ProgressBar
 						styleAttr='Horizontal'
 						indeterminate={ false }
@@ -114,54 +146,20 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 					/>
 				</View>
 			);
-	}, [progress]);
-
-	// watcher to update list item
-	useEffect(() => {
-
-		if (arrivalData) setItemChecks(mappingItem(arrivalData, existingArrivalCheckItems));
-	}, [arrivalData]);
-
-	//watcher to hide bottomSheet after receive api response
-	useEffect(() => {
-		if (apiComplainResult) {
-			getArrivalData(route.params.deliveryId, route.params.clientId);
-			// setShowComplain(null);
-			setApiComplainResult(null);
-		}
-	}, [apiComplainResult]);
-
-	const formik: FormikProps<CheckValues> = useFormik<CheckValues>({
-		validateOnBlur: true,
-		// validateOnChange: enableValidation,
-		validationSchema: Delivery.DeliveryCheckValidationSchema,
-		initialValues: {
-			receiverName: '',
-			photoUri: '',
-			// returnChecked: [],
-		},
-		onSubmit: () => { needConfirmMode ? setShowNotes(true) : setShowConfirm(true); },
-	});
-
-	const navigateToCapturePhoto = useCallback(
-		() => {
-			NavigationHelper.push('CapturePhoto');
-		},
-		[],
-	);
+	};
 
 	const renderImage = useMemo(() => {
-		if (miscState.tmpImageUri) {
-			formik.setFieldValue('photoUri', miscState.tmpImageUri);
+		if (tmpImgUri) {
+			formik.setFieldValue('photoUri', tmpImgUri);
 			return (
 				<View style={ { position: 'relative' } }>
-					<Image style={ styles.addImage } source={ { uri: miscState.tmpImageUri } } />
-					{ renderProgress }
+					<Image style={ styles.addImage } source={ { uri: tmpImgUri } } />
+					{ renderProgress() }
 				</View>
-
 			);
 		}
 
+		formik.setFieldValue('photoUri', '');
 		const onError: boolean = formik.errors && formik.errors.photoUri ? true : false;
 		return (
 			<View style={ onError ? [styles.addImage, { borderColor: Colors.alert.red }] : styles.addImage }>
@@ -176,45 +174,7 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 				</Text>
 			</View>
 		);
-	}, [miscState.tmpImageUri, formik.errors, progress]);
-
-	const mappingItem = (arrive: DeliveryResponseInterface.ClientArrivalResponse | null, existingDataCheckItems: CheckItemProp[] | null) => {
-
-		if (arrive && arrive.items) {
-			return arrive.items.map((item, index) => {
-
-				return {
-					id: item.sales_no + '-' + item.delivery_route_item_id,
-					name: item.item_name,
-					isComplain: item.complaint_description !== '',
-					complainAmount: item.qty_reject + '',
-					complainLabel: item.complaint_description,
-					complainDesc: item.complaint_description,
-					existingComplain: item.complaint_description ? {
-						category: item.complaint_category,
-						description: item.complaint_description,
-						qty: item.qty_reject,
-						imageUrl: item.complaint_images,
-						followUp: item.complaint_follow_up,
-						qtyReceived: item.qty_received
-
-					} : undefined,
-					isConfirm: existingDataCheckItems && existingDataCheckItems[index].isConfirm ? true : item.confirmed,
-					qtyOrder: {
-						order: item.qty_order,
-						kgFactor: 3,
-						isConfirm: existingDataCheckItems && existingDataCheckItems[index].isConfirm ? true : item.confirmed,
-						qtyOrder: {
-							order: item.qty_order,
-							kgFactor: 3
-						}
-					}
-				};
-			});
-		} else {
-			return [];
-		}
-	};
+	}, [tmpImgUri]);
 
 	const renderCart = (checked: boolean, name: string, qty: number) => (
 		<View
@@ -253,68 +213,34 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			</Text>
 		</View>
 	);
-	const renderListCart = useMemo(() => {
+
+	const renderListCart = () => {
 		if (arrivalData && arrivalData.carts) {
-			return arrivalData.carts.map((item, index) =>
+			return arrivalData.carts.map((item) =>
 				renderCart(
 					listCartReturned.indexOf(item.cart_code) > -1, item.cart_code, item.cart_qty
 				)
 			);
-		} else {
-			return (<View style={ styles.row }>
+		}
+
+		return (
+			<View style={ styles.row }>
 				<Images.ButtonCheck2 width={ 28 } height={ 28 } />
 				<Text format={ Fonts.textBody.l.regular as TextStyle }
 					color={ Colors.black.default }
 					style={ { marginStart: 12 } }>Tidak ada</Text>
-			</View>);
-		}
-
-	}, [arrivalData?.carts, listCartReturned]);
-
-	const renderListItem = () => {
-
-		return itemChecks.map((item, index) =>
-			<View key={ 'item_' + index }>
-				{ index > 0 && <View style={ { height: 5 } } /> }
-				<CheckItem { ...item }
-					onClickComplain={ (data) => {
-						setTmpImgUri('');
-						setTempArrivalItemCheck(itemChecks);
-						NavigationHelper.push("ComplainItem", { ...data });
-						// setShowComplain(data);
-						setComplainKey(1);
-					} }
-					deliveryId={ route.params.deliveryId }
-					clientId={ route.params.clientId }
-					onClickConfirm={ (data) => null }
-					itemIndex={ index }
-					onCheckConfirm={ () => {
-						const newItems = [...itemChecks];
-						newItems[index].isConfirm = newItems[index].isConfirm ? false : true;
-
-						if (newItems[index].isConfirm) newItems[index].isComplain = false;
-
-						setItemChecks(newItems);
-					} }
-					onClickDelete={ (deleteItem) => {
-						setTempArrivalItemCheck(itemChecks);
-						deleteComplain(deleteItem);
-					} }
-				/>
 			</View>
 		);
 	};
 
-	const renderShimmerLoading = () => {
-		return Array(6).fill(0).map((item, index) =>
-			<View key={ index } style={ {
-				alignSelf: 'center',
-				marginVertical: 12
-			} }>
-				<Shimmer animate={ true } active width={ Ratio.screenWidth - 48 } height={ 120 } />
-			</View>
-		);
-	};
+	const confirmItem = useCallback((item: DeliveryResponseInterface.Item) => {
+		setListCheckIds(listCheckIds => [...listCheckIds, item.delivery_route_item_id]);
+	}, [listCheckIds]);
+
+	const unconfirmItem = useCallback((item: DeliveryResponseInterface.Item) => {
+		setListCheckIds(listCheckIds => [...listCheckIds.filter((id) => id != item.delivery_route_item_id)]);
+	}, [listCheckIds]);
+
 	return (
 		<Container
 			noPadding
@@ -325,138 +251,133 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 			} }
 			contentContainerStyle={ styles.container }
 		>
-			<ScrollView>
-				<View>
-					{ arrivalData &&
-						<View style={ styles.customerInfo }>
-							<Images.IconLocation style={ { marginTop: 4 } } />
+			{ arrivalLoading && renderShimmerLoading() }
 
-							<View style={ { marginStart: 16 } }>
+			{ arrivalData && renderCustomerInfo() }
+			{ !arrivalLoading &&
+				<FlatList
+					data={ arrivalData?.items }
+					keyExtractor={ (item) => String(item.delivery_route_item_id) }
+					extraData={ [listCheckIds] }
+					renderItem={
+						({ item }) => <CheckItem
+							item={ item }
+							confirmed={ [...listCheckIds].includes(item.delivery_route_item_id) }
+							onConfirm={ confirmItem }
+							onUnconfirm={ unconfirmItem }
+							onComplain={
+								(item) => {
+									setTmpImgUri(null);
+									NavigationHelper.push('ComplainItem', {
+										deliveryRouteItemId: item.sales_no + '-' + item.delivery_route_item_id,
+										deliveryId: route.params.deliveryId,
+										clientId: route.params.clientId,
+										itemName: item.item_name,
+										existing: item.complaint_description ? {
+											category: item.complaint_category,
+											description: item.complaint_description,
+											qty: item.qty_reject,
+											imageUrl: item.complaint_images,
+											followUp: item.complaint_follow_up,
+											qtyReceived: item.qty_received
 
-								<Text format={ Fonts.paragraph.l.bold as TextStyle } color={ Colors.black.default }>{ arrivalData.client_name }</Text>
-								<Text format={ Fonts.paragraph.m.regular as TextStyle } color={ Colors.gray.default } style={ { marginTop: 10 } }>{ arrivalData.client_address }</Text>
+										} : undefined,
+										qtyOrder: {
+											order: item.qty_order,
+											kgFactor: 3
+										}
+									});
+								}
+							}
+							onDeleteComplain={ (item) => deleteComplain({
+								deliveryId: route.params.deliveryId,
+								clientId: route.params.clientId,
+								itemId: item.delivery_route_item_id
+							}) }
+						/>
+					}
+					ListHeaderComponent={
+						<Text
+							color={ Colors.black.default }
+							format={ Fonts.paragraph.l.bold as TextStyle }
+							style={ styles.label }
+						>
+							Pesanan
+						</Text>
+					}
+					ListFooterComponent={
+						<View>
+							<View style={ styles.separator } />
+							<Text
+								color={ Colors.black.default }
+								format={ Fonts.paragraph.l.bold as TextStyle }
+								style={ styles.label }
+							>
+								Bukti Pesanan Diterima
+							</Text>
+
+							<View style={ styles.section }>
+								<Input
+									formik={ formik }
+									name="receiverName"
+									label="Nama Penerima"
+								/>
+
+								<TouchableOpacity
+									activeOpacity={ .75 }
+									onPress={ () => NavigationHelper.push('CapturePhoto') }
+								>
+									{ renderImage }
+
+								</TouchableOpacity>
+							</View>
+
+							<View style={ styles.separator } />
+							<Text
+								color={ Colors.black.default }
+								format={ Fonts.paragraph.l.bold as TextStyle }
+								style={ styles.label }
+							>
+								Barang Yang Harus Dibawa Kembali
+							</Text>
+
+							<View style={ styles.section }>
+
+								{ renderListCart() }
+
+								<Button
+									text='Pengiriman Selesai'
+									textSize={ 14 }
+									weight='700'
+									mt={ 30 }
+									useShadow={ true }
+									onPress={ () => {
+										setNeedConfirmMode(false);
+										formik.handleSubmit();
+									} }
+									loading={ arrivalLoading }
+									disabled={ arrivalData?.items.some((item) => !item.complaint_description && !listCheckIds.includes(item.delivery_route_item_id)) }
+								/>
+								<Button
+									type="outline"
+									backgroundColor="transparent"
+									color={ Colors.company.red }
+									text='Pengiriman Selesai & Butuh Konfirmasi'
+									textSize={ 14 }
+									weight='700'
+									mt={ 20 }
+									useShadow={ true }
+									onPress={ () => {
+										setNeedConfirmMode(true);
+										formik.handleSubmit();
+									} }
+
+								/>
 							</View>
 						</View>
 					}
-					<View style={ styles.separator } />
-					<Text
-						color={ Colors.black.default }
-						format={ Fonts.paragraph.l.bold as TextStyle }
-						style={ styles.label }
-					>
-						Pesanan
-					</Text>
-				</View>
-				{ renderListItem() }
-				{ arrivalLoading && renderShimmerLoading() }
-				{ !arrivalLoading &&
-					<View>
-						<View style={ styles.separator } />
-						<Text
-							color={ Colors.black.default }
-							format={ Fonts.paragraph.l.bold as TextStyle }
-							style={ styles.label }
-						>
-							Bukti Pesanan Diterima
-						</Text>
-
-						<View style={ styles.section }>
-							<Input
-								formik={ formik }
-								name="receiverName"
-								label="Nama Penerima"
-							/>
-
-							<TouchableOpacity
-								activeOpacity={ .75 }
-								onPress={ navigateToCapturePhoto }
-							>
-								{ renderImage }
-
-							</TouchableOpacity>
-						</View>
-
-						<View style={ styles.separator } />
-						<Text
-							color={ Colors.black.default }
-							format={ Fonts.paragraph.l.bold as TextStyle }
-							style={ styles.label }
-						>
-							Barang Yang Harus Dibawa Kembali
-						</Text>
-
-						<View style={ styles.section }>
-
-							{ renderListCart }
-
-							<Button
-								text='Pengiriman Selesai'
-								textSize={ 14 }
-								weight='700'
-								mt={ 30 }
-								useShadow={ true }
-								onPress={ () => {
-									if (needConfirmMode) {
-										setNeedConfirmMode(false);
-									}
-									setEnableValidation(true);
-									formik.handleSubmit();
-								} }
-								loading={ arrivalLoading }
-								disabled={ itemChecks.some((item) => !item.isComplain ? !item.isConfirm : false) }
-							/>
-							<Button
-								type="outline"
-								backgroundColor="transparent"
-								color={ Colors.company.red }
-								text='Pengiriman Selesai & Butuh Konfirmasi'
-								textSize={ 14 }
-								weight='700'
-								mt={ 20 }
-								useShadow={ true }
-								onPress={ () => {
-
-									if (!needConfirmMode) {
-										setNeedConfirmMode(true);
-									}
-									setEnableValidation(true);
-									formik.handleSubmit();
-								} }
-
-							/>
-						</View>
-					</View>
-				}
-			</ScrollView>
-			<ModalDialog visible={ successArrival !== null }
-				onRequestClose={ () => closeArrivalSuccessDialog() }>
-				<SuccessDeliveryDialog
-					testBarcodeValue={ successArrival?.deliveryId }
-					custName={ successArrival?.clientName }
-					time={ successArrival?.time }
-					onButtonPressed={ () => { closeArrivalSuccessDialog(); NavigationHelper.pop(1); } }
 				/>
-			</ModalDialog>
-
-			<BottomSheet
-				visible={ showConfirmItem ? true : false }
-				onRequestClose={ () => setShowConfirmItem(null) }
-				noScroll
-			>
-				<ConfirmItem
-					onClose={ () => setShowConfirmItem(null) }
-					deliveryRouteItemId={ showConfirmItem ? showConfirmItem.deliveryRouteItemId : 'null' }
-					deliveryId={ showConfirmItem ? showConfirmItem.deliveryId : undefined }
-					clientId={ showConfirmItem ? showConfirmItem.clientId : undefined }
-					itemName={ showConfirmItem ? showConfirmItem.itemName : undefined }
-					onOpenComplain={ (item) => {
-						setShowConfirmItem(null);
-						// setShowComplain(item);
-						NavigationHelper.push("ComplainItem", { ...showConfirmItem });
-					} }
-				/>
-			</BottomSheet>
-
+			}
 			<BottomSheet
 				visible={ showConfirm }
 				onRequestClose={ () => setShowConfirm(false) }
@@ -477,19 +398,36 @@ const DeliveryCheck = ({ route }: NavigationProps<'DeliveryCheck'>) => {
 							needConfirmNote: notes
 						});
 						setShowConfirm(false);
-						setShowSuccessDialog(true);
 					} }
 				/>
 			</BottomSheet>
+
 			<BottomSheet
 				visible={ showNotes }
 				onRequestClose={ () => setShowNotes(false) }
 				noScroll>
-				<Notes onCreateNotes={ (notes) => { setNotes(notes); setShowNotes(false); setShowConfirm(true); } } />
+				<Notes
+					onCreateNotes={ (notes) => {
+						setNotes(notes);
+						setShowNotes(false);
+						setShowConfirm(true);
+					} }
+				/>
 			</BottomSheet>
 
-		</Container >
+			<ModalDialog
+				visible={ successArrival !== null }
+				onRequestClose={ () => closeArrivalSuccessDialog() }>
+				<SuccessDeliveryDialog
+					testBarcodeValue={ successArrival?.deliveryId }
+					custName={ successArrival?.clientName }
+					time={ successArrival?.time }
+					onButtonPressed={ () => { closeArrivalSuccessDialog(); NavigationHelper.pop(1); } }
+				/>
+			</ModalDialog>
+
+		</Container>
 	);
 };
 
-export default DeliveryCheck;
+export default DeliveryArrival;

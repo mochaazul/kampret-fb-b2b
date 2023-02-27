@@ -1,67 +1,71 @@
-import React, { ReactNode, useMemo } from "react";
-import { StyleSheet, TextStyle, TouchableOpacity, View, Image } from "react-native";
+import React from "react";
+import { Image, StyleSheet, TextStyle, TouchableOpacity, View } from "react-native";
 
-import { Button, Text } from "@components";
-import { Images, Colors, Fonts } from "@constant";
-import { DeliveryInterface } from "@interfaces";
+import { Colors, Fonts, Images } from "@constant";
+import { DeliveryResponseInterface } from "@interfaces";
+import { Text } from "@components";
 
-export interface CheckItemProp {
-	id: string;
-	name: string;
-	isComplain?: boolean;
-	complainAmount?: string;
-	complainLabel?: string;
-	complainDesc?: string;
-	complainFiles?: Array<ReactNode>;
-	onClickComplain?: (payload: DeliveryInterface.IComplainDialogProps) => void;
-	onClickConfirm?: (payload: DeliveryInterface.IComplainDialogProps) => void;
-	deliveryId?: string,
-	clientId?: string;
-	existingComplain?: DeliveryInterface.IExistingComplain;
-	itemIndex: number;
-	qtyOrder: {
-		order: number,
-		kgFactor: number;
-	};
-	isConfirm?: boolean;
-	onCheckConfirm?: (id: string) => void;
-	onUncheckConfirm?: (id: string) => void;
-	onClickDelete: (
-		deleteItem: {
-			deliveryId: string | undefined,
-			clientId: string | undefined,
-			itemId: string | null;
-		}
-	) => void;
-};
+export interface CheckItemProp2 {
+	item: DeliveryResponseInterface.Item;
+	confirmed: boolean;
+	onConfirm: (item: DeliveryResponseInterface.Item) => void;
+	onUnconfirm: (item: DeliveryResponseInterface.Item) => void;
+	onComplain: (item: DeliveryResponseInterface.Item) => void;
+	onDeleteComplain: (item: DeliveryResponseInterface.Item) => void;
+}
 
-const CheckItem: React.FC<CheckItemProp> = item => {
+const CheckItem2: React.FC<CheckItemProp2> = prop => {
+
+	const { item, confirmed, onConfirm, onUnconfirm, onComplain, onDeleteComplain } = prop;
 
 	const checkHandler = () => {
-		if (item.isConfirm && item.onUncheckConfirm)
-			item.onUncheckConfirm(item.id);
-		else if (!item.isConfirm && item.onCheckConfirm)
-			item.onCheckConfirm(item.id);
+		if (confirmed)
+			onUnconfirm(item);
+		else if (!confirmed)
+			onConfirm(item);
 	};
 
-	const renderAction = useMemo(() => {
+	const renderItemInfo = () => (
+		<View style={ styles.info }>
+			<Text
+				format={ Fonts.textBody.l.bold as TextStyle }
+				color={ Colors.black.default }
+				ellipsizeMode='middle'
+				numberOfLines={ 2 }
+			>
+				{ item.item_name + ' : ' + item.qty_order }
+			</Text>
+
+			<Text
+				format={ Fonts.paragraph.m.regular as TextStyle }
+				color={ Colors.gray.default }
+				mt={ 4 }
+			>
+				{ `${ item.sales_no }-${ item.delivery_route_item_id }` }
+			</Text>
+		</View>
+	);
+
+	const renderAction = () => {
 		const btnProp = { width: 32, height: 32 };
 		return (
 			<View style={ [styles.buttonContainer, { flex: 2, flexDirection: 'row' }] }>
-				<TouchableOpacity onPress={ () => handleClickComplain() }>
+				<TouchableOpacity onPress={ () => onComplain(item) }>
 					{
-						item.isComplain ?
+						item.complaint_description ?
 							<Images.IconWarnRed { ...btnProp } /> :
 							<Images.IconWarn { ...btnProp } />
 					}
 				</TouchableOpacity>
 
 				<TouchableOpacity
-					onPress={ () => item.isComplain ? false : checkHandler() }
+					onPress={ () =>
+						item.complaint_description ? false : checkHandler()
+					}
 					style={ { marginStart: 16 } }
 				>
 					{
-						item.isConfirm ?
+						confirmed ?
 							<Images.ButtonCheck2 { ...btnProp } /> :
 							<Images.ButtonCheck { ...btnProp } />
 					}
@@ -69,63 +73,40 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 
 			</View>
 		);
-	}, [item.isComplain, item.isConfirm]);
-
-	const handleClickComplain = () => {
-		if (item.onClickComplain) {
-			item.onClickComplain(
-				{
-					deliveryRouteItemId: item.id,
-					deliveryId: item.deliveryId,
-					clientId: item.clientId,
-					itemName: item.name,
-					existing: item.existingComplain,
-					qtyOrder: item.qtyOrder
-				}
-			);
-		}
 	};
 
-	const handleOnClickConfirm = () => {
-		if (item.onClickConfirm) {
-			item.onClickConfirm(
-				{
-					deliveryRouteItemId: item.id,
-					deliveryId: item.deliveryId,
-					clientId: item.clientId,
-					itemName: item.name,
-					qtyOrder: item.qtyOrder
-				}
-			);
-		}
-	};
-
-	const complainThumbnail = (existing?: DeliveryInterface.IExistingComplain) => {
-		let pureItemId: string | null = null;
-
-		if (existing) {
-			if (item && item.id) {
-				pureItemId = item.id.split('-')[1];
-			}
+	const renderComplain = (key: string) => {
+		if (item.complaint_description) {
 			return (
 				<View style={ styles.upLine }>
 					<View style={ styles.thumbnail }>
 						<View style={ { flex: 4 } }>
 							<View style={ [styles.thumbnail, { marginTop: 10 }] }>
-								<Text
-									format={ Fonts.textBody.l.bold as TextStyle }
-									color={ Colors.alert.red }
-									numberOfLines={ 1 }
-								>
-									{ existing.qty + ' ' }
-								</Text>
+								{ item.complaint_category == 'Kuantitas Tidak Sesuai' &&
+									<Text
+										format={ Fonts.textBody.l.bold as TextStyle }
+										color={ Colors.alert.red }
+										numberOfLines={ 1 }
+									>
+										{ `${ item.qty_reject == 0 ? item.qty_received : item.qty_reject } ` }
+									</Text>
+								}
+								{ item.complaint_category != 'Kuantitas Tidak Sesuai' &&
+									<Text
+										format={ Fonts.textBody.l.bold as TextStyle }
+										color={ Colors.alert.red }
+										numberOfLines={ 1 }
+									>
+										{ `${ item.qty_reject } ` }
+									</Text>
+								}
 								<Text
 									format={ Fonts.textBody.l.bold as TextStyle }
 									color={ Colors.black.default }
 									ellipsizeMode='head'
 									numberOfLines={ 2 }
 								>
-									{ existing.category }
+									{ item.complaint_category }
 								</Text>
 							</View>
 							<Text
@@ -135,85 +116,70 @@ const CheckItem: React.FC<CheckItemProp> = item => {
 								numberOfLines={ 3 }
 								mt={ 10 }
 							>
-								{ existing.description }
+								{ item.complaint_description }
 							</Text>
 
-							{ existing.imageUrl &&
+							{ item.complaint_images &&
 								<View style={ styles.thumbnail }>
+									{
+										item.complaint_images.map((item, index) => {
+											return (
+												<Image
+													source={ { uri: item } }
+													resizeMethod='resize'
+													resizeMode='cover'
+													style={ styles.images }
+													key={ key + index }
+												/>
+											);
+										})
+									}
 
-									<Image source={ { uri: existing.imageUrl[0] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } />
-									{ existing.imageUrl[1] && <Image source={ { uri: existing.imageUrl[1] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } /> }
-									{ existing.imageUrl[2] && <Image source={ { uri: existing.imageUrl[2] } } resizeMethod='resize' resizeMode='cover' style={ styles.images } /> }
 								</View>
 							}
 
 						</View>
+
 						<TouchableOpacity
 							style={ styles.deleteButton }
-							onPress={ () => item.onClickDelete(
-								{
-									deliveryId: item.deliveryId,
-									clientId: item.clientId,
-									itemId: pureItemId
-								}
-							) }
+							onPress={ () => onDeleteComplain(item) }
 						>
 							<Images.IconTrash />
 						</TouchableOpacity>
 
 					</View>
 				</View>);
-		} else {
-			return <View />;
 		}
+
+		return (<View />);
 	};
 
 	return (
-		<View style={ styles.container } key={ item.id + '_' + item.itemIndex }>
+		<View
+			style={ styles.container }
+			key={ `${ item.sales_no }-${ item.delivery_route_item_id }` }
+		>
 
 			<View style={ styles.header }>
-				<TouchableOpacity style={ { flex: 5, marginRight: 10 } }
-					onPress={ () => handleOnClickConfirm() }
-				>
-					<Text
-						format={ Fonts.textBody.l.bold as TextStyle }
-						color={ Colors.black.default }
-						ellipsizeMode='middle'
-						numberOfLines={ 2 }
-					>
-						{ item.name + ' : ' + item.qtyOrder.order }
-					</Text>
+				{ renderItemInfo() }
 
-					<Text
-						format={ Fonts.paragraph.m.regular as TextStyle }
-						color={ Colors.gray.default }
-						mt={ 4 }
-					>
-						{ item.id }
-					</Text>
-				</TouchableOpacity>
-
-				{/* { renderComplainBtn } */ }
-
-				{ renderAction }
-
+				{ renderAction() }
 			</View>
 
-			{ complainThumbnail(item.existingComplain) }
+			{ renderComplain(`${ item.sales_no }-${ item.delivery_route_item_id }`) }
 		</View>
 	);
 };
-
-export default React.memo(CheckItem,
-	(prev, next) =>
-		JSON.stringify(prev.existingComplain) == JSON.stringify(next.existingComplain) &&
-		prev.isConfirm == next.isConfirm
-);
 
 const styles = StyleSheet.create({
 	container: {
 		padding: 20,
 		backgroundColor: Colors.white.pure,
+	},
+
+	info: {
+		flex: 5,
+		marginRight: 10
 	},
 
 	header: {
@@ -258,6 +224,15 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		height: 80
-
 	}
 });
+
+export default React.memo(
+	CheckItem2,
+	(prev, next) => {
+		const res = prev.confirmed == next.confirmed &&
+			prev.item.complaint_description == next.item.complaint_description;
+
+		return res;
+	}
+);

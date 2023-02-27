@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextStyle, View } from 'react-native';
+import { StyleSheet, TextStyle, View, PermissionsAndroid, Platform } from 'react-native';
 import { FormikProps, useFormik } from 'formik';
 
 import { Images, Colors, Fonts, Variables, Dispatches } from '@constant';
@@ -47,11 +47,27 @@ const Login = () => {
 	}, [user, loadingError]);
 
 	useEffect(() => {
+		requestLocationPermission();
 		return () => {
 			resetLoginError();
 		};
 	}, []);
 
+	const requestLocationPermission = async () => {
+		if (Platform.OS === 'ios') {
+
+		} else {
+			try {
+				const granted = await PermissionsAndroid.requestMultiple([
+					PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+					PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+					PermissionsAndroid.PERMISSIONS.CAMERA,
+				]);
+			} catch (err) {
+				console.warn(err);
+			}
+		}
+	};
 	return (
 		<Container noPadding>
 			<View style={ { flex: 1, marginTop: 20 } }>
