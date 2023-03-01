@@ -36,14 +36,17 @@ export default {
 						payload: true,
 					});
 				}
-				dispatch({
-					type: Dispatches.SET_NOTIFICATION,
-					payload: response.data,
-				});
-				dispatch({
-					type: Dispatches.SET_NOTIFICATION_PAGINATION,
-					payload: response.pagination,
-				});
+				if (response.data) {
+					dispatch({
+						type: Dispatches.SET_NOTIFICATION,
+						payload: response.data,
+					});
+					dispatch({
+						type: Dispatches.SET_NOTIFICATION_PAGINATION,
+						payload: response.pagination,
+					});
+				}
+
 			})
 			.finally(() => {
 				// set loading notification

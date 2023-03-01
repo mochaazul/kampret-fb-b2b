@@ -20,52 +20,54 @@ export default {
 		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryListData[]>>
 			(`${ Endpoints.DELIVERY_LIST }`)
 			.then(response => {
-
-				// clear current delivery list state
-				dispatch({
-					type: Dispatches.CLEAR_DELIVERY_LIST,
-				});
-
-				// init customers
-				let customers: DeliveryInterface.IDeliveryCustomer[] = [];
-
-				// convert api response to delivery list items
-				const items: DeliveryInterface.IDelivery[] =
-					(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
-						const delivery = {
-							deliveryStatus: value.status,
-							deliveryTextStatus: value.text_status,
-							id: value.delivery_id.toString(),
-							label: value.delivery_no,
-							date: value.date,
-							status: value.status > 4 ? 'deliver' : 'new',
-							totalItem: value.total_item,
-							customers: value.clients.map((client) => ({
-								id: client.client_no,
-								deliveryId: value.delivery_id.toString(),
-								custName: client.client_name,
-								validated: false,
-							})),
-							numLocation: Object.keys(value.clients).length,
-						};
-
-						// push customers to list
-						customers = [...customers, ...delivery.customers];
-
-						return delivery;
+				if (response.data) {
+					// clear current delivery list state
+					dispatch({
+						type: Dispatches.CLEAR_DELIVERY_LIST,
 					});
 
-				// update delivery list
-				dispatch({
-					type: Dispatches.SET_DELIVERY_LIST,
-					payload: items ?? [],
-				});
+					// init customers
+					let customers: DeliveryInterface.IDeliveryCustomer[] = [];
 
-				// update delivery client list
-				dispatch({
-					type: Dispatches.SET_DELIVERY_CLIENT,
-					payload: customers
-				});
+					// convert api response to delivery list items
+					const items: DeliveryInterface.IDelivery[] =
+						(response.data as DeliveryResponseInterface.DeliveryListData[])?.map((value) => {
+							const delivery = {
+								deliveryStatus: value.status,
+								deliveryTextStatus: value.text_status,
+								id: value.delivery_id.toString(),
+								label: value.delivery_no,
+								date: value.date,
+								status: value.status > 4 ? 'deliver' : 'new',
+								totalItem: value.total_item,
+								customers: value.clients.map((client) => ({
+									id: client.client_no,
+									deliveryId: value.delivery_id.toString(),
+									custName: client.client_name,
+									validated: false,
+								})),
+								numLocation: Object.keys(value.clients).length,
+							};
+
+							// push customers to list
+							customers = [...customers, ...delivery.customers];
+
+							return delivery;
+						});
+
+					// update delivery list
+					dispatch({
+						type: Dispatches.SET_DELIVERY_LIST,
+						payload: items ?? [],
+					});
+
+					// update delivery client list
+					dispatch({
+						type: Dispatches.SET_DELIVERY_CLIENT,
+						payload: customers
+					});
+				}
+
 			})
 			.finally(() => {
 				// set loading delivery list to false
@@ -86,25 +88,27 @@ export default {
 		API.get<MiscInterface.BE<DeliveryResponseInterface.DeliveryClientData[]>>
 			(`${ Endpoints.DELIVERY_CLIENT(deliveryId) }`)
 			.then(response => {
+				if (response.data) {
+					// init data with response type
+					const data = response.data as DeliveryResponseInterface.DeliveryClientData[];
 
-				// init data with response type
-				const data = response.data as DeliveryResponseInterface.DeliveryClientData[];
+					// convert api response to delivery client
+					const items = data.map((client) => ({
+						id: client.client_no,
+						deliveryId: deliveryId,
+						custName: client.client_name,
+						validated: client.is_client_validate,
+						numItem: client.total_item,
+						numValidated: client.total_item_validate,
+					}));
 
-				// convert api response to delivery client
-				const items = data.map((client) => ({
-					id: client.client_no,
-					deliveryId: deliveryId,
-					custName: client.client_name,
-					validated: client.is_client_validate,
-					numItem: client.total_item,
-					numValidated: client.total_item_validate,
-				}));
+					// update current delivery clients in states
+					dispatch({
+						type: Dispatches.SET_DELIVERY_CLIENT,
+						payload: items,
+					});
+				}
 
-				// update current delivery clients in states
-				dispatch({
-					type: Dispatches.SET_DELIVERY_CLIENT,
-					payload: items,
-				});
 
 			})
 			.finally(() => {
@@ -215,54 +219,57 @@ export default {
 			(Endpoints.DELIVERY_CLIENT_ITEMS(params.deliveryId, params.clientId))
 			.then((response) => {
 
-				// map response items to state item
-				const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
-					return {
-						id: item.sales_detail_id,
-						orderId: item.sales_no ?? '',
-						name: item.name ?? '',
-						qty: item.qty ?? '',
-						validated: item.is_validate,
-						validatedTime: item.validate_date,
-						deliveryId: params.deliveryId,
-						clientId: params.clientId
-					};
-				}) ?? [];
+				if (response.data) {
+					// map response items to state item
+					const items2: DeliveryInterface.IDeliveryItem[] = response.data?.items?.map((item) => {
+						return {
+							id: item.sales_detail_id,
+							orderId: item.sales_no ?? '',
+							name: item.name ?? '',
+							qty: item.qty ?? '',
+							validated: item.is_validate,
+							validatedTime: item.validate_date,
+							deliveryId: params.deliveryId,
+							clientId: params.clientId
+						};
+					}) ?? [];
 
-				dispatch({
-					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items2
-				});
+					dispatch({
+						type: Dispatches.SET_CLIENT_ITEMS,
+						payload: items2
+					});
 
-				// map response carts to state carts
-				const carts: DeliveryInterface.IDeliveryCart[] = response.data?.carts?.map((cart) => {
-					return {
-						id: cart.cart_code ?? '',
-						qty: cart.cart_qty ?? 0,
-						deliveryId: params.deliveryId,
-						clientId: params.clientId
-					};
-				}) ?? [];
+					// map response carts to state carts
+					const carts: DeliveryInterface.IDeliveryCart[] = response.data?.carts?.map((cart) => {
+						return {
+							id: cart.cart_code ?? '',
+							qty: cart.cart_qty ?? 0,
+							deliveryId: params.deliveryId,
+							clientId: params.clientId
+						};
+					}) ?? [];
 
-				dispatch({
-					type: Dispatches.SET_CLIENT_CARTS,
-					payload: carts
-				});
+					dispatch({
+						type: Dispatches.SET_CLIENT_CARTS,
+						payload: carts
+					});
 
-				// map response carts to state carts
-				const so: DeliveryInterface.IDeliverySO[] = response.data?.sales_numbers?.map((s) => {
-					return {
-						id: s ?? '',
-						name: s ?? 0,
-						deliveryId: params.deliveryId,
-						clientId: params.clientId
-					};
-				}) ?? [];
+					// map response carts to state carts
+					const so: DeliveryInterface.IDeliverySO[] = response.data?.sales_numbers?.map((s) => {
+						return {
+							id: s ?? '',
+							name: s ?? 0,
+							deliveryId: params.deliveryId,
+							clientId: params.clientId
+						};
+					}) ?? [];
 
-				dispatch({
-					type: Dispatches.SET_CLIENT_SO,
-					payload: so
-				});
+					dispatch({
+						type: Dispatches.SET_CLIENT_SO,
+						payload: so
+					});
+				}
+
 			})
 			.catch(() => { })
 			.finally(() => {
@@ -337,43 +344,45 @@ export default {
 		API.patch<MiscInterface.BE<DeliveryResponseInterface.DeliveryItemResp>>
 			(Endpoints.DELIVERY_VALIDATE_ITEMS(params.deliveryId, params.clientId), validatedItems)
 			.then((response) => {
+				if (response.data) {
+					// init data with response type
+					const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
 
-				// init data with response type
-				const data = response.data as DeliveryResponseInterface.DeliveryItemResp;
+					// const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
 
-				// const newItem = [state.deliveryReducers.clientItems, ...items.map((i) => { i.validated = true; })];
+					// loop through current items
+					const items = state.deliveryReducers.clientItems.map((item) => {
+						// check if item is on result
+						const resItem = data.items.find((res) => res.sales_detail_id == item.id);
 
-				// loop through current items
-				const items = state.deliveryReducers.clientItems.map((item) => {
-					// check if item is on result
-					const resItem = data.items.find((res) => res.sales_detail_id == item.id);
-
-					if (resItem) {
-						item.validated = resItem.is_validate;
-						item.validatedTime = resItem.validate_date;
-					}
-
-					return item;
-				});
-
-				// update current client items
-				dispatch({
-					type: Dispatches.SET_CLIENT_ITEMS,
-					payload: items,
-				});
-
-				// update client num validated items
-				dispatch({
-					type: Dispatches.SET_DELIVERY_CLIENT,
-					payload: state.deliveryReducers.clientValidation.map((client) => {
-						const res = { ...client };
-						if (client.id == params.clientId) {
-							res.numValidated = items.filter((item) => item.validated && item.clientId == client.id).length;
+						if (resItem) {
+							item.validated = resItem.is_validate;
+							item.validatedTime = resItem.validate_date;
 						}
 
-						return res;
-					})
-				});
+						return item;
+					});
+
+					// update current client items
+					dispatch({
+						type: Dispatches.SET_CLIENT_ITEMS,
+						payload: items,
+					});
+
+					// update client num validated items
+					dispatch({
+						type: Dispatches.SET_DELIVERY_CLIENT,
+						payload: state.deliveryReducers.clientValidation.map((client) => {
+							const res = { ...client };
+							if (client.id == params.clientId) {
+								res.numValidated = items.filter((item) => item.validated && item.clientId == client.id).length;
+							}
+
+							return res;
+						})
+					});
+				}
+
 
 				// set result validate item to true
 				dispatch({
@@ -382,11 +391,6 @@ export default {
 				});
 			})
 			.catch((error) => {
-				// update current client items
-				// dispatch({
-				// 	type: Dispatches.SET_CLIENT_ITEMS,
-				// 	payload: items,
-				// });
 
 				// set result validate item to false
 				dispatch({
@@ -918,12 +922,13 @@ export default {
 		)
 			.then((response) => {
 
-				dispatch({
-					type: Dispatches.CLIENT_ARRIVAL_DATA,
-					payload: response.data,
-				});
-				NavigationHelper.pop(1);
-
+				if (response.data) {
+					dispatch({
+						type: Dispatches.CLIENT_ARRIVAL_DATA,
+						payload: response.data,
+					});
+					NavigationHelper.pop(1);
+				}
 			})
 			.catch((error: AxiosError) => {
 				const errorData: any = error.response?.data ? error.response?.data : null;

@@ -5,7 +5,7 @@ import { Colors, Fonts, Images } from "@constant";
 import { DeliveryResponseInterface } from "@interfaces";
 import { Text } from "@components";
 
-export interface CheckItemProp2 {
+export interface CheckItemProp {
 	item: DeliveryResponseInterface.Item;
 	confirmed: boolean;
 	onConfirm: (item: DeliveryResponseInterface.Item) => void;
@@ -14,7 +14,7 @@ export interface CheckItemProp2 {
 	onDeleteComplain: (item: DeliveryResponseInterface.Item) => void;
 }
 
-const CheckItem2: React.FC<CheckItemProp2> = prop => {
+const CheckItem2: React.FC<CheckItemProp> = prop => {
 
 	const { item, confirmed, onConfirm, onUnconfirm, onComplain, onDeleteComplain } = prop;
 

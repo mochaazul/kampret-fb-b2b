@@ -162,7 +162,7 @@ interface HistoryDetailReceipt {
 }
 export interface IHistoryDetail {
 	header: HistoryDetailHeader,
-	item: CheckItemProp[] | null,
+	item: CheckItemProp[] | null | any,
 	receipt: HistoryDetailReceipt;
 }
 
