@@ -78,7 +78,13 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 					case 'ERR:NOT_FOUND':
 						// to do redirect to page NOT_FOUND
 						break;
-
+					case 'ERR:VALIDATION':
+						Toast.show({
+							type: 'error',
+							text1: 'Error',
+							text2: data.stat_msg ? data.stat_msg : 'Error validation',
+						});
+						break;
 					case 'ERR:BAD_REQUEST':
 					case 'ERR:EMPTY_DATA':
 						Toast.show({
@@ -104,11 +110,11 @@ const apiRequest = (method: any, url: string, request?: object, headers?: Record
 				}
 			} else
 				return Promise.reject(err);
-			Sentry.captureException(JSON.stringify(url), {
-				tags: {
-					"error_api": 'line109' + method
-				}
-			});
+			// Sentry.captureException(JSON.stringify(url), {
+			// 	tags: {
+			// 		"error_api": 'line109' + method
+			// 	}
+			// });
 		})
 		.finally(() => {
 			// store.dispatch({

@@ -20,6 +20,7 @@ type InputKM = {
 };
 const InputKms = ({ route }: InputKmsScreenProps) => {
 	const [progress, setProgress] = useState(0);
+	const [showWarning, setShowWarning] = useState<null | string>(null);
 
 	const setLongitude = useAppDispatch(Actions.miscAction.setLongitude);
 	const setLatitude = useAppDispatch(Actions.miscAction.setLatitude);
@@ -45,18 +46,25 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			photoUri: null
 		},
 		onSubmit: () => {
-			interval.start();
+
 
 			if (route.params?.deliveryLocation) {
-				inputKmOnFinish({
-					finishLocation: route.params.deliveryLocation,
-					finishOdometer_image: previewImgURI,
-					deliveryId: route.params.deliveryId,
-					lat: latitude,
-					long: longitude,
-					odometer: formik.values.kmSpeedometer
-				});
+				if (route.params.existingStartKm && route.params.existingStartKm < parseInt(formik.values.kmSpeedometer ?? '0')) {
+					interval.start();
+					inputKmOnFinish({
+						finishLocation: route.params.deliveryLocation,
+						finishOdometer_image: previewImgURI,
+						deliveryId: route.params.deliveryId,
+						lat: latitude,
+						long: longitude,
+						odometer: formik.values.kmSpeedometer
+					});
+				} else {
+					setShowWarning('KM kendaraan harus melebihi ' + route.params.existingStartKm + ' KM');
+				}
+
 			} else {
+				interval.start();
 				doInputKm(
 					{
 						lat: latitude,
@@ -77,7 +85,6 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 
 	useEffect(() => {
 		clearLocation();
-
 		Geolocation.getCurrentPosition(
 			info => {
 				setLongitude(info.coords.longitude);
@@ -91,6 +98,7 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 		return function () {
 			clearLocation();
 			setTmpImgUri('');
+			setShowWarning(null);
 		};
 	}, []);
 
@@ -186,6 +194,16 @@ const InputKms = ({ route }: InputKmsScreenProps) => {
 			}
 			contentContainerStyle={ { backgroundColor: Colors.white.pure } }
 		>
+			{ showWarning &&
+				<View style={ styles.row }>
+					<Images.IconWarnRed style={ { marginRight: 10 } } />
+					<Text
+						format={ Fonts.textBody.m.regular as TextStyle }
+						color={ Colors.alert.red }
+					>{ showWarning }
+					</Text>
+				</View>
+			}
 
 			<Input
 				name="kmSpeedometer"

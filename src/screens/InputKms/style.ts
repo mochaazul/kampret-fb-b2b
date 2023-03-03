@@ -56,6 +56,10 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		width: '100%'
 	},
+	row: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	}
 });
 
 export default styles;

@@ -15,7 +15,7 @@ const initialState: MiscInterface.MiscState = {
 	deliveryIssueDesc: '',
 	tmpDeliveryComplainResult: null,
 	uploadProgress: undefined,
-	tempArrivalCheckItems: null
+	tempArrivalCheckItems: null,
 };
 
 type Actions = { type: string; payload: any; };

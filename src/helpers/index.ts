@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from './hooks';
 import useScanBarcodes from './useScanBarcode';
 import useLinking from './useLinking';
 import useInterval from './interval';
-
+import sentryReporter
+	from './sentryReporter';
 export {
 	NavigationHelper,
 	Ratio,
@@ -15,4 +16,5 @@ export {
 	useScanBarcodes,
 	useLinking,
 	useInterval,
+	sentryReporter
 };

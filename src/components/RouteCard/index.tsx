@@ -137,6 +137,20 @@ const RouteCard = ({
 						}
 					</View>
 				);
+			case Variables.DELIVERY_STATUS.NEED_CONFIRM:
+				return (
+					<View style={ [styles.row, { justifyContent: 'space-between', alignItems: 'center' }] }>
+						{ renderTotalBarang }
+
+						<Text
+							color={ Colors.orange.default }
+							format={ Fonts.textBody.s.bold as TextStyle }
+							style={ styles.labelNeedConfirm }
+						>
+							Need Confirm
+						</Text>
+					</View>
+				);
 			case Variables.DELIVERY_STATUS.FINISH:
 				return (
 					<View style={ [styles.row, { justifyContent: 'space-between', alignItems: 'center' }] }>
@@ -200,14 +214,7 @@ const RouteCard = ({
 						}
 					</View>
 				);
-			// case Variables.DELIVERY_STATUS.VALIDATE_ITEM:
-			// 	return (
-			// 		<View style={ [styles.row, { justifyContent: 'space-between' }] }>
-			// 			<View style={ styles.totalItem }>
-			// 				<Text format={ Fonts.textBody.s.regular as TextStyle } color={ Colors.alert.red }>Item Not Validate</Text>
-			// 			</View>
-			// 		</View>
-			// 	);
+
 		}
 	}, [numItem, status, loading, disabled]);
 
@@ -272,8 +279,6 @@ const RouteCard = ({
 
 						</TouchableOpacity>
 					</View>
-
-
 
 					<View style={ styles.timeSection }>
 						<View style={ styles.leftIcon } ><Images.IconTime /></View>
@@ -425,6 +430,12 @@ const styles = StyleSheet.create({
 	labelComplete: {
 		borderRadius: 48,
 		backgroundColor: Colors.green.light,
+		paddingHorizontal: 10,
+		paddingVertical: 6
+	},
+	labelNeedConfirm: {
+		borderRadius: 48,
+		backgroundColor: Colors.orange.light,
 		paddingHorizontal: 10,
 		paddingVertical: 6
 	},

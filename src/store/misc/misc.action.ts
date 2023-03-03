@@ -1,6 +1,8 @@
 import { Dispatch } from 'redux';
-import { Dispatches } from '@constant';
+
+import { Dispatches, Endpoints } from '@constant';
 import { MiscInterface } from '@interfaces';
+import { API, NavigationHelper } from '@helpers';
 
 import { CheckItemProp } from '../../screens/DeliveryCheck/CheckItem';
 
@@ -100,5 +102,31 @@ export default {
 			type: Dispatches.CLIENT_ARRIVAL_DATA,
 			payload: null,
 		});
-	}
+	},
+	getStartOdometer: (params: { deliveryId: string, deliveryLocation: string; }) => (dispatch: Dispatch) => {
+		//set loading delivery route
+		dispatch({
+			type: Dispatches.LOADING_DELIVERY_PROCESS,
+			payload: true
+		});
+		// request odometer data from api
+		API.get<MiscInterface.BE<MiscInterface.OdometerResponse>>
+			(`${ Endpoints.DELIVERY(params.deliveryId) }`)
+			.then(response => {
+				if (response.data) {
+					NavigationHelper.push('InputKms', {
+						deliveryId: params.deliveryId,
+						deliveryLocation: params.deliveryLocation,
+						existingStartKm: response.data.start_odometer
+					});
+				}
+			})
+			.finally(() => {
+				// set loading delivery route to false
+				dispatch({
+					type: Dispatches.LOADING_DELIVERY_PROCESS,
+					payload: false
+				});
+			});
+	},
 };

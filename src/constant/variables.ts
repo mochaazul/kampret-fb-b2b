@@ -10,11 +10,12 @@ export default {
 		VALIDATE_ITEM: 4,
 		SENT: 5,
 		ARRIVED: 6,
-		FINISH: 1
+		FINISH: 1,
+		NEED_CONFIRM: 7
 	},
 	PHOTO_SIZE: {
-		WIDTH: 950,
-		HEIGHT: 580
+		WIDTH: 720,
+		HEIGHT: 960
 	}
 
 };

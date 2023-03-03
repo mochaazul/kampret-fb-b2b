@@ -32,6 +32,7 @@ export type RootStackParamList = {
 		photo?: string;
 		deliveryId?: string;
 		deliveryLocation?: string;
+		existingStartKm?: number;
 	};
 	DeliveryRoute?: {
 		deliveryId?: string;

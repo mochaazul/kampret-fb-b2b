@@ -16,6 +16,16 @@ export type MiscState = {
 	tempArrivalCheckItems: CheckItemProp[] | null;
 };
 
+export interface OdometerResponse {
+	id: number;
+	start_time: Date;
+	start_lat: number;
+	start_long: number;
+	start_location: string;
+	start_odometer: number;
+	start_odometer_file_url: string;
+}
+
 export type UploadProgress = {
 	loaded: number,
 	total: number;

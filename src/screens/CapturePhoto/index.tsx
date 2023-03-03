@@ -4,13 +4,16 @@ import { Camera as CameraVision } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 
 import { Camera } from '@components';
-import { NavigationHelper, useAppDispatch } from '@helpers';
+import { NavigationHelper, useAppDispatch, sentryReporter, useAppSelector } from '@helpers';
 import { Actions } from '@store';
 import { NavigationProps } from '@interfaces';
 import { Variables } from '@constant';
 
 const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 	const cameraRef = useRef<CameraVision>(null);
+
+	const user = useAppSelector(state => state.authReducers.user);
+
 	const setTmpImgUri = useAppDispatch(Actions.miscAction.setTmpImageUri);
 	const setCustomStore = useAppDispatch(Actions.miscAction.setTmpMultiplePhotoCapture);
 
@@ -20,6 +23,7 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 		async () => {
 			const result = await cameraRef?.current?.takePhoto({
 				qualityPrioritization: 'quality',
+				skipMetadata: true
 			});
 
 			if (route.params?.customStore) {
@@ -52,7 +56,17 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 					"file://" + result?.path
 			);
 
+			if (result && result.height !== Variables.PHOTO_SIZE.HEIGHT) {
+				if (result.height !== Variables.PHOTO_SIZE.WIDTH) {
+					sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				}
+			} else if (result && result.width !== Variables.PHOTO_SIZE.WIDTH) {
+				if (result.width !== Variables.PHOTO_SIZE.HEIGHT) {
+					sentryReporter.imageWatcher(user ? user.user_name : 'uknown', result.height, result.width);
+				}
+			}
 			NavigationHelper.pop(1);
+
 		},
 		[cameraRef],
 	);
@@ -73,7 +87,6 @@ const CapturePhoto = ({ route }: NavigationProps<'CapturePhoto'>) => {
 				photo={ true }
 				cameraRef={ cameraRef }
 				isActive={ active }
-				//preset={ route?.params?.cameraPreest ?? 'medium' }
 				format={ {
 					photoHeight: Variables.PHOTO_SIZE.HEIGHT,
 					photoWidth: Variables.PHOTO_SIZE.WIDTH,
