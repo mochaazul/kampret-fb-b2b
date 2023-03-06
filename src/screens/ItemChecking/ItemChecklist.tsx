@@ -13,12 +13,10 @@ interface ItemChecklistProps {
 const ItemChecklist = ({ item, onCheckClicked }: ItemChecklistProps) => {
 
 	const renderButton = useMemo(() => {
-		if (item.validated)
-			return (<Images.ButtonCheck2 />);
 
 		return (
 			<TouchableOpacity onPress={ () => onCheckClicked(item.id) }>
-				<Images.ButtonCheck />
+				{ item.validated ? <Images.ButtonCheck2 /> : <Images.ButtonCheck /> }
 			</TouchableOpacity>
 		);
 	}, [item.validated]);
