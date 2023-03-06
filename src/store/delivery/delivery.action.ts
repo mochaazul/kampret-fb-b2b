@@ -297,7 +297,7 @@ export default {
 		const items = currentItems.map(
 			(item) => {
 				if (item.id == id) {
-					item.validated = true;
+					item.validated = !item.validated;
 				}
 
 				return item;
