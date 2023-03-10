@@ -425,8 +425,8 @@ export default {
 		// create form data
 		const formData = new FormData();
 		formData.append('start_odometer_image', {
-			uri: params?.imageUrl ?? 'test',
-			name: 'test.jpg',
+			uri: params.imageUrl,
+			name: params.deliveryId + '_input.jpg',
 			type: 'image/jpeg',
 		} as any);
 		formData.append('start_lat', params.lat);
